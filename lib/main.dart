@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/users/views/main_screen.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           tertiary: Color(0xFFFF69B4),
         ),
       ),
-      home: const MainScreen(),
+      home: const BottomNavBar(),
     );
   }
 }

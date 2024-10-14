@@ -6,14 +6,14 @@ import 'package:teen_splash/features/users/views/sub_features/home_registered_us
 import 'package:teen_splash/features/users/views/notifications_screen.dart';
 import 'package:teen_splash/features/users/views/profile_screen.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  _BottomNavBarState createState() => _BottomNavBarState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
@@ -25,7 +25,6 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemTapped(int index) {
-    // Ignore taps on the center button (index 2)
     setState(() {
       _selectedIndex = index;
     });
@@ -39,19 +38,17 @@ class _MainScreenState extends State<MainScreen> {
         items: const [
           TabItem(icon: Icons.home, title: 'Home'),
           TabItem(icon: Icons.local_offer, title: 'Coupons'),
-          TabItem(icon: Icons.calendar_today, title: ''), // Fixed center button
+          TabItem(icon: Icons.calendar_today, title: ''),
           TabItem(icon: Icons.notifications, title: 'Notifications'),
           TabItem(icon: Icons.person, title: 'Profile'),
         ],
         backgroundColor: Theme.of(context).colorScheme.primary,
-        activeColor:
-            Theme.of(context).colorScheme.secondary, // For selected items
-        color: const Color(0xFF9DB2CE), // Default color for non-selected items
+        activeColor: Theme.of(context).colorScheme.secondary,
+        color: const Color(0xFF9DB2CE),
         initialActiveIndex: _selectedIndex,
         onTap: _onItemTapped,
-        style: TabStyle.fixed, // Show label only for selected tab
+        style: TabStyle.fixed,
         elevation: 0,
-        // centerButtonBackgroundColor: Colors.red, // Fixed color for calendar button
       ),
     );
   }
