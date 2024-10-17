@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:teen_splash/widgets/app_text_field.dart';
@@ -14,6 +16,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authenticationBloc = context.watch<AuthenticationBloc>();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -98,9 +101,54 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         hintText: 'Email',
                       ),
                       Gaps.hGap50,
-                      AppPrimaryButton(
-                        text: 'Reset Password',
-                        onTap: () {},
+                      BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                        listener: (context, state) {
+                          if (state is ResetPasswordSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Password reset email sent successfully',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(
+                              context,
+                            );
+                          } else if (state is ResetPasswordFailure) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Failed to reset password: ${state.message}',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is ResetPasswordLoading) {
+                            return const CircularProgressIndicator();
+                          }
+                          return AppPrimaryButton(
+                            text: 'Reset Password',
+                            onTap: () {
+                              if (_emailController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your email',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              authenticationBloc.add(
+                                ResetPassword(
+                                  email: _emailController.text,
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

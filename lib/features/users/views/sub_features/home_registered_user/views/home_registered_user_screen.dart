@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/favorites_screen.dart';
 import 'package:teen_splash/features/users/views/offers_history_screen.dart';
 import 'package:teen_splash/features/users/views/settings_screen.dart';
@@ -76,7 +77,17 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
               child: Align(
                 alignment: Alignment.center,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (
+                          context,
+                        ) =>
+                            const ChatRoomScreen(),
+                      ),
+                    );
+                  },
                   child: Container(
                     height: 40,
                     width: 40,

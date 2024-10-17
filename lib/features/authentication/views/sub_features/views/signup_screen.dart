@@ -1,5 +1,4 @@
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/widgets/select_gender_popup.dart';
@@ -24,6 +23,7 @@ class _SignupScreenState extends State<SignupScreen> {
       TextEditingController();
 
   String? selectedCountry;
+  String? selectedCountryFlag;
   String selectedGender = '';
   void updateGender(
     String gender,
@@ -220,7 +220,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               setState(
                                 () {
                                   selectedCountry = country.name;
-                                  _countryController.text = country.name;
+                                  selectedCountryFlag =
+                                      country.flagEmoji; // Get flag emoji
+                                  _countryController.text =
+                                      country.name; // Set country name
                                 },
                               );
                             },
@@ -248,11 +251,16 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               prefixIcon: Padding(
                                 padding: const EdgeInsets.all(10),
-                                child: Image.asset(
-                                  'assets/icons/flag.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
+                                child: selectedCountryFlag != null
+                                    ? Text(
+                                        selectedCountryFlag!,
+                                        style: const TextStyle(fontSize: 24),
+                                      )
+                                    : Image.asset(
+                                        'assets/icons/flag.png',
+                                        width: 24,
+                                        height: 24,
+                                      ),
                               ),
                               hintText: 'Select Country',
                               hintStyle: const TextStyle(
@@ -292,13 +300,83 @@ class _SignupScreenState extends State<SignupScreen> {
                       AppPrimaryButton(
                         text: 'Next',
                         onTap: () {
+                          if (_nameController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please enter your name',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (_emailController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please enter your email',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (selectedCountry!.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please select your country',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (selectedGender.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please select your gender',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (_passwordController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please enter your password',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (_passwordController.text !=
+                              _confirmPasswordController.text) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Passwords do not match',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (
                                 context,
                               ) =>
-                                  const VerifyIdcardScreen(),
+                                  VerifyIdcardScreen(
+                                name: _nameController.text,
+                                email: _emailController.text,
+                                gender: selectedGender,
+                                country: selectedCountry.toString(),
+                                countryFlag: selectedCountryFlag.toString(),
+                                password: _passwordController.text,
+                                confirmPassword:
+                                    _confirmPasswordController.text,
+                              ),
                             ),
                           );
                         },

@@ -1,18 +1,43 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class VerifyIdcardScreen extends StatefulWidget {
-  const VerifyIdcardScreen({super.key});
+  final String name;
+  final String email;
+  final String gender;
+  final String country;
+  final String countryFlag;
+  final String password;
+  final String confirmPassword;
+  const VerifyIdcardScreen({
+    required this.name,
+    required this.email,
+    required this.gender,
+    required this.country,
+    required this.countryFlag,
+    required this.password,
+    required this.confirmPassword,
+    super.key,
+  });
 
   @override
   State<VerifyIdcardScreen> createState() => _VerifyIdcardScreenState();
 }
 
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
+  String status = 'Pending';
+  String? idCardPhoto;
   @override
   Widget build(BuildContext context) {
+    final authenticationBloc = context.watch<AuthenticationBloc>();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -83,15 +108,41 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                         ),
                       ),
                       Gaps.hGap40,
-                      Container(
-                        height: 162,
-                        width: 335,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ),
-                          color: Colors.black.withOpacity(
-                            0.7,
+                      GestureDetector(
+                        onTap: () async {
+                          final pickedFile = await ImagePicker().pickImage(
+                            source: ImageSource.gallery,
+                          );
+
+                          if (pickedFile != null) {
+                            final coverPhotoUrl = pickedFile.path;
+                            setState(
+                              () {
+                                idCardPhoto = coverPhotoUrl;
+                              },
+                            );
+                          }
+                        },
+                        child: Container(
+                          height: 162,
+                          width: 335,
+                          decoration: BoxDecoration(
+                            image: idCardPhoto != null
+                                ? DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(
+                                      File(idCardPhoto!),
+                                    ),
+                                  )
+                                : null,
+                            borderRadius: BorderRadius.circular(
+                              12,
+                            ),
+                            color: idCardPhoto != null
+                                ? null
+                                : Colors.black.withOpacity(
+                                    0.7,
+                                  ),
                           ),
                         ),
                       ),
@@ -144,18 +195,77 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                         ),
                       ),
                       Gaps.hGap40,
-                      AppPrimaryButton(
-                        text: 'Sign Up',
-                        onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (
-                          //       context,
-                          //     ) =>
-                          //         const VerifyIdcardScreen(),
-                          //   ),
-                          // );
+                      BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                        listener: (context, state) {
+                          if (state is Registered) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Request is sent to admin for verification',
+                                ),
+                              ),
+                            );
+                            // Navigator.of(context).pushAndRemoveUntil(
+                            //   MaterialPageRoute(
+                            //     builder: (
+                            //       context,
+                            //     ) =>
+                            //         const BottomNavBar(),
+                            //   ),
+                            //   (route) => false,
+                            // );
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is Registering) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (state is RegisteredFailure) {
+                            SchedulerBinding.instance.addPostFrameCallback(
+                              (timeStamp) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      state.message,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                          return AppPrimaryButton(
+                            text: 'Sign Up',
+                            onTap: () {
+                              if (idCardPhoto!.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select the id card photo',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              authenticationBloc.add(
+                                RegisterEvent(
+                                  name: widget.name,
+                                  email: widget.email,
+                                  gender: widget.gender.toString(),
+                                  country: widget.country.toString(),
+                                  countryFlag: widget.countryFlag.toString(),
+                                  password: widget.password,
+                                  confirmPassword: widget.confirmPassword,
+                                  status: status,
+                                  idCardPhoto: idCardPhoto.toString(),
+                                  image: XFile(idCardPhoto!),
+                                ),
+                              );
+                            },
+                          );
                         },
                       ),
                       Gaps.hGap50,

@@ -44,8 +44,45 @@ dependencies:
 
   # Ticket Widget
   ticket_widget: ^1.0.2
-
+  
+  # Ticket Clippers
   ticket_clippers: ^0.0.8
+
+  # Firebase Core
+  firebase_core: ^3.6.0
+
+  # Shared Preferences
+  shared_preferences: ^2.3.2
+
+  # Provider
+  provider: ^6.1.2
+
+  # Equatable
+  equatable: ^2.0.5
+
+  # Bloc
+  bloc: ^8.1.4
+
+  # Flutter Bloc
+  flutter_bloc: ^8.1.6
+
+  # Firebase Auth
+  firebase_auth: ^5.3.1
+
+  # Cloud Firestore
+  cloud_firestore: ^5.4.4
+
+  # Firebase Storage
+  firebase_storage: ^12.3.3
+
+  # Image Picker
+  image_picker: ^1.1.2
+
+  # File Picker
+  file_picker: ^8.1.2
+
+  # Intl
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

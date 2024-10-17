@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/reset_password_screen.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/views/signup_screen.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/views/home_registered_user_screen.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:teen_splash/widgets/app_text_field.dart';
@@ -18,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authenticationBloc = context.watch<AuthenticationBloc>();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -94,17 +97,43 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: 'Password',
                       ),
                       Gaps.hGap40,
-                      AppPrimaryButton(
-                        text: 'Login',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (
-                                context,
-                              ) =>
-                                  const HomeRegisteredUserScreen(),
-                            ),
+                      BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                        listener: (context, state) {
+                          if (state is AuthenticationSuccess) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const BottomNavBar(),
+                              ),
+                              (route) => false,
+                            );
+                          } else if (state is AuthenticationFailure) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  state.message,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is AuthenticationLoading) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return AppPrimaryButton(
+                            text: 'Login',
+                            onTap: () {
+                              authenticationBloc.add(
+                                LoginEvent(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                            },
                           );
                         },
                       ),

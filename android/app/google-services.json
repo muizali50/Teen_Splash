@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "860854562070",
+    "project_id": "teen-splah",
+    "storage_bucket": "teen-splah.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860854562070:android:16ae49ab40159cc1937437",
+        "android_client_info": {
+          "package_name": "com.example.teen_splash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk6i0xCXzDlsQrox41RonoulkeNZqM1YY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

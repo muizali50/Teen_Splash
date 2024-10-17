@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/clothing_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer_row.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';
@@ -66,7 +67,19 @@ class _HomeGuestUserState extends State<HomeGuestUser>
               child: Align(
                 alignment: Alignment.center,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (
+                          context,
+                        ) =>
+                            const ChatRoomScreen(
+                              isGuest: true,
+                            ),
+                      ),
+                    );
+                  },
                   child: Container(
                     height: 40,
                     width: 40,

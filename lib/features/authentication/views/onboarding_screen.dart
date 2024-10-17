@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/views/signup_screen.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -74,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 AppPrimaryButton(
                   text: 'Login',
                   onTap: () {
-                     Navigator.pushReplacement(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (
@@ -103,14 +104,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 Gaps.hGap25,
                 Center(
-                  child: Text(
-                    'Continue as a Guest',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontFamily: 'Lexend',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).colorScheme.surface,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (
+                            context,
+                          ) =>
+                              const BottomNavBar(
+                            isGuest: true,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Continue as a Guest',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontFamily: 'Lexend',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
                     ),
                   ),
                 ),

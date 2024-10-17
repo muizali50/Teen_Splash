@@ -18,6 +18,8 @@ class AppTextField extends StatefulWidget {
     this.isPrefixIcon = false,
     this.onTapDropdown,
     this.prefixIconColor = const Color(0xFF999999),
+    this.isCopyIcon = false,
+    this.copyOnTap,
   });
 
   final TextEditingController? controller;
@@ -34,6 +36,8 @@ class AppTextField extends StatefulWidget {
   final bool isPrefixIcon;
   final VoidCallback? onTapDropdown;
   final Color prefixIconColor;
+  final bool isCopyIcon;
+  final VoidCallback? copyOnTap;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -88,41 +92,51 @@ class _AppTextFieldState extends State<AppTextField> {
                 ),
               )
             : null,
-        suffixIcon: widget.isPassword
+        suffixIcon: widget.isCopyIcon
             ? IconButton(
-                onPressed: () {
-                  setState(
-                    () {
-                      _isObsecure = !_isObsecure;
-                    },
-                  );
-                },
-                icon: Icon(
+                onPressed: widget.copyOnTap,
+                icon: const ImageIcon(
                   size: 24,
-                  _isObsecure
-                      ? Icons.remove_red_eye_outlined
-                      : CupertinoIcons.eye_slash,
-                  color: Theme.of(context).colorScheme.secondary,
+                  AssetImage(
+                    'assets/icons/copy.png',
+                  ),
                 ),
               )
-            : widget.isSearchIcon
-                ? Icon(
-                    size: 25,
-                    color: Theme.of(context).colorScheme.surface,
-                    CupertinoIcons.search,
+            : widget.isPassword
+                ? IconButton(
+                    onPressed: () {
+                      setState(
+                        () {
+                          _isObsecure = !_isObsecure;
+                        },
+                      );
+                    },
+                    icon: Icon(
+                      size: 24,
+                      _isObsecure
+                          ? Icons.remove_red_eye_outlined
+                          : CupertinoIcons.eye_slash,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
                   )
-                : widget.isDropdownIcon
-                    ? IconButton(
-                        onPressed: widget.onTapDropdown,
-                        icon: ImageIcon(
-                          size: 24,
-                          color: Theme.of(context).colorScheme.secondary,
-                          const AssetImage(
-                            'assets/icons/arrow.png',
-                          ),
-                        ),
+                : widget.isSearchIcon
+                    ? Icon(
+                        size: 25,
+                        color: Theme.of(context).colorScheme.surface,
+                        CupertinoIcons.search,
                       )
-                    : null,
+                    : widget.isDropdownIcon
+                        ? IconButton(
+                            onPressed: widget.onTapDropdown,
+                            icon: ImageIcon(
+                              size: 24,
+                              color: Theme.of(context).colorScheme.secondary,
+                              const AssetImage(
+                                'assets/icons/arrow.png',
+                              ),
+                            ),
+                          )
+                        : null,
         hintText: widget.hintText,
         hintStyle: TextStyle(
           fontFamily: 'OpenSans',

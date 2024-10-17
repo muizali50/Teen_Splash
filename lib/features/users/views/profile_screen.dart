@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -9,6 +12,23 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late final UserProvider userProvider;
+  late final AuthenticationBloc authenticationBloc;
+  @override
+  void initState() {
+    authenticationBloc = context.read<AuthenticationBloc>();
+    authenticationBloc.add(
+      const GetUser(),
+    );
+    userProvider = context.read<UserProvider>();
+    if (userProvider.user == null) {
+      authenticationBloc.add(
+        const GetUser(),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,16 +147,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Gaps.hGap30,
-                          Center(
-                            child: Text(
-                              '@aryas',
-                              style: TextStyle(
-                                fontFamily: 'Lexend',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
+                          Consumer<UserProvider>(
+                            builder: (context, userProvider, child) {
+                              return Center(
+                                child: Text(
+                                  '@${userProvider.user?.name ?? ''}',
+                                  style: TextStyle(
+                                    fontFamily: 'Lexend',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           Gaps.hGap40,
                           Container(
@@ -154,116 +179,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 0xFFF8F8F8,
                               ),
                             ),
-                            child: Column(
-                              children: [
-                                Row(
+                            child: Consumer<UserProvider>(
+                              builder: (context, userProvider, child) {
+                                return Column(
                                   children: [
-                                    Text(
-                                      'Name',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Arya Smith',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Name',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
                                         ),
-                                      ),
+                                        const Spacer(),
+                                        Text(
+                                          userProvider.user?.name ?? '',
+                                          style: const TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(
+                                              0xFF999999,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Gaps.hGap10,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Gender',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          userProvider.user?.gender ?? '',
+                                          style: const TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(
+                                              0xFF999999,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Gaps.hGap10,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Age',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        const Text(
+                                          '25 y/o',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(
+                                              0xFF999999,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Gaps.hGap10,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Country',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          '${userProvider.user?.country ?? ''} ${userProvider.user?.countryFlag ?? ''}',
+                                          style: const TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(
+                                              0xFF999999,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                                ),
-                                Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Gender',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Female',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Age',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      '25 y/o',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Country',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color:
-                                            Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Barbados 🇧🇧 ',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                );
+                              },
                             ),
                           ),
                           Gaps.hGap20,
