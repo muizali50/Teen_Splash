@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/admin/views/sub_features/dashborad/views/admin_dashboard.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/onboarding_screen.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
@@ -32,6 +36,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (context) => AdminBloc(),
+        ),
+        BlocProvider(
           create: (context) => AuthenticationBloc(),
         ),
         BlocProvider(
@@ -58,8 +65,12 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: FirebaseAuth.instance.currentUser == null
-              ? const OnboardingScreen()
-              : const BottomNavBar(),
+              ? kIsWeb
+                  ? const LoginScreen()
+                  : const OnboardingScreen()
+              : kIsWeb
+                  ? const AdminDashboard()
+                  : const BottomNavBar(),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -207,15 +208,15 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                 ),
                               ),
                             );
-                            // Navigator.of(context).pushAndRemoveUntil(
-                            //   MaterialPageRoute(
-                            //     builder: (
-                            //       context,
-                            //     ) =>
-                            //         const BottomNavBar(),
-                            //   ),
-                            //   (route) => false,
-                            // );
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const BottomNavBar(),
+                              ),
+                              (route) => false,
+                            );
                           }
                         },
                         builder: (context, state) {

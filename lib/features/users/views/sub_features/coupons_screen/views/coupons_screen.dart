@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/coupons_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/coupons_screen/widgets/vertical_dashed_line.dart';
 import 'package:teen_splash/utils/gaps.dart';
@@ -12,6 +16,18 @@ class CouponsScreen extends StatefulWidget {
 }
 
 class _CouponsScreenState extends State<CouponsScreen> {
+  late final AdminBloc adminBloc;
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.coupons.isEmpty) {
+      adminBloc.add(
+        GetCoupon(),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,130 +116,187 @@ class _CouponsScreenState extends State<CouponsScreen> {
                         ),
                       ),
                       Gaps.hGap20,
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (
-                                    context,
-                                  ) =>
-                                      const CouponsDetailsScreen(),
-                                ),
-                              );
+                      BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          final currentDate = DateTime.now();
+                          final dateFormat = DateFormat('yyyy-MM-dd');
+
+                          final filteredCoupon = adminBloc.coupons.where(
+                            (coupon) {
+                              final isUserNotRedeemed = !coupon.userIds!
+                                  .contains(
+                                      FirebaseAuth.instance.currentUser!.uid);
+
+                              final isDateValid = coupon.validDate != null &&
+                                  dateFormat
+                                      .parse(coupon.validDate!)
+                                      .isAfter(currentDate);
+
+                              return isUserNotRedeemed && isDateValid;
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: TicketWidget(
-                                color: Theme.of(context).colorScheme.tertiary,
-                                width: double.infinity,
-                                height: 124,
-                                isCornerRounded: true,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    1.0,
+                          ).toList();
+                          if (state is GettingCoupon) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetCouponFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return filteredCoupon.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'No coupons',
                                   ),
-                                  child: TicketWidget(
-                                    color:
-                                        Theme.of(context).colorScheme.surface,
-                                    width: double.infinity,
-                                    height: 124,
-                                    isCornerRounded: true,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 30,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          scale: 8,
-                                          'assets/images/cheezious.png',
-                                        ),
-                                        const SizedBox(
-                                          width: 25,
-                                        ),
-                                        Center(
-                                          child: Align(
-                                            child: VerticalDashedLine(
-                                              height: 100,
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: filteredCoupon.length,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) =>
+                                                CouponsDetailsScreen(
+                                              coupon: filteredCoupon[index],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: TicketWidget(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                          width: double.infinity,
+                                          height: 124,
+                                          isCornerRounded: true,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(
+                                              1.0,
+                                            ),
+                                            child: TicketWidget(
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .onSurface,
-                                              dashHeight: 10,
-                                              dashWidth: 0.5,
-                                              dashSpace: 4,
+                                                  .surface,
+                                              width: double.infinity,
+                                              height: 124,
+                                              isCornerRounded: true,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 30,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Image.network(
+                                                    scale: 8,
+                                                    filteredCoupon[index]
+                                                            .image ??
+                                                        '',
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 25,
+                                                  ),
+                                                  Center(
+                                                    child: Align(
+                                                      child: VerticalDashedLine(
+                                                        height: 100,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface,
+                                                        dashHeight: 10,
+                                                        dashWidth: 0.5,
+                                                        dashSpace: 4,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 30,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        filteredCoupon[index]
+                                                                .businessName ??
+                                                            '',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Lexend',
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                      ),
+                                                      Gaps.hGap05,
+                                                      Text(
+                                                        '${filteredCoupon[index].discount ?? ''}% Off',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Lexend',
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .tertiary,
+                                                        ),
+                                                      ),
+                                                      Gaps.hGap05,
+                                                      Text(
+                                                        '${filteredCoupon[index].item ?? ''} Coupon',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Lexend',
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                        ),
+                                                      ),
+                                                      Gaps.hGap10,
+                                                      Text(
+                                                        'Valid until: ${filteredCoupon[index].validDate ?? ''}',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Lexend',
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(
-                                          width: 30,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Cheezius',
-                                              style: TextStyle(
-                                                fontFamily: 'Lexend',
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              ),
-                                            ),
-                                            Gaps.hGap05,
-                                            Text(
-                                              '70% Off',
-                                              style: TextStyle(
-                                                fontFamily: 'Lexend',
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .tertiary,
-                                              ),
-                                            ),
-                                            Gaps.hGap05,
-                                            Text(
-                                              'Pizza Coupon',
-                                              style: TextStyle(
-                                                fontFamily: 'Lexend',
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface,
-                                              ),
-                                            ),
-                                            Gaps.hGap10,
-                                            Text(
-                                              'Valid until: 4/10/2024',
-                                              style: TextStyle(
-                                                fontFamily: 'Lexend',
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
+                                      ),
+                                    );
+                                  },
+                                );
                         },
                       ),
                     ],

@@ -84,6 +84,9 @@ dependencies:
   # Intl
   intl: ^0.19.0
 
+  # Dotted Bborder
+  dotted_border: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

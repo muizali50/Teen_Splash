@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/views/sub_features/dashborad/views/admin_dashboard.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/reset_password_screen.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/views/signup_screen.dart';
@@ -45,8 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.only(
                   top: 40,
-                  left: 20,
-                  right: 20,
+                  left: kIsWeb ? 250 : 20,
+                  right: kIsWeb ? 250 : 20,
                   bottom: 20,
                 ),
                 decoration: BoxDecoration(
@@ -71,13 +73,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Login',
-                        style: TextStyle(
-                          fontFamily: 'Lexend',
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
+                      Align(
+                        alignment:
+                            kIsWeb ? Alignment.center : Alignment.centerLeft,
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontFamily: 'Lexend',
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                       ),
                       Gaps.hGap15,
@@ -105,7 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (
                                   context,
                                 ) =>
-                                    const BottomNavBar(),
+                                    kIsWeb
+                                        ? const AdminDashboard()
+                                        : const BottomNavBar(),
                               ),
                               (route) => false,
                             );
@@ -122,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         builder: (context, state) {
                           if (state is AuthenticationLoading) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(),
+                            );
                           }
                           return AppPrimaryButton(
                             text: 'Login',
@@ -137,46 +146,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                       ),
-                      Gaps.hGap10,
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (
-                                  context,
-                                ) =>
-                                    const ResetPasswordScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              fontFamily: 'Lexend',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Gaps.hGap50,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Don’t have an account?',
-                            style: TextStyle(
-                              fontFamily: 'OpenSans',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          TextButton(
+                      if (kIsWeb != true) Gaps.hGap10,
+                      if (kIsWeb != true)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -184,12 +158,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   builder: (
                                     context,
                                   ) =>
-                                      const SignupScreen(),
+                                      const ResetPasswordScreen(),
                                 ),
                               );
                             },
                             child: Text(
-                              'Sign Up',
+                              'Forgot Password?',
                               style: TextStyle(
                                 fontFamily: 'Lexend',
                                 fontSize: 16,
@@ -198,8 +172,46 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      if (kIsWeb != true) Gaps.hGap50,
+                      if (kIsWeb != true)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Don’t have an account?',
+                              style: TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (
+                                      context,
+                                    ) =>
+                                        const SignupScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontFamily: 'Lexend',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),

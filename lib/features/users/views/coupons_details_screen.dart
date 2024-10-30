@@ -1,12 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/sub_features/coupons_screen/widgets/horizontal_dashed_line.dart';
-import 'package:teen_splash/features/users/views/sub_features/offer_detail_screen/widgets/redeem_offer.dart';
+import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/redeem_offer.dart';
+import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
 class CouponsDetailsScreen extends StatefulWidget {
-  const CouponsDetailsScreen({super.key});
+  final CouponModel? coupon;
+  const CouponsDetailsScreen({
+    required this.coupon,
+    super.key,
+  });
 
   @override
   State<CouponsDetailsScreen> createState() => _CouponsDetailsScreenState();
@@ -15,6 +23,7 @@ class CouponsDetailsScreen extends StatefulWidget {
 class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    final userBloc = context.read<UserBloc>();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
@@ -25,7 +34,9 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
             child: Align(
               alignment: Alignment.center,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                },
                 child: Container(
                   height: 40,
                   width: 40,
@@ -106,12 +117,12 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                 Container(
                                   height: 86,
                                   width: 86,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: AssetImage(
-                                        'assets/images/cheezious.png',
+                                      image: NetworkImage(
+                                        widget.coupon!.image.toString(),
                                       ),
                                     ),
                                   ),
@@ -120,7 +131,7 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  'Little Caesars Pizza',
+                                  widget.coupon!.businessName.toString(),
                                   style: TextStyle(
                                     fontFamily: 'Lexend',
                                     fontSize: 20,
@@ -133,7 +144,7 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                   height: 12,
                                 ),
                                 Text(
-                                  '20% Off',
+                                  '${widget.coupon!.discount.toString()}% Off',
                                   style: TextStyle(
                                     fontFamily: 'Lexend',
                                     fontSize: 34,
@@ -152,10 +163,56 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                       showDialog(
                                         context: context,
                                         builder: (context) => Dialog(
-                                          child: RedeemOfferPopup(
-                                            redeemOnTap: () {},
-                                            cancelOnTap: () {
-                                              Navigator.pop(context);
+                                          child:
+                                              BlocConsumer<UserBloc, UserState>(
+                                            listener: (context, state) {
+                                              if (state
+                                                  is RedeemCouponSuccess) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Redeemed Successfully',
+                                                    ),
+                                                  ),
+                                                );
+                                                Navigator.pop(context);
+                                              } else if (state
+                                                  is RedeemCouponFailed) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      state.message,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            builder: (context, state) {
+                                              if (state is ReedeemingCoupon) {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              }
+                                              return RedeemOfferPopup(
+                                                redeemOnTap: () {
+                                                  userBloc.add(
+                                                    RedeemCoupom(
+                                                      widget.coupon!.couponId
+                                                          .toString(),
+                                                      FirebaseAuth.instance
+                                                          .currentUser!.uid,
+                                                    ),
+                                                  );
+                                                },
+                                                cancelOnTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              );
                                             },
                                           ),
                                         ),
@@ -221,7 +278,7 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                   height: 8.0,
                                 ),
                                 Text(
-                                  'Valid until: 4/10/2024',
+                                  'Valid until: ${widget.coupon!.validDate.toString()}',
                                   style: TextStyle(
                                     fontFamily: 'OpenSans',
                                     fontSize: 12,

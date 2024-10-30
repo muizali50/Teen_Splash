@@ -5,7 +5,7 @@ import 'package:teen_splash/features/users/views/sub_features/home_registered_us
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/finanicial_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/food_screen.dart';
-import 'package:teen_splash/features/users/views/view_more_screen.dart';
+import 'package:teen_splash/features/users/views/view_more_monday_offers.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
@@ -392,7 +392,7 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                                 builder: (
                                   context,
                                 ) =>
-                                    const ViewMoreScreen(),
+                                    const ViewMoreMondayOffers(),
                               ),
                             );
                           },

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/favorites_screen.dart';
 import 'package:teen_splash/features/users/views/offers_history_screen.dart';
@@ -8,9 +11,10 @@ import 'package:teen_splash/features/users/views/sub_features/home_registered_us
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/finanicial_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/food_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
 import 'package:teen_splash/features/users/views/terms_and_conditions_screen.dart';
 import 'package:teen_splash/features/users/views/top_teens_screen.dart';
-import 'package:teen_splash/features/users/views/view_more_screen.dart';
+import 'package:teen_splash/features/users/views/view_more_monday_offers.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:teen_splash/widgets/search_field.dart';
@@ -25,6 +29,18 @@ class HomeRegisteredUserScreen extends StatefulWidget {
 
 class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
     with TickerProviderStateMixin {
+  late final AdminBloc adminBloc;
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.mondayOffers.isEmpty) {
+      adminBloc.add(
+        GetMondayOffers(),
+      );
+    }
+    super.initState();
+  }
+
   final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -502,7 +518,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                                     builder: (
                                       context,
                                     ) =>
-                                        const ViewMoreScreen(),
+                                        const ViewMoreMondayOffers(),
                                   ),
                                 );
                               },
@@ -521,93 +537,165 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                         ),
                         SizedBox(
                           height: 110,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0,
-                                        horizontal: 6.0,
-                                      ),
-                                      width: 131,
-                                      height: 89,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          8.0,
-                                        ),
-                                        image: const DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                            'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1398&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                          ),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 4,
-                                              vertical: 2,
-                                            ),
-                                            color: const Color(0xFFEF589F),
-                                            child: Text(
-                                              '20% off',
-                                              style: TextStyle(
-                                                fontFamily: 'OpenSans',
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .surface,
-                                              ),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            padding: const EdgeInsets.all(
-                                              5.0,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface
-                                                  .withOpacity(0.9),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              size: 10,
-                                              Icons.favorite,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Gaps.hGap05,
-                                    Text(
-                                      'ABC Restaurant',
-                                      style: TextStyle(
-                                        fontFamily: 'OpenSans',
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          child: BlocBuilder<AdminBloc, AdminState>(
+                            builder: (context, state) {
+                              final currentDate =
+                                  DateFormat('yyyy-MM-dd').format(
+                                DateTime.now(),
                               );
+
+                              final filteredMondayOffers =
+                                  adminBloc.mondayOffers.where(
+                                (offer) {
+                                  final isDateValid = offer.date == currentDate;
+
+                                  return isDateValid;
+                                },
+                              ).toList();
+                              if (state is GettingMondayOffers) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (state is GetMondayOffersFailed) {
+                                return Center(
+                                  child: Text(state.message),
+                                );
+                              }
+                              return filteredMondayOffers.isEmpty
+                                  ? const Center(
+                                      child: Text(
+                                        'No offers',
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: filteredMondayOffers.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 10.0,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) =>
+                                                          MondayOfferDetailsScreen(
+                                                        mondayOffer:
+                                                            filteredMondayOffers[
+                                                                index],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 8.0,
+                                                    horizontal: 6.0,
+                                                  ),
+                                                  width: 131,
+                                                  height: 89,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      8.0,
+                                                    ),
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: NetworkImage(
+                                                        filteredMondayOffers[
+                                                                    index]
+                                                                .image ??
+                                                            '',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 4,
+                                                          vertical: 2,
+                                                        ),
+                                                        color: const Color(
+                                                            0xFFEF589F),
+                                                        child: Text(
+                                                          '${filteredMondayOffers[index].discount ?? ''}% off',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'OpenSans',
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .surface,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const Spacer(),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(
+                                                          5.0,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .surface
+                                                              .withOpacity(0.9),
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                        child: Icon(
+                                                          size: 10,
+                                                          Icons.favorite,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Gaps.hGap05,
+                                              Text(
+                                                filteredMondayOffers[index]
+                                                        .businessName ??
+                                                    '',
+                                                style: TextStyle(
+                                                  fontFamily: 'OpenSans',
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
                             },
                           ),
                         ),
