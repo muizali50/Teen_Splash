@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/offer_redeemed.dart';
-import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/redeem_offer.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HighlightedSponsorDetailsScreen extends StatefulWidget {
   final SponsorsModel sponsor;
@@ -19,6 +18,25 @@ class HighlightedSponsorDetailsScreen extends StatefulWidget {
 
 class _HighlightedSponsorDetailsScreenState
     extends State<HighlightedSponsorDetailsScreen> {
+  Future<void> _launchWebsite(String? url, BuildContext context) async {
+    if (url != null && await launchUrlString(url)) {
+      await launchUrlString(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not launch the link.',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,31 +227,11 @@ class _HighlightedSponsorDetailsScreenState
                       height: 100,
                     ),
                     AppPrimaryButton(
-                      text: 'Redeem Now',
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                            child: RedeemOfferPopup(
-                              redeemOnTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => Dialog(
-                                    child: OfferRedeemedDialog(
-                                      dismissOnTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                              cancelOnTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        );
-                      },
+                      text: 'Link to Sponsor',
+                      onTap: () => _launchWebsite(
+                        widget.sponsor.websiteLink.toString(),
+                        context,
+                      ),
                     ),
                   ],
                 ),

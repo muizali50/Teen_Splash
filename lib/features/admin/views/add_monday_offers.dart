@@ -30,6 +30,7 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
   String? coverPhoto;
   String? businessLogo;
   String _selectedDateString = '';
+  String discountType = 'Cash Discount';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -53,6 +54,7 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
     if (widget.mondayOffer != null) {
       _businessNameController.text = widget.mondayOffer!.businessName ?? '';
       _discountController.text = widget.mondayOffer!.discount ?? '';
+      discountType = widget.mondayOffer!.discountType ?? '';
       _addressController.text = widget.mondayOffer!.address ?? '';
       _detailsController.text = widget.mondayOffer!.details ?? '';
       _offerNameController.text = widget.mondayOffer!.offerName ?? '';
@@ -146,6 +148,71 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
                     const SizedBox(
                       width: 20,
                     ),
+                    Container(
+                      width: 325,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(
+                          0xFFEAEAEA,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          15,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Discount Type:',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF999999),
+                            ),
+                          ),
+                          const Spacer(),
+                          DropdownButton<String>(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            underline: Container(),
+                            value: discountType,
+                            icon: const Icon(
+                              Icons.arrow_drop_down_rounded,
+                            ),
+                            items: const [
+                              DropdownMenuItem<String>(
+                                value: 'Cash Discount',
+                                child: Text(
+                                  'Cash Discount',
+                                ),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: 'Percentage Discount',
+                                child: Text(
+                                  'Percentage Discount',
+                                ),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(
+                                () {
+                                  discountType = newValue!;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Gaps.hGap30,
+                Row(
+                  children: [
                     SizedBox(
                       width: 325,
                       child: AppTextField(
@@ -156,11 +223,9 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
                         hintText: 'Discount',
                       ),
                     ),
-                  ],
-                ),
-                Gaps.hGap30,
-                Row(
-                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
                     SizedBox(
                       width: 325,
                       child: AppTextField(
@@ -184,9 +249,11 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
                         hintText: 'Details',
                       ),
                     ),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                  ],
+                ),
+                Gaps.hGap30,
+                Row(
+                  children: [
                     Container(
                       width: 325,
                       padding: const EdgeInsets.symmetric(
@@ -521,6 +588,7 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
                                 MondayOffersModel(
                                   offerId: widget.mondayOffer!.offerId,
                                   businessName: _businessNameController.text,
+                                  discountType: discountType,
                                   offerName: _offerNameController.text,
                                   address: _addressController.text,
                                   details: _detailsController.text,
@@ -543,6 +611,7 @@ class _AddMondayOffersScreenState extends State<AddMondayOffersScreen> {
                                 MondayOffersModel(
                                   offerId: DateTime.now().toIso8601String(),
                                   businessName: _businessNameController.text,
+                                  discountType: discountType,
                                   offerName: _offerNameController.text,
                                   address: _addressController.text,
                                   discount: _discountController.text,

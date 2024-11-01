@@ -12,6 +12,15 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs permission for using your phone microphone</string>
 
+	<key>LSApplicationQueriesSchemes</key>
+    <array><string>https</string></array>
+
+	<key>NSCameraUsageDescription</key>
+    <string>your usage description here</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>your usage description here</string>
+
 	
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

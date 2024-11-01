@@ -154,8 +154,8 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
               child: Row(
                 children: [
                   Container(
-                    height: 50,
-                    width: 50,
+                    height: 55,
+                    width: 55,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: const Color(
@@ -181,7 +181,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                         '@aryas',
                         style: TextStyle(
                           fontFamily: 'Lexend',
-                          fontSize: 18,
+                          fontSize: 19,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -193,7 +193,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                         'Barbados 🇧🇧 ',
                         style: TextStyle(
                           fontFamily: 'OpenSans',
-                          fontSize: 18,
+                          fontSize: 19,
                           fontWeight: FontWeight.w400,
                           color: Color(
                             0xFF999999,
@@ -430,7 +430,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                           'Logout',
                           style: TextStyle(
                             fontFamily: 'Lexend',
-                            fontSize: 16,
+                            fontSize: 19,
                             fontWeight: FontWeight.w400,
                             color: Color(0xFFE50000),
                           ),
@@ -447,7 +447,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                     'Version 20.01.0',
                     style: TextStyle(
                       fontFamily: 'Lexend',
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w300,
                       color: Color(0xFF999999),
                     ),
@@ -633,7 +633,12 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                                                         color: const Color(
                                                             0xFFEF589F),
                                                         child: Text(
-                                                          '${filteredMondayOffers[index].discount ?? ''}% off',
+                                                          filteredMondayOffers[
+                                                                          index]
+                                                                      .discountType ==
+                                                                  'Cash Discount'
+                                                              ? '\$${filteredMondayOffers[index].discount ?? ''} off'
+                                                              : '${filteredMondayOffers[index].discount ?? ''}% off',
                                                           style: TextStyle(
                                                             fontFamily:
                                                                 'OpenSans',

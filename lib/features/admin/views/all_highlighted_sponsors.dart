@@ -208,11 +208,6 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
                               ),
                               DataColumn(
                                 label: Text(
-                                  'Discount',
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
                                   'Actions',
                                 ),
                               ),
@@ -230,11 +225,6 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
-                                            ),
-                                          ),
-                                          DataCell(
-                                            Text(
-                                              offer.discount ?? '',
                                             ),
                                           ),
                                           DataCell(
@@ -283,11 +273,6 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
-                                            ),
-                                          ),
-                                          DataCell(
-                                            Text(
-                                              offer.discount ?? '',
                                             ),
                                           ),
                                           DataCell(

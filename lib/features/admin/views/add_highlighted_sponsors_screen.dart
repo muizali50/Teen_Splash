@@ -25,10 +25,10 @@ class _AddHighlightedSponsorScreenState
     extends State<AddHighlightedSponsorScreen> {
   late SponsorsModel sponsor;
   final TextEditingController _businessNameController = TextEditingController();
-  final TextEditingController _discountController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _offerNameController = TextEditingController();
+  final TextEditingController _websiteLinkController = TextEditingController();
   String? coverPhoto;
   String? businessLogo;
 
@@ -36,12 +36,12 @@ class _AddHighlightedSponsorScreenState
   void initState() {
     if (widget.sponsor != null) {
       _businessNameController.text = widget.sponsor!.businessName ?? '';
-      _discountController.text = widget.sponsor!.discount ?? '';
       _addressController.text = widget.sponsor!.address ?? '';
       _detailsController.text = widget.sponsor!.details ?? '';
       _offerNameController.text = widget.sponsor!.offerName ?? '';
       coverPhoto = widget.sponsor!.image ?? '';
       businessLogo = widget.sponsor!.businessLogo ?? '';
+      _websiteLinkController.text = widget.sponsor!.websiteLink ?? '';
     }
     super.initState();
   }
@@ -135,8 +135,8 @@ class _AddHighlightedSponsorScreenState
                         fillColor: const Color(
                           0xFFEAEAEA,
                         ),
-                        controller: _discountController,
-                        hintText: 'Discount',
+                        controller: _addressController,
+                        hintText: 'Address',
                       ),
                     ),
                   ],
@@ -150,8 +150,8 @@ class _AddHighlightedSponsorScreenState
                         fillColor: const Color(
                           0xFFEAEAEA,
                         ),
-                        controller: _addressController,
-                        hintText: 'Address',
+                        controller: _detailsController,
+                        hintText: 'Details',
                       ),
                     ),
                     const SizedBox(
@@ -163,8 +163,8 @@ class _AddHighlightedSponsorScreenState
                         fillColor: const Color(
                           0xFFEAEAEA,
                         ),
-                        controller: _detailsController,
-                        hintText: 'Details',
+                        controller: _websiteLinkController,
+                        hintText: 'Website Link',
                       ),
                     ),
                   ],
@@ -322,9 +322,9 @@ class _AddHighlightedSponsorScreenState
                       );
                       _businessNameController.clear();
                       _addressController.clear();
-                      _discountController.clear();
                       _detailsController.clear();
                       _offerNameController.clear();
+                      _websiteLinkController.clear();
                       Navigator.pop(
                         context,
                       );
@@ -346,9 +346,9 @@ class _AddHighlightedSponsorScreenState
                       );
                       _businessNameController.clear();
                       _addressController.clear();
-                      _discountController.clear();
                       _detailsController.clear();
                       _offerNameController.clear();
+                      _websiteLinkController.clear();
                       Navigator.pop(context);
                     } else if (state is UpdateSponsorFailed) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -361,8 +361,7 @@ class _AddHighlightedSponsorScreenState
                     }
                   },
                   builder: (context, state) {
-                    if (state is AddingSponsor ||
-                        state is UpdatingSponsor) {
+                    if (state is AddingSponsor || state is UpdatingSponsor) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
@@ -392,16 +391,7 @@ class _AddHighlightedSponsorScreenState
                             );
                             return;
                           }
-                          if (_discountController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Please enter the discount',
-                                ),
-                              ),
-                            );
-                            return;
-                          }
+
                           if (_detailsController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -417,6 +407,16 @@ class _AddHighlightedSponsorScreenState
                               const SnackBar(
                                 content: Text(
                                   'Please enter the address',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          if (_websiteLinkController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please enter the website link',
                                 ),
                               ),
                             );
@@ -451,16 +451,15 @@ class _AddHighlightedSponsorScreenState
                                   businessName: _businessNameController.text,
                                   offerName: _offerNameController.text,
                                   address: _addressController.text,
+                                  websiteLink: _websiteLinkController.text,
                                   details: _detailsController.text,
-                                  discount: _discountController.text,
                                   image: coverPhoto,
                                   businessLogo: businessLogo,
                                 ),
                                 coverPhoto == widget.sponsor?.image
                                     ? null
                                     : XFile(coverPhoto!),
-                                businessLogo ==
-                                        widget.sponsor?.businessLogo
+                                businessLogo == widget.sponsor?.businessLogo
                                     ? null
                                     : XFile(businessLogo!),
                               ),
@@ -473,7 +472,7 @@ class _AddHighlightedSponsorScreenState
                                   businessName: _businessNameController.text,
                                   offerName: _offerNameController.text,
                                   address: _addressController.text,
-                                  discount: _discountController.text,
+                                  websiteLink: _websiteLinkController.text,
                                   details: _detailsController.text,
                                   image: coverPhoto,
                                   businessLogo: businessLogo,

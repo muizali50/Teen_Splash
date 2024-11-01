@@ -206,6 +206,11 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                   'Offer Name',
                                 ),
                               ),
+                               DataColumn(
+                                label: Text(
+                                  'Discount Type',
+                                ),
+                              ),
                               DataColumn(
                                 label: Text(
                                   'Discount',
@@ -230,6 +235,11 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
+                                            ),
+                                          ),
+                                           DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(
@@ -283,6 +293,11 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
+                                            ),
+                                          ),
+                                           DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(

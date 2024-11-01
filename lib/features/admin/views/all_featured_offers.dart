@@ -208,6 +208,11 @@ class _AllFeaturedOffersState extends State<AllFeaturedOffers> {
                               ),
                               DataColumn(
                                 label: Text(
+                                  'Discount Type',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
                                   'Discount',
                                 ),
                               ),
@@ -230,6 +235,11 @@ class _AllFeaturedOffersState extends State<AllFeaturedOffers> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(
@@ -283,6 +293,11 @@ class _AllFeaturedOffersState extends State<AllFeaturedOffers> {
                                           DataCell(
                                             Text(
                                               offer.offerName ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(

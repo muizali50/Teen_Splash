@@ -1,6 +1,7 @@
 class MondayOffersModel {
   String? offerId;
   String? businessName;
+  String? discountType;
   String? discount;
   String? address;
   String? details;
@@ -12,6 +13,7 @@ class MondayOffersModel {
   MondayOffersModel({
     this.offerId,
     this.businessName,
+    this.discountType,
     this.discount,
     this.address,
     this.details,
@@ -25,6 +27,7 @@ class MondayOffersModel {
     return {
       'offerId': offerId,
       'businessName': businessName,
+      'discountType': discountType,
       'discount': discount,
       'address': address,
       'details': details,
@@ -39,6 +42,7 @@ class MondayOffersModel {
     return MondayOffersModel(
       offerId: map['offerId'],
       businessName: map['businessName'],
+      discountType: map['discountType'],
       discount: map['discount'],
       address: map['address'],
       details: map['details'],

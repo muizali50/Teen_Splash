@@ -20,6 +20,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: AppBar(
@@ -55,46 +56,47 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             ),
           ),
           actions: [
-            !widget.isGuest!
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                      right: 16.0,
-                    ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (
-                                context,
-                              ) =>
-                                  const ChatsScreen(),
+            if (widget.isGuest != null)
+              !widget.isGuest!
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        right: 16.0,
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const ChatsScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                          );
-                        },
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF4F4F4),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: ImageIcon(
-                              color: Theme.of(context).colorScheme.secondary,
-                              const AssetImage(
-                                'assets/icons/chat.png',
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: ImageIcon(
+                                color: Theme.of(context).colorScheme.secondary,
+                                const AssetImage(
+                                  'assets/icons/chat.png',
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                : Container(),
+                    )
+                  : Container(),
           ],
           title: InkWell(
             onTap: () {
@@ -229,7 +231,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                       15.0,
                                     ),
                                   ),
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color:
+                                      Theme.of(context).colorScheme.tertiary,
                                 ),
                                 child: Text(
                                   'Have a great working week!!',
@@ -311,7 +314,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                       15.0,
                                     ),
                                   ),
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color:
+                                      Theme.of(context).colorScheme.tertiary,
                                 ),
                                 child: Text(
                                   'Have a great working week!!',
@@ -408,81 +412,82 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               ),
             ),
             const Spacer(),
-            if (widget.isGuest! == false)
-              Container(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 20,
-                  bottom: 30,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      offset: const Offset(-4, -4),
-                      blurRadius: 16,
+            widget.isGuest != null && widget.isGuest! == true
+                ? const SizedBox()
+                : Container(
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: 20,
+                      bottom: 30,
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 24,
-                        width: 24,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              'assets/icons/clip.png',
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          offset: const Offset(-4, -4),
+                          blurRadius: 16,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 24,
+                            width: 24,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/icons/clip.png',
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const SizedBox(
-                        width: 216,
-                        child: AppTextField(
-                          isCopyIcon: true,
-                          hintText: 'Write your message',
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Container(
-                        height: 24,
-                        width: 24,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              'assets/icons/cam.png',
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const SizedBox(
+                            width: 216,
+                            child: AppTextField(
+                              isCopyIcon: true,
+                              hintText: 'Write your message',
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 24,
-                        width: 24,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              'assets/icons/mic.png',
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          Container(
+                            height: 24,
+                            width: 24,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/icons/cam.png',
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            height: 24,
+                            width: 24,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/icons/mic.png',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
           ],
         ),
       ),

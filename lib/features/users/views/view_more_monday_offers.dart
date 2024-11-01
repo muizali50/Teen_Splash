@@ -197,7 +197,12 @@ class _ViewMoreMondayOffersState extends State<ViewMoreMondayOffers> {
                                                     color:
                                                         const Color(0xFFEF589F),
                                                     child: Text(
-                                                      '${filteredMondayOffers[index].discount ?? ''}% off',
+                                                      filteredMondayOffers[
+                                                                      index]
+                                                                  .discountType ==
+                                                              'Cash Discount'
+                                                          ? '\$${filteredMondayOffers[index].discount ?? ''} off'
+                                                          : '${filteredMondayOffers[index].discount ?? ''}% off',
                                                       style: TextStyle(
                                                         fontFamily: 'OpenSans',
                                                         fontSize: 12,

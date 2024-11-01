@@ -30,6 +30,7 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
   final TextEditingController _offerNameController = TextEditingController();
   String? coverPhoto;
   String? businessLogo;
+  String discountType = 'Cash Discount';
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
       _addressController.text = widget.featuredOffer!.address ?? '';
       _detailsController.text = widget.featuredOffer!.details ?? '';
       _offerNameController.text = widget.featuredOffer!.offerName ?? '';
+      discountType = widget.featuredOffer!.discountType ?? '';
       coverPhoto = widget.featuredOffer!.image ?? '';
       businessLogo = widget.featuredOffer!.businessLogo ?? '';
     }
@@ -128,6 +130,71 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
                     const SizedBox(
                       width: 20,
                     ),
+                    Container(
+                      width: 325,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(
+                          0xFFEAEAEA,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          15,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Discount Type:',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF999999),
+                            ),
+                          ),
+                          const Spacer(),
+                          DropdownButton<String>(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            underline: Container(),
+                            value: discountType,
+                            icon: const Icon(
+                              Icons.arrow_drop_down_rounded,
+                            ),
+                            items: const [
+                              DropdownMenuItem<String>(
+                                value: 'Cash Discount',
+                                child: Text(
+                                  'Cash Discount',
+                                ),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: 'Percentage Discount',
+                                child: Text(
+                                  'Percentage Discount',
+                                ),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(
+                                () {
+                                  discountType = newValue!;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Gaps.hGap30,
+                Row(
+                  children: [
                     SizedBox(
                       width: 325,
                       child: AppTextField(
@@ -138,11 +205,9 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
                         hintText: 'Discount',
                       ),
                     ),
-                  ],
-                ),
-                Gaps.hGap30,
-                Row(
-                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
                     SizedBox(
                       width: 325,
                       child: AppTextField(
@@ -448,6 +513,7 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
                                 FeaturedOffersModel(
                                   offerId: widget.featuredOffer!.offerId,
                                   businessName: _businessNameController.text,
+                                  discountType: discountType,
                                   offerName: _offerNameController.text,
                                   address: _addressController.text,
                                   details: _detailsController.text,
@@ -471,6 +537,7 @@ class _AddFeaturedOffersScreenState extends State<AddFeaturedOffersScreen> {
                                   offerId: DateTime.now().toIso8601String(),
                                   businessName: _businessNameController.text,
                                   offerName: _offerNameController.text,
+                                  discountType: discountType,
                                   address: _addressController.text,
                                   discount: _discountController.text,
                                   details: _detailsController.text,

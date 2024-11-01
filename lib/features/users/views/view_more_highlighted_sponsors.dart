@@ -176,27 +176,6 @@ class _ViewMoreHighlightedSponsorsState
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 3,
-                                                    ),
-                                                    color:
-                                                        const Color(0xFFEF589F),
-                                                    child: Text(
-                                                      '${adminBloc.sponsors[index].discount ?? ''}% off',
-                                                      style: TextStyle(
-                                                        fontFamily: 'OpenSans',
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .surface,
-                                                      ),
-                                                    ),
-                                                  ),
                                                   const Spacer(),
                                                   Container(
                                                     padding:

@@ -185,7 +185,13 @@ class _ViewMoreFeaturedOffersState extends State<ViewMoreFeaturedOffers> {
                                                     color:
                                                         const Color(0xFFEF589F),
                                                     child: Text(
-                                                      '${adminBloc.featuredOffers[index].discount ?? ''}% off',
+                                                      adminBloc
+                                                                  .featuredOffers[
+                                                                      index]
+                                                                  .discountType ==
+                                                              'Cash Discount'
+                                                          ? '\$${adminBloc.featuredOffers[index].discount ?? ''} off'
+                                                          : '${adminBloc.featuredOffers[index].discount ?? ''}% off',
                                                       style: TextStyle(
                                                         fontFamily: 'OpenSans',
                                                         fontSize: 12,
