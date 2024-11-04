@@ -48,6 +48,9 @@ class MyApp extends StatelessWidget {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider<UserProvider>(
+            create: (context) => UserProvider(),
+          ),
+          ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()..getUser(),
           ),
         ],

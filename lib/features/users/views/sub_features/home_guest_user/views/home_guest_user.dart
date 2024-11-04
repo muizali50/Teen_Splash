@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/users/views/chat_room_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/clothing_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer_row.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';

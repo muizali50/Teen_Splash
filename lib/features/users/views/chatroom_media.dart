@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/full_screen_image.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class ChatroomMedia extends StatefulWidget {
@@ -92,33 +94,62 @@ class _ChatroomMediaState extends State<ChatroomMedia> {
             ),
             Gaps.hGap40,
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                ),
-                itemCount: 16,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  // mainAxisExtent: 120,
-                  crossAxisCount: 4,
-                  // mainAxisSpacing: 50.0,
-                ),
-                itemBuilder: (context, index) {
-                  return Container(
-                    height: 83,
-                    width: 83,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(
-                          0xFFD9D9D9,
-                        ),
-                      ),
-                      image: const DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                        ),
-                      ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chatroom')
+                    .where('messageType',
+                        isEqualTo: 'image') // Only fetch image messages
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  final imageMessages = snapshot.data!.docs;
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
                     ),
+                    itemCount: imageMessages.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      // mainAxisExtent: 120,
+                      crossAxisCount: 4,
+                      // mainAxisSpacing: 50.0,
+                    ),
+                    itemBuilder: (context, index) {
+                      final imageUrl =
+                          imageMessages[index]['message']; // Get image URL
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  FullScreenImage(imageUrl: imageUrl),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 83,
+                          width: 83,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(
+                                0xFFD9D9D9,
+                              ),
+                            ),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                imageUrl,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

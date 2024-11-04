@@ -29,73 +29,63 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  // Stream to get chat messages in real-time
   Stream<List<ChatMessage>> getChatMessages() {
     return _firestore
-        .collection('chat')
+        .collection('chatroom')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ChatMessage.fromMap(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => ChatMessage.fromMap(doc.data(), doc.id),
+              )
+              .toList(),
+        );
   }
 
+  // Send a text message
   Future<void> sendTextMessage(String senderId, String senderName,
       String profileUrl, String countryFlagUrl, String message) async {
-    await _firestore.collection('chat').add(
-      {
-        'senderId': senderId,
-        'senderName': senderName,
-        'profileUrl': profileUrl,
-        'countryFlagUrl': countryFlagUrl,
-        'message': message,
-        'messageType': 'text',
-        'timestamp': Timestamp.now(),
-      },
+    final chatMessage = ChatMessage(
+      id: '', // Firestore will auto-generate the ID
+      senderId: senderId,
+      senderName: senderName,
+      profileUrl: profileUrl,
+      countryFlagUrl: countryFlagUrl,
+      message: message,
+      messageType: 'text',
+      timestamp: DateTime.now(),
     );
-  }
 
-  Future<void> sendFileMessage(
-    String senderId,
-    String senderName,
-    String profileUrl,
-    String countryFlagUrl,
-    File file,
-    String messageType,
-  ) async {
-    final fileRef = FirebaseStorage.instance.ref().child('chat_files').child(
-          '${DateTime.now().toIso8601String()}_${file.path.split('/').last}',
+    await _firestore.collection('chatroom').add(
+          chatMessage.toMap(),
         );
-    final uploadTask = fileRef.putFile(file);
-    final fileUrl = await (await uploadTask).ref.getDownloadURL();
-
-    await _firestore.collection('chat').add(
-      {
-        'senderId': senderId,
-        'senderName': senderName,
-        'profileUrl': profileUrl,
-        'countryFlagUrl': countryFlagUrl,
-        'message': fileUrl,
-        'messageType': messageType,
-        'timestamp': Timestamp.now(),
-      },
-    );
   }
 
-  Future<void> sendCameraMedia(
-    String senderId,
-    String senderName,
-    String profileUrl,
-    String countryFlagUrl,
-    File cameraFile,
-    bool isVideo,
-  ) async {
-    await sendFileMessage(
-      senderId,
-      senderName,
-      profileUrl,
-      countryFlagUrl,
-      cameraFile,
-      isVideo ? 'video' : 'image',
+  // Send an image message
+  Future<void> sendImageMessage(String senderId, String senderName,
+      String profileUrl, String countryFlagUrl, File imageFile) async {
+    final fileRef = FirebaseStorage.instance
+        .ref()
+        .child('chat_images')
+        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await fileRef.putFile(imageFile);
+    final imageUrl = await fileRef.getDownloadURL();
+
+    final chatMessage = ChatMessage(
+      id: '',
+      senderId: senderId,
+      senderName: senderName,
+      profileUrl: profileUrl,
+      countryFlagUrl: countryFlagUrl,
+      message: imageUrl,
+      messageType: 'image',
+      timestamp: DateTime.now(),
     );
+
+    await _firestore.collection('chatroom').add(
+          chatMessage.toMap(),
+        );
   }
 }

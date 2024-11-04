@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
-import 'package:teen_splash/features/users/views/chat_room_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/favorites_screen.dart';
 import 'package:teen_splash/features/users/views/offers_history_screen.dart';
 import 'package:teen_splash/features/users/views/settings_screen.dart';
