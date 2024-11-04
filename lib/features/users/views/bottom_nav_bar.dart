@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:teen_splash/features/users/views/sub_features/coupons_screen/views/coupons_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:teen_splash/features/users/views/events_screen.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_guest_user/views/home_guest_user.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/views/home_registered_user_screen.dart';
 import 'package:teen_splash/features/users/views/notifications_screen.dart';
 import 'package:teen_splash/features/users/views/profile_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/coupons_screen/views/coupons_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/home_guest_user/views/home_guest_user.dart';
+import 'package:teen_splash/features/users/views/sub_features/home_registered_user/views/home_registered_user_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   final bool? isGuest;
@@ -28,17 +28,17 @@ class _BottomNavBarState extends State<BottomNavBar> {
     super.initState();
     if (widget.isGuest ?? false) {
       _screens = [
-        const HomeGuestUser(), 
-        const EventScreen(), 
-        const NotificationsScreen(), 
+        const HomeGuestUser(),
+        const EventScreen(),
+        const NotificationsScreen(),
       ];
     } else {
       _screens = [
-        const HomeRegisteredUserScreen(), 
-        const CouponsScreen(), 
+        const HomeRegisteredUserScreen(),
+        const CouponsScreen(),
         const EventScreen(),
         const NotificationsScreen(),
-        const ProfileScreen(), 
+        const ProfileScreen(),
       ];
     }
   }
@@ -55,9 +55,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         color: Theme.of(context).colorScheme.primary,
-        height: 69,
+        height: 80,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+          padding: const EdgeInsets.only(bottom: 00.0),
           child: ConvexAppBar(
             height: 50,
             items: [
