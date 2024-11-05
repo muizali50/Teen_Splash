@@ -246,7 +246,11 @@ class _CouponsScreenState extends State<CouponsScreen> {
                                                       ),
                                                       Gaps.hGap05,
                                                       Text(
-                                                        '${filteredCoupon[index].discount ?? ''}% Off',
+                                                        filteredCoupon[index]
+                                                                    .discountType ==
+                                                                'Cash Discount'
+                                                            ? '\$${filteredCoupon[index].discount ?? ''} off'
+                                                            : '${filteredCoupon[index].discount ?? ''}% off',
                                                         style: TextStyle(
                                                           fontFamily: 'Lexend',
                                                           fontSize: 20,

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/full_screen_image.dart';
 import 'package:teen_splash/features/users/views/other_person_profile.dart';
 import 'package:teen_splash/model/chat_message.dart';
 import 'package:teen_splash/utils/gaps.dart';
@@ -29,15 +30,30 @@ class _ChatBubbleState extends State<ChatBubble> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 widget.chatMessage.messageType == 'image'
-                    ? Container(
-                        height: 122,
-                        width: 192,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.0),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                              widget.chatMessage.message,
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (
+                                context,
+                              ) =>
+                                  FullScreenImage(
+                                imageUrl: widget.chatMessage.message,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 122,
+                          width: 192,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.0),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                widget.chatMessage.message,
+                              ),
                             ),
                           ),
                         ),
@@ -50,7 +66,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                             bottomLeft: Radius.circular(15.0),
                             bottomRight: Radius.circular(15.0),
                           ),
-                          color: Theme.of(context).colorScheme.tertiary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         child: Text(
                           widget.chatMessage.message,
@@ -58,7 +74,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                             fontFamily: 'OpenSans',
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                         ),
                       ),
@@ -123,15 +139,31 @@ class _ChatBubbleState extends State<ChatBubble> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       widget.chatMessage.messageType == 'image'
-                          ? Container(
-                              height: 122,
-                              width: 192,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image:
-                                      NetworkImage(widget.chatMessage.message),
+                          ? InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (
+                                      context,
+                                    ) =>
+                                        FullScreenImage(
+                                      imageUrl: widget.chatMessage.message,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 122,
+                                width: 192,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                      widget.chatMessage.message,
+                                    ),
+                                  ),
                                 ),
                               ),
                             )

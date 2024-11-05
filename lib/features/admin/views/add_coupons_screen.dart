@@ -27,6 +27,7 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
   final TextEditingController _itemController = TextEditingController();
   String? coverPhoto;
   String _selectedDateString = '';
+  String discountType = 'Cash Discount';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -50,6 +51,7 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
     if (widget.coupon != null) {
       _businessNameController.text = widget.coupon!.businessName ?? '';
       _discountController.text = widget.coupon!.discount ?? '';
+      discountType = widget.coupon!.discountType ?? '';
       _itemController.text = widget.coupon!.item ?? '';
       _selectedDateString = widget.coupon!.validDate ?? '';
       coverPhoto = widget.coupon!.image ?? '';
@@ -140,6 +142,71 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
                     const SizedBox(
                       width: 20,
                     ),
+                    Container(
+                      width: 325,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(
+                          0xFFEAEAEA,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          15,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Discount Type:',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF999999),
+                            ),
+                          ),
+                          const Spacer(),
+                          DropdownButton<String>(
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            underline: Container(),
+                            value: discountType,
+                            icon: const Icon(
+                              Icons.arrow_drop_down_rounded,
+                            ),
+                            items: const [
+                              DropdownMenuItem<String>(
+                                value: 'Cash Discount',
+                                child: Text(
+                                  'Cash Discount',
+                                ),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: 'Percentage Discount',
+                                child: Text(
+                                  'Percentage Discount',
+                                ),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(
+                                () {
+                                  discountType = newValue!;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Gaps.hGap30,
+                Row(
+                  children: [
                     SizedBox(
                       width: 325,
                       child: AppTextField(
@@ -150,11 +217,9 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
                         hintText: 'Discount',
                       ),
                     ),
-                  ],
-                ),
-                Gaps.hGap30,
-                Row(
-                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
                     Container(
                       width: 325,
                       padding: const EdgeInsets.symmetric(
@@ -389,6 +454,7 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
                                   businessName: _businessNameController.text,
                                   item: _itemController.text,
                                   validDate: _selectedDateString,
+                                  discountType: discountType,
                                   discount: _discountController.text,
                                   image: coverPhoto,
                                 ),
@@ -405,6 +471,7 @@ class _AddCouponsScreenState extends State<AddCouponsScreen> {
                                   businessName: _businessNameController.text,
                                   item: _itemController.text,
                                   validDate: _selectedDateString,
+                                  discountType: discountType,
                                   discount: _discountController.text,
                                   image: coverPhoto,
                                 ),

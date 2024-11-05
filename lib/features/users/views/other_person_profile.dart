@@ -28,7 +28,9 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
             child: Align(
               alignment: Alignment.center,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                },
                 child: Container(
                   height: 40,
                   width: 40,
@@ -41,7 +43,7 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                     child: ImageIcon(
                       color: Theme.of(context).colorScheme.secondary,
                       const AssetImage(
-                        'assets/icons/menu.png',
+                        'assets/icons/back.png',
                       ),
                     ),
                   ),

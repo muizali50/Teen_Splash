@@ -144,7 +144,9 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                   height: 12,
                                 ),
                                 Text(
-                                  '${widget.coupon!.discount.toString()}% Off',
+                                  widget.coupon!.discountType == 'Cash Discount'
+                                      ? '\$${widget.coupon!.discount ?? ''} off'
+                                      : '${widget.coupon!.discount ?? ''}% off',
                                   style: TextStyle(
                                     fontFamily: 'Lexend',
                                     fontSize: 34,

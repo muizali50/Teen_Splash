@@ -55,11 +55,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         color: Theme.of(context).colorScheme.primary,
-        height: 80,
+        height: 60,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 00.0),
+          padding: const EdgeInsets.only(bottom: 10.0),
           child: ConvexAppBar(
-            height: 50,
+            height: 60,
             items: [
               TabItem(
                 fontFamily: 'OpenSans',

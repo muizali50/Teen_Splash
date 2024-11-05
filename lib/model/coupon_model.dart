@@ -1,6 +1,7 @@
 class CouponModel {
   String? couponId;
   String? businessName;
+  String? discountType;
   String? discount;
   String? item;
   String? validDate;
@@ -10,6 +11,7 @@ class CouponModel {
   CouponModel({
     this.couponId,
     this.businessName,
+    this.discountType,
     this.discount,
     this.item,
     this.validDate,
@@ -21,6 +23,7 @@ class CouponModel {
     return {
       'couponId': couponId,
       'businessName': businessName,
+      'discountType': discountType,
       'discount': discount,
       'item': item,
       'validDate': validDate,
@@ -33,6 +36,7 @@ class CouponModel {
     return CouponModel(
       couponId: map['couponId'],
       businessName: map['businessName'],
+      discountType: map['discountType'],
       discount: map['discount'],
       item: map['item'],
       validDate: map['validDate'],

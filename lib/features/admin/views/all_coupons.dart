@@ -208,6 +208,11 @@ class _AllCouponsState extends State<AllCoupons> {
                               ),
                               DataColumn(
                                 label: Text(
+                                  'Discount Type',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
                                   'Discount',
                                 ),
                               ),
@@ -230,6 +235,11 @@ class _AllCouponsState extends State<AllCoupons> {
                                           DataCell(
                                             Text(
                                               offer.validDate ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(
@@ -283,6 +293,11 @@ class _AllCouponsState extends State<AllCoupons> {
                                           DataCell(
                                             Text(
                                               offer.validDate ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              offer.discountType ?? '',
                                             ),
                                           ),
                                           DataCell(

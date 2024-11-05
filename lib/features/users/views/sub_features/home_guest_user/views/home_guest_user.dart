@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/about_screen.dart';
+import 'package:teen_splash/features/users/views/offers_history_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/clothing_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer_row.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/finanicial_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/food_screen.dart';
+import 'package:teen_splash/features/users/views/terms_and_conditions_screen.dart';
+import 'package:teen_splash/features/users/views/top_teens_screen.dart';
 import 'package:teen_splash/features/users/views/view_more_monday_offers.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
@@ -68,15 +72,15 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                 alignment: Alignment.center,
                 child: InkWell(
                   onTap: () {
-                      Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (
                           context,
                         ) =>
                             const ChatRoomScreen(
-                              isGuest: true,
-                            ),
+                          isGuest: true,
+                        ),
                       ),
                     );
                   },
@@ -205,7 +209,17 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                   DrawerRow(
                     iconImage: 'assets/icons/history.png',
                     title: 'Offers History',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (
+                            context,
+                          ) =>
+                              const OffersHistoryScreen(),
+                        ),
+                      );
+                    },
                   ),
                   Gaps.hGap15,
                   Divider(
@@ -225,7 +239,17 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                   DrawerRow(
                     iconImage: 'assets/icons/ranking.png',
                     title: 'Top Teens',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (
+                            context,
+                          ) =>
+                              const TopTeensScreen(),
+                        ),
+                      );
+                    },
                   ),
                   Gaps.hGap15,
                   Divider(
@@ -235,7 +259,17 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                   DrawerRow(
                     iconImage: 'assets/icons/about.png',
                     title: 'About',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (
+                            context,
+                          ) =>
+                              const AboutScreen(),
+                        ),
+                      );
+                    },
                   ),
                   Gaps.hGap15,
                   Divider(
@@ -245,7 +279,17 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                   DrawerRow(
                     iconImage: 'assets/icons/more.png',
                     title: 'Terms & Conditions',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (
+                            context,
+                          ) =>
+                              const TermsAndConditionsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

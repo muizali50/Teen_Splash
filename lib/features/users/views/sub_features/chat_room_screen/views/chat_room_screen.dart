@@ -10,6 +10,7 @@ import 'package:teen_splash/features/users/views/chats_screen.dart';
 import 'package:teen_splash/model/chat_message.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   final bool? isGuest;
@@ -25,6 +26,7 @@ class ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
   late final UserProvider userProvider;
   late final AuthenticationBloc authenticationBloc;
   @override
@@ -198,16 +200,37 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   );
                 }
                 final messages = snapshot.data!;
+                final groupedMessages = _groupMessagesByDate(messages);
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   reverse: true,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) => ChatBubble(
-                    chatMessage: messages[index],
-                    isGuest: widget.isGuest != null && widget.isGuest == true
-                        ? true
-                        : false,
-                  ),
+                  itemCount: groupedMessages.length,
+                  itemBuilder: (context, index) {
+                    final item = groupedMessages[index];
+                    if (item is String) {
+                      // Render date header
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            item,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else if (item is ChatMessage) {
+                      // Render chat bubble
+                      return ChatBubble(
+                        chatMessage: item,
+                        isGuest:
+                            widget.isGuest != null && widget.isGuest == true,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 );
               },
             ),
@@ -218,13 +241,126 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   onSendText: () =>
                       _sendTextMessage(userProvider, _messageController.text),
                   onSendCameraImage: () =>
-                      _pickAndSendImage(userProvider, ImageSource.camera),
+                      _pickAndPreviewImage(ImageSource.camera),
                   onSendGalleryImage: () =>
-                      _pickAndSendImage(userProvider, ImageSource.gallery),
+                      _pickAndPreviewImage(ImageSource.gallery),
                   messageController: _messageController,
                 ),
         ],
       ),
+    );
+  }
+
+  List<dynamic> _groupMessagesByDate(List<ChatMessage> messages) {
+    final List<dynamic> groupedMessages = [];
+    String? lastDate;
+
+    for (var message in messages.reversed) {
+      // Reverse the order for correct display
+      final messageDate = _formatDate(message.timestamp);
+      if (messageDate != lastDate) {
+        // Add date header at the start of each new date group
+        groupedMessages.insert(0, messageDate);
+        lastDate = messageDate;
+      }
+      // Add message after the date header
+      groupedMessages.insert(0, message);
+    }
+
+    return groupedMessages;
+  }
+
+  String _formatDate(DateTime timestamp) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final messageDate =
+        DateTime(timestamp.year, timestamp.month, timestamp.day);
+
+    if (messageDate == today) {
+      return "Today";
+    } else if (messageDate == yesterday) {
+      return "Yesterday";
+    } else {
+      // Format other dates (e.g., "MM/dd/yyyy")
+      return "${timestamp.month}/${timestamp.day}/${timestamp.year}";
+    }
+  }
+
+  Future<void> _pickAndPreviewImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(
+        () {
+          _selectedImage = File(pickedFile.path);
+        },
+      );
+
+      _showImagePreviewDialog();
+    }
+  }
+
+  void _showImagePreviewDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.zero, // Ensures full-screen display
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.file(
+                  _selectedImage!,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      width: 106,
+                      child: AppPrimaryButton(
+                        hintTextColor: Theme.of(context).colorScheme.primary,
+                        isBorderColor: Theme.of(context).colorScheme.tertiary,
+                        isBorder: true,
+                        text: 'Cancel',
+                        onTap: () {
+                          setState(
+                            () {
+                              _selectedImage = null; // Discard image
+                            },
+                          );
+                          Navigator.pop(context); // Close dialog
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 50,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: 106,
+                      child: AppPrimaryButton(
+                        text: 'Send',
+                        onTap: () {
+                          Navigator.pop(context); // Close dialog
+                          _sendImageMessage(); // Send image
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -244,21 +380,43 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     }
   }
 
-  Future<void> _pickAndSendImage(
-      UserProvider userProvider, ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      final imageFile = File(pickedFile.path);
-      final currentUser = userProvider.user;
-      if (currentUser != null) {
-        await userProvider.sendImageMessage(
-          currentUser.uid.toString(),
-          currentUser.name,
-          currentUser.picture.toString(),
-          currentUser.countryFlag.toString(),
-          imageFile,
-        );
-      }
+  Future<void> _sendImageMessage() async {
+    if (_selectedImage == null) return;
+
+    final currentUser = userProvider.user;
+    if (currentUser != null) {
+      await userProvider.sendImageMessage(
+        currentUser.uid.toString(),
+        currentUser.name,
+        currentUser.picture.toString(),
+        currentUser.countryFlag.toString(),
+        _selectedImage!,
+      );
+
+      // Clear the preview after sending
+      setState(
+        () {
+          _selectedImage = null;
+        },
+      );
     }
   }
+
+  // Future<void> _pickAndSendImage(
+  //     UserProvider userProvider, ImageSource source) async {
+  //   final pickedFile = await _picker.pickImage(source: source);
+  //   if (pickedFile != null) {
+  //     final imageFile = File(pickedFile.path);
+  //     final currentUser = userProvider.user;
+  //     if (currentUser != null) {
+  //       await userProvider.sendImageMessage(
+  //         currentUser.uid.toString(),
+  //         currentUser.name,
+  //         currentUser.picture.toString(),
+  //         currentUser.countryFlag.toString(),
+  //         imageFile,
+  //       );
+  //     }
+  //   }
+  // }
 }
