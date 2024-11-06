@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/private_chat_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class OtherPersonProfile extends StatefulWidget {
+  final String chatUserId;
+  final String chatUserName;
+  final String chatUserProfileUrl;
   final bool? isGuest;
   const OtherPersonProfile({
+    required this.chatUserId,
+    required this.chatUserName,
+    required this.chatUserProfileUrl,
     this.isGuest,
     super.key,
   });
@@ -269,7 +276,22 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                               ),
                               child: AppPrimaryButton(
                                 text: 'Initiate Chat',
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (
+                                        context,
+                                      ) =>
+                                          PrivateChatScreen(
+                                        chatUserId: widget.chatUserId,
+                                        chatUserName: widget.chatUserName,
+                                        chatUserProfileUrl:
+                                            widget.chatUserProfileUrl,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                         ],

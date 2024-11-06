@@ -88,4 +88,99 @@ class UserProvider extends ChangeNotifier {
           chatMessage.toMap(),
         );
   }
+
+  Future<void> sendPrivateTextMessage(
+    String chatId,
+    String senderId,
+    String senderName,
+    String profileUrl,
+    String countryFlagUrl,
+    String message,
+    String otherUserId,
+  ) async {
+    if (user == null || message.trim().isEmpty) return;
+
+    final newMessage = ChatMessage(
+      id: '', // Firestore will auto-generate the ID
+      senderId: senderId,
+      senderName: senderName,
+      profileUrl: profileUrl,
+      countryFlagUrl: countryFlagUrl,
+      message: message,
+      messageType: 'text',
+      timestamp: DateTime.now(),
+      read: false,
+    );
+
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .add(newMessage.toMap());
+
+    // Update the chatId document with last message details
+    await _firestore.collection('chats').doc(chatId).set(
+      {
+        'lastMessage': message,
+        'lastTimestamp': DateTime.now(),
+        'messageCount': FieldValue.increment(1),
+        'participants': FieldValue.arrayUnion(
+            [senderId, otherUserId]),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<void> sendPrivateImageMessage(
+    String chatId,
+    String senderId,
+    String senderName,
+    String profileUrl,
+    String countryFlagUrl,
+    File imageFile,
+    String otherUserId,
+  ) async {
+    if (user == null) return;
+    final fileRef = FirebaseStorage.instance
+        .ref()
+        .child('private_chat_images')
+        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await fileRef.putFile(imageFile);
+    final imageUrl = await fileRef.getDownloadURL();
+
+    final newMessage = ChatMessage(
+      id: '',
+      senderId: senderId,
+      senderName: senderName,
+      profileUrl: profileUrl,
+      countryFlagUrl: countryFlagUrl,
+      message: imageUrl,
+      messageType: 'image',
+      timestamp: DateTime.now(),
+      read: false,
+    );
+
+    await FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .add(newMessage.toMap());
+
+    await _firestore.collection('chats').doc(chatId).set(
+      {
+        'lastMessage': imageUrl,
+        'lastTimestamp': DateTime.now(),
+        'messageCount': FieldValue.increment(1),
+        'participants': FieldValue.arrayUnion(
+            [senderId, otherUserId]),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  String getChatId(String userId, String otherUserId) {
+    return userId.compareTo(otherUserId) < 0
+        ? '${userId}_$otherUserId'
+        : '${otherUserId}_$userId';
+  }
 }

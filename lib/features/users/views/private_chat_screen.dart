@@ -1,29 +1,34 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_bubble.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_input.dart';
-import 'package:teen_splash/features/users/views/chatroom_media.dart';
-import 'package:teen_splash/features/users/views/chats_screen.dart';
+import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/chat_message.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
-class ChatRoomScreen extends StatefulWidget {
-  final bool? isGuest;
-  const ChatRoomScreen({
-    this.isGuest,
+class PrivateChatScreen extends StatefulWidget {
+  final String chatUserId;
+  final String chatUserName;
+  final String chatUserProfileUrl;
+  const PrivateChatScreen({
+    required this.chatUserId,
+    required this.chatUserName,
+    required this.chatUserProfileUrl,
     super.key,
   });
 
   @override
-  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+  State<PrivateChatScreen> createState() => _PrivateChatScreenState();
 }
 
-class _ChatRoomScreenState extends State<ChatRoomScreen> {
+class _PrivateChatScreenState extends State<PrivateChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
@@ -46,7 +51,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppUser? currentUser = Provider.of<UserProvider>(context).user;
     final UserProvider userProvider = context.read<UserProvider>();
+    // String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    String chatId = userProvider.getChatId(
+      currentUser!.uid!,
+      widget.chatUserId,
+    );
+    // Mark messages as read when opening the chat screen
+    listenAndMarkMessagesAsRead(chatId);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: PreferredSize(
@@ -83,68 +96,33 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               ),
             ),
           ),
-          actions: [
-            if (widget.isGuest == null)
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 16.0,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (
-                            context,
-                          ) =>
-                              const ChatsScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF4F4F4),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: ImageIcon(
-                          color: Theme.of(context).colorScheme.secondary,
-                          const AssetImage(
-                            'assets/icons/chat.png',
-                          ),
-                        ),
-                      ),
-                    ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: _getProfileImage(),
                   ),
                 ),
-              )
-          ],
-          title: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (
-                    context,
-                  ) =>
-                      const ChatroomMedia(),
-                ),
-              );
-            },
-            child: Text(
-              'Chatroom',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.surface,
               ),
-            ),
+              const SizedBox(
+                width: 8,
+              ),
+              Text(
+                '@${widget.chatUserName}',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              ),
+            ],
           ),
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -184,20 +162,44 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ),
           Gaps.hGap20,
           Expanded(
-            child: StreamBuilder<List<ChatMessage>>(
-              stream: userProvider.getChatMessages(),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('chats')
+                  .doc(
+                    userProvider.getChatId(
+                      currentUser.uid!,
+                      widget.chatUserId,
+                    ),
+                  )
+                  .collection('messages')
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                if (!snapshot.hasData) {
                   return const Center(
                     child: Text('No messages yet'),
                   );
                 }
-                final messages = snapshot.data!;
+                // Convert QuerySnapshot to List<ChatMessage>
+                final messages = snapshot.data!.docs.map(
+                  (doc) {
+                    return ChatMessage(
+                      id: doc.id,
+                      senderId: doc['senderId'],
+                      senderName: doc['senderName'],
+                      profileUrl: doc['profileUrl'],
+                      countryFlagUrl: doc['countryFlagUrl'],
+                      message: doc['message'],
+                      messageType: doc['messageType'],
+                      timestamp: (doc['timestamp'] as Timestamp).toDate(),
+                    );
+                  },
+                ).toList();
                 final groupedMessages = _groupMessagesByDate(messages);
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -223,8 +225,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       // Render chat bubble
                       return ChatBubble(
                         chatMessage: item,
-                        isGuest:
-                            widget.isGuest != null && widget.isGuest == true,
                       );
                     }
                     return const SizedBox.shrink();
@@ -233,17 +233,13 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               },
             ),
           ),
-          widget.isGuest != null && widget.isGuest! == true
-              ? const SizedBox()
-              : ChatInput(
-                  onSendText: () =>
-                      _sendTextMessage(userProvider, _messageController.text),
-                  onSendCameraImage: () =>
-                      _pickAndPreviewImage(ImageSource.camera),
-                  onSendGalleryImage: () =>
-                      _pickAndPreviewImage(ImageSource.gallery),
-                  messageController: _messageController,
-                ),
+          ChatInput(
+            onSendText: () =>
+                _sendTextMessage(userProvider, _messageController.text),
+            onSendCameraImage: () => _pickAndPreviewImage(ImageSource.camera),
+            onSendGalleryImage: () => _pickAndPreviewImage(ImageSource.gallery),
+            messageController: _messageController,
+          ),
         ],
       ),
     );
@@ -362,17 +358,65 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     );
   }
 
+// Call this function when the user opens a chat to listen for new messages and mark them as read
+  void listenAndMarkMessagesAsRead(String chatId) {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Listen to new messages where 'read' is false
+    FirebaseFirestore.instance
+        .collection('messages')
+        .where('chatId', isEqualTo: chatId)
+        .where('read', isEqualTo: false)
+        .snapshots()
+        .listen((snapshot) {
+      for (var doc in snapshot.docs) {
+        // Only mark as read if the message is from another user
+        if (doc['senderId'] != userId) {
+          doc.reference.update({'read': true});
+        }
+      }
+
+      // After marking messages as read, update the unread count
+      updateUnreadCount(chatId, userId);
+    });
+  }
+
+  Future<void> updateUnreadCount(String chatId, String currentUserId) async {
+    // Get all unread messages for the chat
+    final unreadMessagesSnapshot = await FirebaseFirestore.instance
+        .collection('messages')
+        .where('chatId', isEqualTo: chatId)
+        .where('read', isEqualTo: false)
+        .get();
+
+    // Filter out messages sent by the current user (they should not be counted)
+    final unreadMessagesForOtherUser = unreadMessagesSnapshot.docs
+        .where((doc) => doc['senderId'] != currentUserId)
+        .toList();
+
+    // Count the unread messages for the current user
+    int unreadCountForRecipient = unreadMessagesForOtherUser.length;
+
+    // Update unread count for the recipient in the 'chats' collection
+    await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
+      'unreadCount.$currentUserId': unreadCountForRecipient,
+    }, SetOptions(merge: true));
+  }
+
   void _sendTextMessage(UserProvider userProvider, String message) {
     if (message.isNotEmpty) {
       final currentUser = userProvider.user;
+      String chatId = userProvider.getChatId(
+          FirebaseAuth.instance.currentUser!.uid, widget.chatUserId);
       if (currentUser != null) {
-        userProvider.sendTextMessage(
-          currentUser.uid.toString(),
-          currentUser.name,
-          currentUser.picture.toString(),
-          currentUser.countryFlag.toString(),
-          message,
-        );
+        userProvider.sendPrivateTextMessage(
+            chatId,
+            currentUser.uid.toString(),
+            currentUser.name,
+            currentUser.picture.toString(),
+            currentUser.countryFlag.toString(),
+            message,
+            widget.chatUserId);
         _messageController.clear();
       }
     }
@@ -382,13 +426,17 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     if (_selectedImage == null) return;
 
     final currentUser = userProvider.user;
+    String chatId = userProvider.getChatId(
+        FirebaseAuth.instance.currentUser!.uid, widget.chatUserId);
     if (currentUser != null) {
-      await userProvider.sendImageMessage(
+      await userProvider.sendPrivateImageMessage(
+        chatId,
         currentUser.uid.toString(),
         currentUser.name,
         currentUser.picture.toString(),
         currentUser.countryFlag.toString(),
         _selectedImage!,
+        widget.chatUserId,
       );
 
       // Clear the preview after sending
@@ -400,21 +448,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     }
   }
 
-  // Future<void> _pickAndSendImage(
-  //     UserProvider userProvider, ImageSource source) async {
-  //   final pickedFile = await _picker.pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     final imageFile = File(pickedFile.path);
-  //     final currentUser = userProvider.user;
-  //     if (currentUser != null) {
-  //       await userProvider.sendImageMessage(
-  //         currentUser.uid.toString(),
-  //         currentUser.name,
-  //         currentUser.picture.toString(),
-  //         currentUser.countryFlag.toString(),
-  //         imageFile,
-  //       );
-  //     }
-  //   }
-  // }
+  ImageProvider<Object> _getProfileImage() {
+    final profileUrl = widget.chatUserProfileUrl;
+    // Check if profileUrl is empty, "null" string, or not a valid URL
+    if (profileUrl.isEmpty ||
+        profileUrl == "null" ||
+        (Uri.tryParse(profileUrl)?.hasAbsolutePath != true)) {
+      return const AssetImage('assets/images/user.png');
+    } else {
+      return NetworkImage(profileUrl);
+    }
+  }
 }

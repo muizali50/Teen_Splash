@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/users/views/messages_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:teen_splash/features/users/views/private_chat_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
@@ -12,6 +14,7 @@ class ChatsScreen extends StatefulWidget {
 
 class _ChatsScreenState extends State<ChatsScreen> {
   final TextEditingController searchController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,119 +109,213 @@ class _ChatsScreenState extends State<ChatsScreen> {
             ),
             Gaps.hGap20,
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                ),
-                itemCount: 7,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (
-                                context,
-                              ) =>
-                                  const MessagesScreen(),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              height: 52,
-                              width: 52,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(
-                                    'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '@aryas',
-                                  style: TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Text(
-                                  'How are you today?',
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '2 min ago',
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w300,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Container(
-                                  height: 16,
-                                  width: 16,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '3',
-                                      style: TextStyle(
-                                        fontFamily: 'OpenSans',
-                                        fontSize: 8,
-                                        fontWeight: FontWeight.w800,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surface,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore.collection('chats').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text("No chats available"));
+                  }
+
+                  final chatDocs = snapshot.data!.docs;
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                    ),
+                    itemCount: chatDocs.length,
+                    itemBuilder: (context, index) {
+                      final chat = chatDocs[index];
+                      final chatId = chat.id;
+
+                      // Get the last message
+                      final lastMessage =
+                          chat['lastMessage'] ?? 'No messages yet';
+                      final lastMessageTimestamp = chat[
+                          'lastTimestamp']; // Assuming it's a Timestamp field
+
+                      // Format the last message time
+                      String formattedTime = '';
+                      if (lastMessageTimestamp != null) {
+                        // If it's a Firestore Timestamp, convert it to DateTime
+                        DateTime lastMessageDateTime =
+                            lastMessageTimestamp is Timestamp
+                                ? lastMessageTimestamp.toDate()
+                                : lastMessageTimestamp;
+
+                        final timeDifference =
+                            DateTime.now().difference(lastMessageDateTime);
+
+                        // Show time difference in minutes, if less than 60 minutes
+                        if (timeDifference.inMinutes < 60) {
+                          formattedTime = '${timeDifference.inMinutes} min ago';
+                        }
+                        // Show time difference in hours, if less than 24 hours
+                        else if (timeDifference.inHours < 24) {
+                          formattedTime = '${timeDifference.inHours} hours ago';
+                        }
+                        // Show time difference in days, if less than 7 days
+                        else if (timeDifference.inDays < 7) {
+                          formattedTime = '${timeDifference.inDays} days ago';
+                        }
+                        // Show the exact date if more than 7 days have passed
+                        else {
+                          formattedTime = DateFormat('MMM d, yyyy')
+                              .format(lastMessageDateTime);
+                        }
+                      }
+                      return FutureBuilder<QuerySnapshot>(
+                        future: _firestore
+                            .collection('chats')
+                            .doc(chatId)
+                            .collection('messages')
+                            .orderBy('timestamp', descending: true)
+                            .limit(1)
+                            .get(),
+                        builder: (context, messageSnapshot) {
+                          if (messageSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (messageSnapshot.hasError ||
+                              messageSnapshot.data == null) {
+                            return const Center(
+                              child: Text('Error loading message.'),
+                            );
+                          }
+                          final latestMessage =
+                              messageSnapshot.data!.docs.first;
+                          final id = latestMessage['senderId'] ?? '';
+                          final name = latestMessage['senderName'] ?? '';
+                          final profileUrl = latestMessage['profileUrl'];
+                          return Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (
+                                        context,
+                                      ) =>
+                                          PrivateChatScreen(
+                                        chatUserId: id,
+                                        chatUserName: name,
+                                        chatUserProfileUrl: profileUrl,
                                       ),
                                     ),
-                                  ),
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: 52,
+                                      width: 52,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '@$name',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        Gaps.hGap05,
+                                        Text(
+                                          lastMessage,
+                                          style: TextStyle(
+                                            fontFamily: 'OpenSans',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          formattedTime,
+                                          style: TextStyle(
+                                            fontFamily: 'OpenSans',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w300,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                        Gaps.hGap05,
+                                        // unreadCount > 0
+                                        //     ?
+                                        Container(
+                                          height: 16,
+                                          width: 16,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '2',
+                                              style: TextStyle(
+                                                fontFamily: 'OpenSans',
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.w800,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surface,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        // : const SizedBox(),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Gaps.hGap15,
-                      Divider(
-                        thickness: 0.5,
-                        color: const Color(0Xff000000).withOpacity(0.1),
-                      ),
-                      Gaps.hGap15,
-                    ],
+                              ),
+                              Gaps.hGap15,
+                              Divider(
+                                thickness: 0.5,
+                                color: const Color(0Xff000000).withOpacity(0.1),
+                              ),
+                              Gaps.hGap15,
+                            ],
+                          );
+                        },
+                      );
+                    },
                   );
                 },
               ),

@@ -9,6 +9,7 @@ class ChatMessage {
   final String message;
   final String messageType;
   final DateTime timestamp;
+  final bool? read;
 
   ChatMessage({
     required this.id,
@@ -19,6 +20,7 @@ class ChatMessage {
     required this.message,
     required this.messageType,
     required this.timestamp,
+    this.read,
   });
 
   Map<String, dynamic> toMap() {
@@ -30,6 +32,7 @@ class ChatMessage {
       'message': message,
       'messageType': messageType,
       'timestamp': timestamp,
+      'read': read,
     };
   }
 
@@ -43,6 +46,7 @@ class ChatMessage {
       message: map['message'] ?? '',
       messageType: map['messageType'] ?? 'text',
       timestamp: (map['timestamp'] as Timestamp).toDate(),
+      read: map['read'] ?? false,
     );
   }
 }

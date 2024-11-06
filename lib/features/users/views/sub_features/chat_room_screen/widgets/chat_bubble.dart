@@ -7,10 +7,10 @@ import 'package:teen_splash/utils/gaps.dart';
 
 class ChatBubble extends StatefulWidget {
   final ChatMessage chatMessage;
-  final bool isGuest;
+  final bool? isGuest;
   const ChatBubble({
     required this.chatMessage,
-    required this.isGuest,
+    this.isGuest,
     super.key,
   });
 
@@ -102,6 +102,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => OtherPersonProfile(
+                        chatUserId: widget.chatMessage.senderId,
+                        chatUserName: widget.chatMessage.senderName,
+                        chatUserProfileUrl: widget.chatMessage.profileUrl,
                         isGuest: widget.isGuest,
                       ),
                     ),
