@@ -53,13 +53,12 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   Widget build(BuildContext context) {
     AppUser? currentUser = Provider.of<UserProvider>(context).user;
     final UserProvider userProvider = context.read<UserProvider>();
-    // String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     String chatId = userProvider.getChatId(
       currentUser!.uid!,
       widget.chatUserId,
     );
-    // Mark messages as read when opening the chat screen
-    listenAndMarkMessagesAsRead(chatId);
+    updateUnreadCount(chatId, currentUserId);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: PreferredSize(
@@ -358,65 +357,39 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     );
   }
 
-// Call this function when the user opens a chat to listen for new messages and mark them as read
-  void listenAndMarkMessagesAsRead(String chatId) {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-
-    // Listen to new messages where 'read' is false
-    FirebaseFirestore.instance
-        .collection('messages')
-        .where('chatId', isEqualTo: chatId)
-        .where('read', isEqualTo: false)
-        .snapshots()
-        .listen((snapshot) {
-      for (var doc in snapshot.docs) {
-        // Only mark as read if the message is from another user
-        if (doc['senderId'] != userId) {
-          doc.reference.update({'read': true});
-        }
-      }
-
-      // After marking messages as read, update the unread count
-      updateUnreadCount(chatId, userId);
-    });
-  }
-
   Future<void> updateUnreadCount(String chatId, String currentUserId) async {
-    // Get all unread messages for the chat
-    final unreadMessagesSnapshot = await FirebaseFirestore.instance
-        .collection('messages')
-        .where('chatId', isEqualTo: chatId)
-        .where('read', isEqualTo: false)
-        .get();
+    final chatDocRef =
+        FirebaseFirestore.instance.collection('chats').doc(chatId);
 
-    // Filter out messages sent by the current user (they should not be counted)
-    final unreadMessagesForOtherUser = unreadMessagesSnapshot.docs
-        .where((doc) => doc['senderId'] != currentUserId)
-        .toList();
+    final docSnapshot = await chatDocRef.get();
 
-    // Count the unread messages for the current user
-    int unreadCountForRecipient = unreadMessagesForOtherUser.length;
-
-    // Update unread count for the recipient in the 'chats' collection
-    await FirebaseFirestore.instance.collection('chats').doc(chatId).set({
-      'unreadCount.$currentUserId': unreadCountForRecipient,
-    }, SetOptions(merge: true));
+    if (docSnapshot.exists) {
+      // Only update if the document exists
+      await chatDocRef.set({
+        'unreadCount.$currentUserId': 0,
+      }, SetOptions(merge: true));
+    }
   }
 
-  void _sendTextMessage(UserProvider userProvider, String message) {
+  void _sendTextMessage(UserProvider userProvider, String message) async {
     if (message.isNotEmpty) {
       final currentUser = userProvider.user;
       String chatId = userProvider.getChatId(
           FirebaseAuth.instance.currentUser!.uid, widget.chatUserId);
       if (currentUser != null) {
         userProvider.sendPrivateTextMessage(
-            chatId,
-            currentUser.uid.toString(),
-            currentUser.name,
-            currentUser.picture.toString(),
-            currentUser.countryFlag.toString(),
-            message,
-            widget.chatUserId);
+          chatId,
+          currentUser.uid.toString(),
+          currentUser.name,
+          currentUser.picture.toString(),
+          currentUser.countryFlag.toString(),
+          message,
+          widget.chatUserId,
+          widget.chatUserId,
+          widget.chatUserName,
+          widget.chatUserProfileUrl,
+          'text',
+        );
         _messageController.clear();
       }
     }
@@ -437,6 +410,10 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
         currentUser.countryFlag.toString(),
         _selectedImage!,
         widget.chatUserId,
+        widget.chatUserId,
+        widget.chatUserName,
+        widget.chatUserProfileUrl,
+        'image',
       );
 
       // Clear the preview after sending

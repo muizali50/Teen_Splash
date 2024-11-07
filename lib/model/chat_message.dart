@@ -6,6 +6,9 @@ class ChatMessage {
   final String senderName;
   final String profileUrl;
   final String countryFlagUrl;
+  final String? recieverId;
+  final String? recieverName;
+  final String? recieverProfileUrl;
   final String message;
   final String messageType;
   final DateTime timestamp;
@@ -16,6 +19,9 @@ class ChatMessage {
     required this.senderId,
     required this.senderName,
     required this.profileUrl,
+    this.recieverId,
+    this.recieverName,
+    this.recieverProfileUrl,
     required this.countryFlagUrl,
     required this.message,
     required this.messageType,
@@ -28,6 +34,9 @@ class ChatMessage {
       'senderId': senderId,
       'senderName': senderName,
       'profileUrl': profileUrl,
+      'recieverId': recieverId,
+      'recieverName': recieverName,
+      'recieverProfileUrl': recieverProfileUrl,
       'countryFlagUrl': countryFlagUrl,
       'message': message,
       'messageType': messageType,
@@ -42,6 +51,9 @@ class ChatMessage {
       senderId: map['senderId'] ?? '',
       senderName: map['senderName'] ?? '',
       profileUrl: map['profileUrl'] ?? '',
+      recieverId: map['recieverId'] ?? '',
+      recieverName: map['recieverName'] ?? '',
+      recieverProfileUrl: map['recieverProfileUrl'] ?? '',
       countryFlagUrl: map['countryFlagUrl'] ?? '',
       message: map['message'] ?? '',
       messageType: map['messageType'] ?? 'text',

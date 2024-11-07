@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:teen_splash/features/users/views/private_chat_screen.dart';
@@ -15,8 +16,25 @@ class ChatsScreen extends StatefulWidget {
 class _ChatsScreenState extends State<ChatsScreen> {
   final TextEditingController searchController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(
+      () {
+        setState(
+          () {
+            searchQuery = searchController.text.trim();
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    String cuid = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
@@ -110,7 +128,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
             Gaps.hGap20,
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore.collection('chats').snapshots(),
+                stream: _firestore
+                    .collection('chats')
+                    .where('participants', arrayContains: cuid)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -130,16 +151,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
                       final chat = chatDocs[index];
                       final chatId = chat.id;
 
-                      // Get the last message
                       final lastMessage =
                           chat['lastMessage'] ?? 'No messages yet';
-                      final lastMessageTimestamp = chat[
-                          'lastTimestamp']; // Assuming it's a Timestamp field
-
-                      // Format the last message time
+                      final lastMessageTimestamp = chat['lastTimestamp'];
+                      final lastMessageType = chat['lastMessageType'];
+                      final unreadCountField = 'unreadCount.$cuid';
+                      final chatData = chat.data() as Map<String, dynamic>;
+                      final unreadCount = chatData.containsKey(unreadCountField)
+                          ? chatData[unreadCountField]
+                          : 0;
                       String formattedTime = '';
                       if (lastMessageTimestamp != null) {
-                        // If it's a Firestore Timestamp, convert it to DateTime
                         DateTime lastMessageDateTime =
                             lastMessageTimestamp is Timestamp
                                 ? lastMessageTimestamp.toDate()
@@ -147,25 +169,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
                         final timeDifference =
                             DateTime.now().difference(lastMessageDateTime);
-
-                        // Show time difference in minutes, if less than 60 minutes
-                        if (timeDifference.inMinutes < 60) {
+                        if (timeDifference.inSeconds < 60) {
+                          formattedTime = '${timeDifference.inSeconds} sec ago';
+                        } else if (timeDifference.inMinutes < 60) {
                           formattedTime = '${timeDifference.inMinutes} min ago';
-                        }
-                        // Show time difference in hours, if less than 24 hours
-                        else if (timeDifference.inHours < 24) {
+                        } else if (timeDifference.inHours < 24) {
                           formattedTime = '${timeDifference.inHours} hours ago';
-                        }
-                        // Show time difference in days, if less than 7 days
-                        else if (timeDifference.inDays < 7) {
+                        } else if (timeDifference.inDays < 7) {
                           formattedTime = '${timeDifference.inDays} days ago';
-                        }
-                        // Show the exact date if more than 7 days have passed
-                        else {
+                        } else {
                           formattedTime = DateFormat('MMM d, yyyy')
                               .format(lastMessageDateTime);
                         }
                       }
+
                       return FutureBuilder<QuerySnapshot>(
                         future: _firestore
                             .collection('chats')
@@ -189,13 +206,41 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           }
                           final latestMessage =
                               messageSnapshot.data!.docs.first;
-                          final id = latestMessage['senderId'] ?? '';
-                          final name = latestMessage['senderName'] ?? '';
-                          final profileUrl = latestMessage['profileUrl'];
+                          final senderId = latestMessage['senderId'] ?? '';
+                          final senderName = latestMessage['senderName'] ?? '';
+                          final senderProfileUrl = latestMessage['profileUrl'];
+                          final recieverId = latestMessage['recieverId'] ?? '';
+                          final recieverName =
+                              latestMessage['recieverName'] ?? '';
+                          final recieverProfileUrl =
+                              latestMessage['recieverProfileUrl'];
+                          final name =
+                              senderId == cuid ? recieverName : senderName;
+                          if (searchQuery.isNotEmpty &&
+                              !name
+                                  .toLowerCase()
+                                  .contains(searchQuery.toLowerCase())) {
+                            return const SizedBox();
+                          }
+
+                          ImageProvider<Object> getProfileImage() {
+                            final profileUrl = senderId == cuid
+                                ? recieverProfileUrl
+                                : senderProfileUrl;
+                            if (profileUrl.isEmpty ||
+                                profileUrl == "null" ||
+                                (Uri.tryParse(profileUrl)?.hasAbsolutePath !=
+                                    true)) {
+                              return const AssetImage('assets/images/user.png');
+                            } else {
+                              return NetworkImage(profileUrl);
+                            }
+                          }
+
                           return Column(
                             children: [
                               InkWell(
-                                onTap: () {
+                                onTap: () async {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -203,11 +248,26 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         context,
                                       ) =>
                                           PrivateChatScreen(
-                                        chatUserId: id,
-                                        chatUserName: name,
-                                        chatUserProfileUrl: profileUrl,
+                                        chatUserId: senderId == cuid
+                                            ? recieverId
+                                            : senderId,
+                                        chatUserName: senderId == cuid
+                                            ? recieverName
+                                            : senderName,
+                                        chatUserProfileUrl: senderId == cuid
+                                            ? recieverProfileUrl
+                                            : senderProfileUrl,
                                       ),
                                     ),
+                                  );
+                                  await FirebaseFirestore.instance
+                                      .collection('chats')
+                                      .doc(chatId)
+                                      .set(
+                                    {
+                                      'unreadCount.$cuid': 0,
+                                    },
+                                    SetOptions(merge: true),
                                   );
                                 },
                                 child: Row(
@@ -215,13 +275,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                     Container(
                                       height: 52,
                                       width: 52,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                            'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                          ),
+                                          image: getProfileImage(),
                                         ),
                                       ),
                                     ),
@@ -233,7 +291,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '@$name',
+                                          senderId == cuid
+                                              ? '@$recieverName'
+                                              : '@$senderName',
                                           style: TextStyle(
                                             fontFamily: 'Lexend',
                                             fontSize: 18,
@@ -244,15 +304,22 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                           ),
                                         ),
                                         Gaps.hGap05,
-                                        Text(
-                                          lastMessage,
-                                          style: TextStyle(
-                                            fontFamily: 'OpenSans',
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
+                                        SizedBox(
+                                          width: 200,
+                                          child: Text(
+                                            lastMessageType == 'image'
+                                                ? 'Image'
+                                                : lastMessage,
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
                                         ),
                                       ],
@@ -274,32 +341,32 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                           ),
                                         ),
                                         Gaps.hGap05,
-                                        // unreadCount > 0
-                                        //     ?
-                                        Container(
-                                          height: 16,
-                                          width: 16,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .tertiary,
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '2',
-                                              style: TextStyle(
-                                                fontFamily: 'OpenSans',
-                                                fontSize: 8,
-                                                fontWeight: FontWeight.w800,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .surface,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        // : const SizedBox(),
+                                        unreadCount > 0
+                                            ? Container(
+                                                height: 16,
+                                                width: 16,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .tertiary,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    unreadCount.toString(),
+                                                    style: TextStyle(
+                                                      fontFamily: 'OpenSans',
+                                                      fontSize: 8,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .surface,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(),
                                       ],
                                     ),
                                   ],

@@ -97,6 +97,10 @@ class UserProvider extends ChangeNotifier {
     String countryFlagUrl,
     String message,
     String otherUserId,
+    String recieverId,
+    String recieverName,
+    String recieverProfileUrl,
+    String type,
   ) async {
     if (user == null || message.trim().isEmpty) return;
 
@@ -105,6 +109,9 @@ class UserProvider extends ChangeNotifier {
       senderId: senderId,
       senderName: senderName,
       profileUrl: profileUrl,
+      recieverId: recieverId,
+      recieverName: recieverName,
+      recieverProfileUrl: recieverProfileUrl,
       countryFlagUrl: countryFlagUrl,
       message: message,
       messageType: 'text',
@@ -124,8 +131,10 @@ class UserProvider extends ChangeNotifier {
         'lastMessage': message,
         'lastTimestamp': DateTime.now(),
         'messageCount': FieldValue.increment(1),
-        'participants': FieldValue.arrayUnion(
-            [senderId, otherUserId]),
+        'participants': FieldValue.arrayUnion([senderId, otherUserId]),
+        'lastMessageType': type,
+        'unreadCount.$recieverId': FieldValue.increment(1),
+        'unreadCount.$senderId': 0,
       },
       SetOptions(merge: true),
     );
@@ -139,6 +148,10 @@ class UserProvider extends ChangeNotifier {
     String countryFlagUrl,
     File imageFile,
     String otherUserId,
+    String recieverId,
+    String recieverName,
+    String recieverProfileUrl,
+    String type,
   ) async {
     if (user == null) return;
     final fileRef = FirebaseStorage.instance
@@ -153,6 +166,9 @@ class UserProvider extends ChangeNotifier {
       senderId: senderId,
       senderName: senderName,
       profileUrl: profileUrl,
+      recieverId: recieverId,
+      recieverName: recieverName,
+      recieverProfileUrl: recieverProfileUrl,
       countryFlagUrl: countryFlagUrl,
       message: imageUrl,
       messageType: 'image',
@@ -171,8 +187,10 @@ class UserProvider extends ChangeNotifier {
         'lastMessage': imageUrl,
         'lastTimestamp': DateTime.now(),
         'messageCount': FieldValue.increment(1),
-        'participants': FieldValue.arrayUnion(
-            [senderId, otherUserId]),
+        'participants': FieldValue.arrayUnion([senderId, otherUserId]),
+        'lastMessageType': type,
+        'unreadCount.$recieverId': FieldValue.increment(1),
+        'unreadCount.$senderId': 0,
       },
       SetOptions(merge: true),
     );

@@ -68,13 +68,18 @@ class _ChatBubbleState extends State<ChatBubble> {
                           ),
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        child: Text(
-                          widget.chatMessage.message,
-                          style: TextStyle(
-                            fontFamily: 'OpenSans',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.surface,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: 200,
+                          ), // Max width for message
+                          child: Text(
+                            widget.chatMessage.message,
+                            style: TextStyle(
+                              fontFamily: 'OpenSans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
                           ),
                         ),
                       ),
@@ -180,13 +185,19 @@ class _ChatBubbleState extends State<ChatBubble> {
                                 ),
                                 color: Theme.of(context).colorScheme.tertiary,
                               ),
-                              child: Text(
-                                widget.chatMessage.message,
-                                style: TextStyle(
-                                  fontFamily: 'OpenSans',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).colorScheme.primary,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 200,
+                                ), // Max width for message
+                                child: Text(
+                                  widget.chatMessage.message,
+                                  style: TextStyle(
+                                    fontFamily: 'OpenSans',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
                               ),
                             ),
