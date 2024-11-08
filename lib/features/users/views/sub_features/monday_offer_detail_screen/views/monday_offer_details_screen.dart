@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/offer_redeemed.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/redeem_offer.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
@@ -18,6 +19,21 @@ class MondayOfferDetailsScreen extends StatefulWidget {
 }
 
 class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Hide the status bar when entering the screen
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  @override
+  void dispose() {
+    // Re-enable the status bar when leaving the screen
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

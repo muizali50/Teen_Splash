@@ -324,7 +324,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       height: 50,
                       width: 106,
                       child: AppPrimaryButton(
-                        hintTextColor: Theme.of(context).colorScheme.primary,
+                        isPrimaryColor: true,
+                        primaryColor: Colors.white,
+                        hintTextColor: Theme.of(context).colorScheme.secondary,
                         isBorderColor: Theme.of(context).colorScheme.tertiary,
                         isBorder: true,
                         text: 'Cancel',

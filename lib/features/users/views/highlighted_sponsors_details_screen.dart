@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
@@ -18,6 +19,19 @@ class HighlightedSponsorDetailsScreen extends StatefulWidget {
 
 class _HighlightedSponsorDetailsScreenState
     extends State<HighlightedSponsorDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    super.dispose();
+  }
+
   Future<void> _launchWebsite(String? url, BuildContext context) async {
     if (url != null && await launchUrlString(url)) {
       await launchUrlString(
