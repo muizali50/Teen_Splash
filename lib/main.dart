@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,7 @@ import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/onboarding_screen.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
+import 'package:teen_splash/features/users/views/hydrated_popup.dart';
 import 'package:teen_splash/firebase_options.dart';
 import 'package:teen_splash/user_provider.dart';
 
@@ -26,11 +28,60 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  final List<TimeOfDay> hydrationTimes = [
+    const TimeOfDay(hour: 9, minute: 0),
+    const TimeOfDay(hour: 14, minute: 0),
+    const TimeOfDay(hour: 19, minute: 0),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        scheduleHydrationReminders();
+      },
+    );
+  }
+
+  // Function to show the hydration popup
+  void showHydrationPopup() {
+    if (navigatorKey.currentContext != null) {
+      showDialog(
+        context: navigatorKey.currentContext!,
+        barrierDismissible: false,
+        builder: (_) => const Center(
+          child: HydratedPopup(),
+        ),
+      );
+    }
+  }
+
+  // Schedule the hydration reminders
+  void scheduleHydrationReminders() {
+    Timer.periodic(
+      const Duration(minutes: 1),
+      (timer) {
+        final now = TimeOfDay.now();
+        for (TimeOfDay time in hydrationTimes) {
+          if (now.hour == time.hour && now.minute == time.minute) {
+            showHydrationPopup();
+            break;
+          }
+        }
+      },
+    );
+  }
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

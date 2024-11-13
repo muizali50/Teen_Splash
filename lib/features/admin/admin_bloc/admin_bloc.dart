@@ -8,6 +8,7 @@ import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
+import 'package:teen_splash/model/water_sponsor_model.dart';
 part 'admin_event.dart';
 part 'admin_state.dart';
 
@@ -16,6 +17,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<MondayOffersModel> mondayOffers = [];
   List<FeaturedOffersModel> featuredOffers = [];
   List<SponsorsModel> sponsors = [];
+  List<WaterSponsorModel> waterSponsors = [];
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
       (
@@ -676,6 +678,160 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           emit(
             UpdateSponsorFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<AddWaterSponsor>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingWaterSponsor(),
+        );
+        try {
+          final ref = FirebaseStorage.instance.ref().child(
+                'water_sponsor_images/${event.image.path.split('/').last}',
+              );
+
+          await ref.putData(
+            await event.image.readAsBytes(),
+          );
+          final imageUrl = await ref.getDownloadURL();
+          event.waterSponsor.image = imageUrl;
+
+          final waterSponsorCollection = FirebaseFirestore.instance.collection(
+            'waterSponsor',
+          );
+          final result = await waterSponsorCollection.add(
+            event.waterSponsor.toMap(),
+          );
+          event.waterSponsor.waterSponsorId = result.id;
+          waterSponsors.add(
+            event.waterSponsor,
+          );
+          emit(
+            AddWaterSponsorSuccess(
+              event.waterSponsor,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddWaterSponsorFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddWaterSponsorFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetWaterSponsor>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingWaterSponsor(),
+        );
+        try {
+          final waterSponsorCollection = FirebaseFirestore.instance.collection(
+            'waterSponsor',
+          );
+          final result = await waterSponsorCollection.get();
+          waterSponsors = result.docs.map(
+            (e) {
+              final waterSponsor = WaterSponsorModel.fromMap(
+                e.data(),
+              );
+              waterSponsor.waterSponsorId = e.id;
+              return waterSponsor;
+            },
+          ).toList();
+          emit(
+            GetWaterSponsorSuccess(
+              waterSponsors,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetWaterSponsorFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetWaterSponsorFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateWaterSponsor>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingWaterSponsor(),
+        );
+        try {
+          if (event.image != null) {
+            final ref = FirebaseStorage.instance.ref().child(
+                  'water_sponsor_images/${event.image!.path.split('/').last}',
+                );
+            await ref.putData(
+              await event.image!.readAsBytes(),
+            );
+            final imageUrl = await ref.getDownloadURL();
+            event.waterSponsor.image = imageUrl;
+          }
+          final waterSponsorCollection = FirebaseFirestore.instance.collection(
+            'waterSponsor',
+          );
+          await waterSponsorCollection
+              .doc(
+                event.waterSponsor.waterSponsorId,
+              )
+              .update(
+                event.waterSponsor.toMap(),
+              );
+          final index = waterSponsors.indexWhere(
+            (element) =>
+                element.waterSponsorId == event.waterSponsor.waterSponsorId,
+          );
+          waterSponsors[index] = event.waterSponsor;
+          emit(
+            UpdateWaterSponsorSuccess(
+              event.waterSponsor,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateWaterSponsorFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateWaterSponsorFailed(
               e.toString(),
             ),
           );

@@ -3,6 +3,7 @@ import 'package:teen_splash/features/admin/views/all_coupons.dart';
 import 'package:teen_splash/features/admin/views/all_featured_offers.dart';
 import 'package:teen_splash/features/admin/views/all_highlighted_sponsors.dart';
 import 'package:teen_splash/features/admin/views/all_monday_offers.dart';
+import 'package:teen_splash/features/admin/views/all_water_sponsors_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/dashborad/widgets/dashboard_fields.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
@@ -20,6 +21,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const AllFeaturedOffers(),
     const AllHighlightedSponsor(),
     const AllCoupons(),
+    const AllWaterSponsor(),
   ];
 
   void _onItemTapped(
@@ -102,6 +104,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     titleColor: _selectedIndex == 3 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 3 ? 0xFFffffff : 0xFF000000,
+                  ),
+                  Gaps.hGap20,
+                  DashboardFields(
+                    icon: 'assets/icons/offer.png',
+                    onTap: () => _onItemTapped(4),
+                    iconColor: _selectedIndex == 4 ? 0xFF000000 : 0xFFffffff,
+                    title: 'Water Sponsors',
+                    titleColor: _selectedIndex == 4 ? 0xFF000000 : 0xFFffffff,
+                    containerColor:
+                        _selectedIndex == 4 ? 0xFFffffff : 0xFF000000,
                   ),
                 ],
               ),

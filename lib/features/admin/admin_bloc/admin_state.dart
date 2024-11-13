@@ -320,3 +320,81 @@ final class UpdateSponsorSuccess extends AdminState {
         sponsor,
       ];
 }
+
+final class AddWaterSponsorFailed extends AdminState {
+  final String message;
+  const AddWaterSponsorFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingWaterSponsor extends AdminState {}
+
+final class AddWaterSponsorSuccess extends AdminState {
+  final WaterSponsorModel waterSponsor;
+  const AddWaterSponsorSuccess(
+    this.waterSponsor,
+  );
+
+  @override
+  List<Object> get props => [
+        waterSponsor,
+      ];
+}
+
+final class GetWaterSponsorFailed extends AdminState {
+  final String message;
+  const GetWaterSponsorFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingWaterSponsor extends AdminState {}
+
+final class GetWaterSponsorSuccess extends AdminState {
+  final List<WaterSponsorModel> waterSponsors;
+  const GetWaterSponsorSuccess(
+    this.waterSponsors,
+  );
+
+  @override
+  List<Object> get props => [
+        waterSponsors,
+      ];
+}
+
+final class UpdateWaterSponsorFailed extends AdminState {
+  final String message;
+  const UpdateWaterSponsorFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingWaterSponsor extends AdminState {}
+
+final class UpdateWaterSponsorSuccess extends AdminState {
+  final WaterSponsorModel waterSponsor;
+  const UpdateWaterSponsorSuccess(
+    this.waterSponsor,
+  );
+
+  @override
+  List<Object> get props => [
+        waterSponsor,
+      ];
+}

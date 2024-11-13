@@ -90,6 +90,9 @@ dependencies:
   # UrlcLauncher
   url_launcher: ^6.3.1
 
+  # Flutter Local Notifications
+  flutter_local_notifications: ^18.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

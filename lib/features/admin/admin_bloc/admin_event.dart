@@ -145,3 +145,33 @@ final class UpdateSponsors extends AdminEvent {
         sponsor,
       ];
 }
+
+final class AddWaterSponsor extends AdminEvent {
+  final WaterSponsorModel waterSponsor;
+  final XFile image;
+  const AddWaterSponsor(
+    this.waterSponsor,
+    this.image,
+  );
+  @override
+  List<Object> get props => [
+        waterSponsor,
+        image,
+      ];
+}
+
+final class GetWaterSponsor extends AdminEvent {}
+
+final class UpdateWaterSponsor extends AdminEvent {
+  final WaterSponsorModel waterSponsor;
+  final XFile? image;
+  const UpdateWaterSponsor(
+    this.waterSponsor,
+    this.image,
+  );
+
+  @override
+  List<Object> get props => [
+        waterSponsor,
+      ];
+}
