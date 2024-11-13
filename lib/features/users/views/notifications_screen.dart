@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:teen_splash/widgets/app_bar.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -12,54 +13,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F4F4),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: ImageIcon(
-                      color: Theme.of(context).colorScheme.secondary,
-                      const AssetImage(
-                        'assets/icons/back.png',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            'Notifications',
-            style: TextStyle(
-              fontFamily: 'Lexend',
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Colors.transparent,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBarWidget(
+          isTittle: true,
+          title: 'Notifications',
         ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,

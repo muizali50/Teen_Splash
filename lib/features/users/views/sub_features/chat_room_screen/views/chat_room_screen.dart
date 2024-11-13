@@ -393,7 +393,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         _selectedImage!,
       );
 
-      // Clear the preview after sending
       setState(
         () {
           _selectedImage = null;
@@ -401,22 +400,4 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       );
     }
   }
-
-  // Future<void> _pickAndSendImage(
-  //     UserProvider userProvider, ImageSource source) async {
-  //   final pickedFile = await _picker.pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     final imageFile = File(pickedFile.path);
-  //     final currentUser = userProvider.user;
-  //     if (currentUser != null) {
-  //       await userProvider.sendImageMessage(
-  //         currentUser.uid.toString(),
-  //         currentUser.name,
-  //         currentUser.picture.toString(),
-  //         currentUser.countryFlag.toString(),
-  //         imageFile,
-  //       );
-  //     }
-  //   }
-  // }
 }

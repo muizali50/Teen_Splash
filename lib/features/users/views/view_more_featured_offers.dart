@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:teen_splash/widgets/app_bar.dart';
 
 class ViewMoreFeaturedOffers extends StatefulWidget {
   const ViewMoreFeaturedOffers({super.key});
@@ -27,54 +28,12 @@ class _ViewMoreFeaturedOffersState extends State<ViewMoreFeaturedOffers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F4F4),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: ImageIcon(
-                      color: Theme.of(context).colorScheme.secondary,
-                      const AssetImage(
-                        'assets/icons/back.png',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            'Featured Offers',
-            style: TextStyle(
-              fontFamily: 'Lexend',
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Colors.transparent,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBarWidget(
+          isBackIcon: true,
+          isTittle: true,
+          title: 'Featured Offers',
         ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,

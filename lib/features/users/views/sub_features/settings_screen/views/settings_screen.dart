@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/sub_features/settings_screen/widgets/setting_row.dart';
 import 'package:teen_splash/features/users/views/update_password_screen.dart';
 import 'package:teen_splash/features/users/views/update_profile_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:teen_splash/widgets/app_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,54 +17,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F4F4),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: ImageIcon(
-                      color: Theme.of(context).colorScheme.secondary,
-                      const AssetImage(
-                        'assets/icons/back.png',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          title: Text(
-            'Settings',
-            style: TextStyle(
-              fontFamily: 'Lexend',
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Colors.transparent,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBarWidget(
+          isBackIcon: true,
+          isTittle: true,
+          title: 'Settings',
         ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -126,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: const Color(0xFF000000).withOpacity(0.1),
                       ),
                       Gaps.hGap15,
-                      InkWell(
+                      SettingRow(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -138,33 +98,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           );
                         },
-                        child: Row(
-                          children: [
-                            Text(
-                              'Update Profile',
-                              style: TextStyle(
-                                fontFamily: 'Lexend',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            const Spacer(),
-                            ImageIcon(
-                              color: Theme.of(context).colorScheme.secondary,
-                              const AssetImage(
-                                'assets/icons/forward.png',
-                              ),
-                            ),
-                          ],
-                        ),
+                        title: 'Update Profile',
+                        icon: 'assets/icons/forward.png',
                       ),
                       Gaps.hGap15,
                       Divider(
                         color: const Color(0xFF000000).withOpacity(0.1),
                       ),
                       Gaps.hGap15,
-                      InkWell(
+                      SettingRow(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -176,26 +118,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           );
                         },
-                        child: Row(
-                          children: [
-                            Text(
-                              'Update Password',
-                              style: TextStyle(
-                                fontFamily: 'Lexend',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            const Spacer(),
-                            ImageIcon(
-                              color: Theme.of(context).colorScheme.secondary,
-                              const AssetImage(
-                                'assets/icons/forward.png',
-                              ),
-                            ),
-                          ],
-                        ),
+                        title: 'Update Password',
+                        icon: 'assets/icons/forward.png',
                       ),
                     ],
                   ),

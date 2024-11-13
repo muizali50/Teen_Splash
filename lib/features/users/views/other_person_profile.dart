@@ -1,5 +1,8 @@
+// ignore_for_file: unnecessary_const
+
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/users/views/private_chat_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/profile_row.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -138,118 +141,26 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                                 0xFFF8F8F8,
                               ),
                             ),
-                            child: Column(
+                            child: const Column(
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Name',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Arya Smith',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const ProfileRow(
+                                  title: 'Name',
+                                  content: 'Arya Smith',
                                 ),
                                 Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Gender',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Female',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const ProfileRow(
+                                  title: 'Gender',
+                                  content: 'Female',
                                 ),
                                 Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Age',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      '25 y/o',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const ProfileRow(
+                                  title: 'Age',
+                                  content: '25 y/o',
                                 ),
                                 Gaps.hGap10,
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Country',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    const Text(
-                                      'Barbados 🇧🇧 ',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(
-                                          0xFF999999,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const ProfileRow(
+                                  title: 'Country',
+                                  content: 'Barbados 🇧🇧 ',
                                 ),
                               ],
                             ),

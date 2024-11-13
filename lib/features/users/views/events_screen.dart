@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/users/views/events_detail_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:teen_splash/widgets/app_bar.dart';
 
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
@@ -13,87 +15,17 @@ class _EventScreenState extends State<EventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: Builder(builder: (context) {
-                return InkWell(
-                  onTap: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF4F4F4),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: ImageIcon(
-                        color: Theme.of(context).colorScheme.secondary,
-                        const AssetImage(
-                          'assets/icons/menu.png',
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(
-                right: 16.0,
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: InkWell(
-                  onTap: () {},
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF4F4F4),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: ImageIcon(
-                        color: Theme.of(context).colorScheme.secondary,
-                        const AssetImage(
-                          'assets/icons/chat.png',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-          title: Text(
-            'Events',
-            style: TextStyle(
-              fontFamily: 'Lexend',
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Colors.transparent,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: AppBarWidget(
+          isMenyIcon: true,
+          isChatIcon: true,
+          isTittle: true,
+          title: 'Events',
         ),
+      ),
+      drawer: const Drawer(
+        child: DrawerWidget(),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
