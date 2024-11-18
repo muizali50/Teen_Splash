@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -12,8 +12,7 @@ class NotificationsService {
   }
 
   Future<void> init(GlobalKey<NavigatorState> navigatorKey) async {
-    const initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+    const initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
     const initializationSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -27,8 +26,7 @@ class NotificationsService {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
-        _showPopup(navigatorKey.currentContext,
-            response.payload ?? "Notification Clicked");
+        _showPopup(navigatorKey.currentContext, response.payload ?? "Notification Clicked");
       },
     );
   }
@@ -51,7 +49,7 @@ class NotificationsService {
 
   Future<void> scheduleDailyNotifications() async {
     tz.initializeTimeZones();
-    String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    String timeZoneName = await FlutterTimezone.getLocalTimezone();
     final location = tz.getLocation(timeZoneName);
     tz.setLocalLocation(location);
 
@@ -72,11 +70,13 @@ class NotificationsService {
         scheduledDate = DateTime(now.year, now.month, now.day, hours[i]);
       }
 
+      // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
+
       // Convert it to TZDateTime
       final scheduledTime = tz.TZDateTime.from(scheduledDate, location);
 
       // Print the scheduled time for debugging (in local time)
-      print("Scheduled Time for ${hours[i]}: ${scheduledTime}");
+      print("Scheduled Time for ${hours[i]}: $scheduledTime");
 
       // Format the time for display in the notification
       final formattedTime = "${hours[i]} ${_getAmPm(hours[i])}";
@@ -102,8 +102,7 @@ class NotificationsService {
     required String body,
     required tz.TZDateTime scheduledTime,
   }) async {
-    AndroidNotificationDetails androidDetails =
-        const AndroidNotificationDetails(
+    AndroidNotificationDetails androidDetails = const AndroidNotificationDetails(
       'daily_notifications_channel',
       'Daily Notifications',
       channelDescription: 'Channel for daily notifications',
@@ -124,9 +123,8 @@ class NotificationsService {
       body,
       scheduledTime,
       platformDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.wallClockTime,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
     );
   }
 }

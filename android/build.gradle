@@ -1,17 +1,17 @@
 buildscript {
   ext {
     // SDK and tools
-    kotlinVersion = '1.5.20'
+    kotlinVersion = '1.7.10'
   }
 
-  ext.kotlin_version = '1.5.20'
+  ext.kotlin_version = '1.7.10'
     repositories {
         google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

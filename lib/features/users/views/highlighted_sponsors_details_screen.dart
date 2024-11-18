@@ -12,12 +12,10 @@ class HighlightedSponsorDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<HighlightedSponsorDetailsScreen> createState() =>
-      _HighlightedSponsorDetailsScreenState();
+  State<HighlightedSponsorDetailsScreen> createState() => _HighlightedSponsorDetailsScreenState();
 }
 
-class _HighlightedSponsorDetailsScreenState
-    extends State<HighlightedSponsorDetailsScreen> {
+class _HighlightedSponsorDetailsScreenState extends State<HighlightedSponsorDetailsScreen> {
   Future<void> _launchWebsite(String? url, BuildContext context) async {
     if (url != null && await launchUrlString(url)) {
       await launchUrlString(

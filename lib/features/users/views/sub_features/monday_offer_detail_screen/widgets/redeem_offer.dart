@@ -20,11 +20,11 @@ class _RedeemOfferPopupState extends State<RedeemOfferPopup> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 20,
+        horizontal: 16,
+        vertical: 16,
       ),
-      height: 300,
-      width: 386,
+      // height: 300,
+      // width: 386,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(
           10.0,
@@ -32,6 +32,7 @@ class _RedeemOfferPopupState extends State<RedeemOfferPopup> {
         color: Theme.of(context).colorScheme.surface,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(

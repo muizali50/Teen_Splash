@@ -41,7 +41,7 @@ class _AppPrimaryButtonState extends State<AppPrimaryButton> {
       child: Container(
         height: 56,
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 16,
           vertical: 12,
         ),
         decoration: BoxDecoration(

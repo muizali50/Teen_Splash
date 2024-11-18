@@ -13,12 +13,10 @@ class FeaturedOfferDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<FeaturedOfferDetailsScreen> createState() =>
-      _FeaturedOfferDetailsScreenState();
+  State<FeaturedOfferDetailsScreen> createState() => _FeaturedOfferDetailsScreenState();
 }
 
-class _FeaturedOfferDetailsScreenState
-    extends State<FeaturedOfferDetailsScreen> {
+class _FeaturedOfferDetailsScreenState extends State<FeaturedOfferDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

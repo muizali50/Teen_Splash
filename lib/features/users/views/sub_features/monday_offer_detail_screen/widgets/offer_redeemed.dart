@@ -18,15 +18,13 @@ class _OfferRedeemedDialogState extends State<OfferRedeemedDialog> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 20,
+        horizontal: 16,
+        vertical: 16,
       ),
       height: 300,
       width: 386,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          10.0,
-        ),
+        borderRadius: BorderRadius.circular(10.0),
         color: Theme.of(context).colorScheme.surface,
       ),
       child: Column(

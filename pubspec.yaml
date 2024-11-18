@@ -91,11 +91,11 @@ dependencies:
   # Flutter Local Notifications
   flutter_local_notifications: ^18.0.1
 
-  # Flutter Native Timezone
-  flutter_native_timezone: ^2.0.0
+  # # Flutter Native Timezone
+  # flutter_native_timezone: ^2.0.0
 
   # Timezone
-  timezone: ^0.10.0
+  flutter_timezone: ^3.0.1
 
   # Permission Handler
   permission_handler: ^11.3.1

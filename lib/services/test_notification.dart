@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -40,9 +40,7 @@ class TestNotificationsService {
   /// Requests notification permissions for Android 13+ and iOS
   Future<void> _requestPermissions() async {
     // Request Android notification permission (Android 13+)
-    if (await flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestNotificationsPermission() == false) {
+    if (await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission() == false) {
       print("Notification permissions not granted.");
     }
   }
@@ -68,7 +66,7 @@ class TestNotificationsService {
   Future<void> scheduleImmediateNotification() async {
     // Initialize timezone settings and set local timezone
     tz.initializeTimeZones();
-    String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    String timeZoneName =await FlutterTimezone.getLocalTimezone();
     final location = tz.getLocation(timeZoneName);
     tz.setLocalLocation(location);
 
@@ -96,18 +94,22 @@ class TestNotificationsService {
   }) async {
     // Define Android and iOS notification details
     const androidDetails = AndroidNotificationDetails(
-      'test_notifications_channel', // Channel ID
-      'Test Notifications', // Channel Name
-      channelDescription: 'Channel for test notifications',
+      'teen_splash', // Channel ID
+      'Teen Splash', // Channel Name
+      channelDescription: 'Teen Splash Notification Channel',
       importance: Importance.max,
       priority: Priority.high,
       enableVibration: true,
       playSound: true,
     );
 
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      presentSound: true,
+      presentAlert: true,
+      presentBadge: true,
+    );
 
-    final platformDetails = NotificationDetails(
+    const platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -120,8 +122,7 @@ class TestNotificationsService {
       scheduledTime,
       platformDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.wallClockTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
     );
 
     print("Notification scheduled for: $scheduledTime");
