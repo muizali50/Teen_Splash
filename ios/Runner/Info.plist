@@ -14,7 +14,18 @@
 
 	<key>LSApplicationQueriesSchemes</key>
     <array><string>https</string></array>
-	
+
+	<key>UIBackgroundModes</key>
+    <array>
+       <string>fetch</string>
+       <string>remote-notification</string>
+    </array>
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to schedule notifications</string>
+	<key>NSUserTrackingUsageDescription</key>
+    <string>We need your permission to track user activity</string>
 	
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

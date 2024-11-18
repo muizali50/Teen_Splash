@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
-import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/profile_row.dart';
 import 'package:teen_splash/user_provider.dart';
