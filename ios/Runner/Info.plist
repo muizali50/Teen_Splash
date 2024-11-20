@@ -2,29 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-    <key>NSPhotoLibraryUsageDescription</key>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>App needs notification permision to send you hydration reminder.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to allow you to select and upload images from your gallery for your profile or other features</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs permission to access your camera so you can take pictures directly within the app to send, scanning QR codes, or other related features</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to your microphone to enable voice recording for features like voice messages or audio notes</string>
 	<key>LSApplicationQueriesSchemes</key>
-    <array><string>https</string></array>
-	<key>UIBackgroundModes</key>
-    <array>
-       <string>fetch</string>
-       <string>remote-notification</string>
-    </array>
-    <key>UIUserInterfaceStyle</key>
-    <string>Light</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need your location to schedule notifications</string>
-	<key>NSUserTrackingUsageDescription</key>
-    <string>We need your permission to track user activity</string>
 	<array>
 		<string>https</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to schedule notifications</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We need your permission to track user activity</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
