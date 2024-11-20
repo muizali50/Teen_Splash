@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:teen_splash/features/users/views/hydrated_popup.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+onBackgroundNotificationHandler(response) {
+  final context = navigatorKey.currentContext;
+
+  if (context != null) {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: HydratedPopup(),
+      ),
+    );
+  } else {
+    debugPrint("No context available for background notification.");
+  }
+}
 
 class NotificationsService {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -12,7 +29,8 @@ class NotificationsService {
   }
 
   Future<void> init(GlobalKey<NavigatorState> navigatorKey) async {
-    const initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
     const initializationSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -26,23 +44,19 @@ class NotificationsService {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
-        _showPopup(navigatorKey.currentContext, response.payload ?? "Notification Clicked");
+        _showPopup(navigatorKey.currentContext,
+            response.payload ?? "Notification Clicked");
       },
+      onDidReceiveBackgroundNotificationResponse:
+          onBackgroundNotificationHandler,
     );
   }
 
   void _showPopup(BuildContext? context, String message) {
     showDialog(
       context: context!,
-      builder: (context) => AlertDialog(
-        title: const Text("Notification"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          ),
-        ],
+      builder: (context) => const Center(
+        child: HydratedPopup(),
       ),
     );
   }
@@ -84,8 +98,8 @@ class NotificationsService {
       // Schedule the notification
       await _scheduleNotification(
         id: i,
-        title: "Daily Reminder",
-        body: "This is your daily notification at $formattedTime",
+        title: "Hydration Reminder",
+        body: "Hydration Reminder to keep you hydrated",
         scheduledTime: scheduledTime,
       );
     }
@@ -102,7 +116,8 @@ class NotificationsService {
     required String body,
     required tz.TZDateTime scheduledTime,
   }) async {
-    AndroidNotificationDetails androidDetails = const AndroidNotificationDetails(
+    AndroidNotificationDetails androidDetails =
+        const AndroidNotificationDetails(
       'daily_notifications_channel',
       'Daily Notifications',
       channelDescription: 'Channel for daily notifications',
@@ -124,7 +139,8 @@ class NotificationsService {
       scheduledTime,
       platformDetails,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.wallClockTime,
     );
   }
 }

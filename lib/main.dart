@@ -15,13 +15,11 @@ import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/firebase_options.dart';
 import 'package:teen_splash/services/notification_services.dart';
-import 'package:teen_splash/services/test_notification.dart';
 import 'package:teen_splash/user_provider.dart';
 
 late final SharedPreferences prefs;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final notificationsService = NotificationsService();
-final testNotificationsService = TestNotificationsService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,11 +31,13 @@ void main() async {
   await notificationsService.init(navigatorKey);
   notificationsService.scheduleDailyNotifications();
 
-  await testNotificationsService.init(navigatorKey);
-  testNotificationsService.scheduleImmediateNotification();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
 
   runApp(const MyApp());
 }
