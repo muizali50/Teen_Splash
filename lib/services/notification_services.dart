@@ -62,46 +62,50 @@ class NotificationsService {
   }
 
   Future<void> scheduleDailyNotifications() async {
+    // Cancel any existing notifications
+    await flutterLocalNotificationsPlugin.cancelAll();
+
     tz.initializeTimeZones();
     String timeZoneName = await FlutterTimezone.getLocalTimezone();
     final location = tz.getLocation(timeZoneName);
     tz.setLocalLocation(location);
 
     // Define the notification times (8 AM, 3 PM, 8 PM)
-    List<int> hours = [8, 15, 20]; // 8 AM, 3 PM, 8 PM
+    List<int> hours = [8, 15, 20];
 
-    for (int i = 0; i < hours.length; i++) {
-      // Get the current date at the given hour
-      final now = DateTime.now();
-      DateTime scheduledDate;
+    for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
+      for (int i = 0; i < hours.length; i++) {
+        // Get the current date and calculate the scheduled time
+        final now = DateTime.now();
+        final scheduledDate = DateTime(
+          now.year,
+          now.month,
+          now.day + dayOffset,
+          hours[i],
+        );
 
-      // Check if the scheduled time today has passed. If so, schedule for tomorrow.
-      if (now.hour >= hours[i]) {
-        // Scheduled time has passed today, so set it for tomorrow
-        scheduledDate = DateTime(now.year, now.month, now.day + 1, hours[i]);
-      } else {
-        // Scheduled time is still in the future today
-        scheduledDate = DateTime(now.year, now.month, now.day, hours[i]);
+        // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
+
+        // Ensure the scheduled time is in the future
+        final scheduledTime = tz.TZDateTime.from(scheduledDate, location);
+        if (scheduledTime.isBefore(tz.TZDateTime.now(location))) {
+          continue; // Skip if the time is in the past
+        }
+
+        // Debugging log
+        print("Scheduled Time for ${hours[i]}: $scheduledTime");
+
+        // Format the time for display in the notification
+        final formattedTime = "${hours[i]} ${_getAmPm(hours[i])}";
+
+        // Schedule the notification
+        await _scheduleNotification(
+          id: dayOffset * 100 + i, // Unique ID for each notification
+          title: "Hydration Reminder",
+          body: "Stay hydrated! Time for a drink of water.",
+          scheduledTime: scheduledTime,
+        );
       }
-
-      // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
-
-      // Convert it to TZDateTime
-      final scheduledTime = tz.TZDateTime.from(scheduledDate, location);
-
-      // Print the scheduled time for debugging (in local time)
-      print("Scheduled Time for ${hours[i]}: $scheduledTime");
-
-      // Format the time for display in the notification
-      final formattedTime = "${hours[i]} ${_getAmPm(hours[i])}";
-
-      // Schedule the notification
-      await _scheduleNotification(
-        id: i,
-        title: "Hydration Reminder",
-        body: "Hydration Reminder to keep you hydrated",
-        scheduledTime: scheduledTime,
-      );
     }
   }
 
