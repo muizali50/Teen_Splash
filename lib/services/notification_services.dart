@@ -2,23 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:teen_splash/features/users/views/hydrated_popup.dart';
+import 'package:teen_splash/main.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-onBackgroundNotificationHandler(response) {
-  final context = navigatorKey.currentContext;
+// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+@pragma('vm:entry-point') // Required for background callbacks
+void onBackgroundNotificationHandler(NotificationResponse response) async {
+  showDialog(
+    context: navigatorKey.currentContext!,
+    builder: (context) => const Center(
+      child: HydratedPopup(),
+    ),
+  );
+}
 
-  if (context != null) {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: HydratedPopup(),
-      ),
-    );
-  } else {
-    debugPrint("No context available for background notification.");
-  }
+void _handleNotificationTap(
+    NotificationResponse response, BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => const Center(
+      child: HydratedPopup(),
+    ),
+  );
 }
 
 class NotificationsService {
@@ -41,15 +47,12 @@ class NotificationsService {
       iOS: initializationSettingsIOS,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (response) {
-        _showPopup(navigatorKey.currentContext,
-            response.payload ?? "Notification Clicked");
-      },
-      onDidReceiveBackgroundNotificationResponse:
-          onBackgroundNotificationHandler,
-    );
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (response) {
+      _handleNotificationTap(response, navigatorKey.currentContext!);
+    },
+        onDidReceiveBackgroundNotificationResponse:
+            onBackgroundNotificationHandler);
   }
 
   void _showPopup(BuildContext? context, String message) {
@@ -77,7 +80,7 @@ class NotificationsService {
       for (int i = 0; i < hours.length; i++) {
         // Get the current date and calculate the scheduled time
         final now = DateTime.now();
-        final scheduledDate = DateTime(
+        var scheduledDate = DateTime(
           now.year,
           now.month,
           now.day + dayOffset,
