@@ -8,6 +8,7 @@ import 'package:teen_splash/features/users/views/sub_features/home_registered_us
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/finanicial_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/food_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/membership_card.dart';
 import 'package:teen_splash/features/users/views/view_more_monday_offers.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
@@ -374,14 +375,11 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                   ),
                 ],
               ),
-              Positioned(
+             const Positioned(
                 top: 0,
                 left: 20,
                 right: 20,
-                child: SizedBox(
-                  height: 158,
-                  child: Image.asset('assets/images/card.png'),
-                ),
+                child: Center(child: MembershipCard(),),
               ),
             ],
           ),

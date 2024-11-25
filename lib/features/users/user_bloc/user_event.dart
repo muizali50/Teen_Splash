@@ -21,3 +21,5 @@ final class RedeemCoupom extends UserEvent {
         userId,
       ];
 }
+
+final class GetAllUsers extends UserEvent {}

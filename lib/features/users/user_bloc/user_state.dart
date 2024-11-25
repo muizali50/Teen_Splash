@@ -24,3 +24,29 @@ final class RedeemCouponFailed extends UserState {
         message,
       ];
 }
+
+final class GetAllUsersFailed extends UserState {
+  final String message;
+  const GetAllUsersFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingAllUsers extends UserState {}
+
+final class GetAllUsersSuccess extends UserState {
+  final List<AppUser> users;
+  const GetAllUsersSuccess(
+    this.users,
+  );
+
+  @override
+  List<Object> get props => [
+        users,
+      ];
+}
