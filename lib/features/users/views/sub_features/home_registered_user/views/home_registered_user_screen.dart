@@ -375,11 +375,13 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
                   ),
                 ],
               ),
-             const Positioned(
+              const Positioned(
                 top: 0,
                 left: 20,
                 right: 20,
-                child: Center(child: MembershipCard(),),
+                child: Center(
+                  child: MembershipCard(),
+                ),
               ),
             ],
           ),
