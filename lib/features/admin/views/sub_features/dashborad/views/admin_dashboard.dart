@@ -4,7 +4,7 @@ import 'package:teen_splash/features/admin/views/all_featured_offers.dart';
 import 'package:teen_splash/features/admin/views/all_highlighted_sponsors.dart';
 import 'package:teen_splash/features/admin/views/all_monday_offers.dart';
 import 'package:teen_splash/features/admin/views/all_water_sponsors_screen.dart';
-import 'package:teen_splash/features/admin/views/demographics_screen.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/views/demographics_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/dashborad/widgets/dashboard_fields.dart';
 import 'package:teen_splash/utils/gaps.dart';
 

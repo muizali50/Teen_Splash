@@ -50,3 +50,19 @@ final class GetAllUsersSuccess extends UserState {
         users,
       ];
 }
+
+final class ViewingCoupon extends UserState {}
+
+final class ViewCouponSuccess extends UserState {}
+
+final class ViewCouponFailed extends UserState {
+  final String message;
+  const ViewCouponFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

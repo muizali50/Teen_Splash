@@ -23,3 +23,18 @@ final class RedeemCoupom extends UserEvent {
 }
 
 final class GetAllUsers extends UserEvent {}
+
+final class ViewCoupom extends UserEvent {
+  final String couponId;
+  final String userId;
+  const ViewCoupom(
+    this.couponId,
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        couponId,
+        userId,
+      ];
+}

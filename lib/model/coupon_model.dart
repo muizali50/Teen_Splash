@@ -7,6 +7,7 @@ class CouponModel {
   String? validDate;
   String? image;
   List<String>? userIds;
+  List<String>? views;
 
   CouponModel({
     this.couponId,
@@ -17,6 +18,7 @@ class CouponModel {
     this.validDate,
     this.image,
     this.userIds,
+    this.views,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class CouponModel {
       'validDate': validDate,
       'image': image,
       'userIds': userIds ?? [],
+      'views': views ?? [],
     };
   }
 
@@ -42,6 +45,7 @@ class CouponModel {
       validDate: map['validDate'],
       image: map['image'],
       userIds: List<String>.from(map['userIds'] ?? []),
+      views: List<String>.from(map['views'] ?? []),
     );
   }
 }

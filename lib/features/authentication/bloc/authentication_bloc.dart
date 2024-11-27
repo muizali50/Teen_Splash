@@ -123,6 +123,20 @@ class AuthenticationBloc
                 userCreds.user!.uid,
               )
               .get();
+          if (kIsWeb != true) {
+            await FirebaseFirestore.instance
+                .collection(
+                  'users',
+                )
+                .doc(
+                  userCreds.user!.uid,
+                )
+                .update(
+              {
+                'loginFrequency': FieldValue.increment(1),
+              },
+            );
+          }
           AppUser? user;
           if (kIsWeb != true) {
             user = AppUser.fromMap(

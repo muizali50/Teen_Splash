@@ -110,5 +110,60 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       },
     );
+    on<ViewCoupom>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          ViewingCoupon(),
+        );
+        try {
+          final couponCollection =
+              FirebaseFirestore.instance.collection('coupon');
+          final docRef = couponCollection.doc(event.couponId);
+
+          // Use transaction to safely add userId if it doesn't exist
+          await FirebaseFirestore.instance.runTransaction(
+            (transaction) async {
+              final snapshot = await transaction.get(docRef);
+              final data = snapshot.data();
+
+              if (data != null) {
+                final List<String> views = List<String>.from(
+                  data['views'] ?? [],
+                );
+
+                if (!views.contains(event.userId)) {
+                  views.add(event.userId);
+                  transaction.update(
+                    docRef,
+                    {'views': views},
+                  );
+                }
+              }
+            },
+          );
+          emit(
+            ViewCouponSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            ViewCouponFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            ViewCouponFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
 }

@@ -24,7 +24,11 @@ class CouponsDetailsScreen extends StatefulWidget {
 class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     final userBloc = context.read<UserBloc>();
+    userBloc.add(
+      ViewCoupom(widget.coupon!.couponId.toString(), userId),
+    );
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),

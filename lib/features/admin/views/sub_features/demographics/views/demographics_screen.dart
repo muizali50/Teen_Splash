@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/admin/views/age_groups.dart';
-import 'package:teen_splash/features/admin/views/gender_groups.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/age_groups.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/app_logins_frequency.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/country_groups.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/gender_groups.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class DemographicsScreen extends StatefulWidget {
@@ -17,7 +19,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this); // 3 tabs
+    _tabController = TabController(length: 4, vsync: this); // 3 tabs
   }
 
   @override
@@ -80,6 +82,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                   Tab(text: "Age Groups"),
                   Tab(text: "Gender"),
                   Tab(text: "Country"),
+                  Tab(text: "App Usage Metrics"),
                 ],
               ),
               Gaps.hGap20,
@@ -107,17 +110,15 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          Text(
-                            "Country Distribution Chart Here",
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black54),
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Insights per Country...",
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black54),
-                          ),
+                          CountryGroups(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          AppLoginsFrequency(),
                         ],
                       ),
                     ),
