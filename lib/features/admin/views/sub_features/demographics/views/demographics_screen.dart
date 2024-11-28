@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/age_groups.dart';
-import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/app_logins_frequency.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/app_usage_metrics.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/conversion_rate.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/country_groups.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/gender_groups.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/number_of_coupons_redeemed.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/preffered_days.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class DemographicsScreen extends StatefulWidget {
@@ -19,7 +22,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this); // 3 tabs
+    _tabController = TabController(length: 7, vsync: this); // 6 tabs
   }
 
   @override
@@ -69,10 +72,15 @@ class _DemographicsScreenState extends State<DemographicsScreen>
               ),
               Gaps.hGap20,
               TabBar(
+                dividerColor: Colors.grey[200],
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
                 controller: _tabController,
                 labelColor: Colors.black,
                 unselectedLabelColor: Colors.grey,
-                indicatorColor: Colors.blue, // Line indicator color
+                indicatorColor: Theme.of(context)
+                    .colorScheme
+                    .primary, // Line indicator color
                 indicatorWeight: 3, // Thickness of the line
                 labelStyle: const TextStyle(
                   fontSize: 16,
@@ -83,6 +91,9 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                   Tab(text: "Gender"),
                   Tab(text: "Country"),
                   Tab(text: "App Usage Metrics"),
+                  Tab(text: "Conversion Rate"),
+                  Tab(text: "Coupon's Redeemed"),
+                  Tab(text: "Preferred Days of Activity"),
                 ],
               ),
               Gaps.hGap20,
@@ -118,7 +129,31 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          AppLoginsFrequency(),
+                          AppUsageMetrics(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          ConversionRate(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          NumberofCouponRedeemed(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          PrefferedDays(),
                         ],
                       ),
                     ),

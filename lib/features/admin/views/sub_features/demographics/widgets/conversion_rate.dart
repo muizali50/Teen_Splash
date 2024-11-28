@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 
-class AppLoginsFrequency extends StatefulWidget {
-  const AppLoginsFrequency({super.key});
+class ConversionRate extends StatefulWidget {
+  const ConversionRate({super.key});
 
   @override
-  State<AppLoginsFrequency> createState() => _AppLoginsFrequencyState();
+  State<ConversionRate> createState() => _ConversionRateState();
 }
 
-class _AppLoginsFrequencyState extends State<AppLoginsFrequency> {
+class _ConversionRateState extends State<ConversionRate> {
   late final AdminBloc adminBloc;
   late final UserBloc userBloc;
   @override
@@ -32,43 +32,38 @@ class _AppLoginsFrequencyState extends State<AppLoginsFrequency> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
+    return BlocBuilder<AdminBloc, AdminState>(
       builder: (context, state) {
-        int getTotalLogins() {
-          // Aggregate total logins
-          return userBloc.users.fold(
-            0,
-            (sum, user) => sum + user.loginFrequency!.toInt(),
-          );
-        }
-
-        final totalLogins = getTotalLogins();
-
-        int getTotalCouponsRedeemed() {
-          // Sum up the length of userIds in all coupons
+        int getTotalRedeemed() {
+          // Total number of userIds collectively
           return adminBloc.coupons.fold(
             0,
             (sum, coupon) => sum + (coupon.userIds?.length ?? 0),
           );
         }
 
-        final totalCouponsRedeemed = getTotalCouponsRedeemed();
-
-        int getTotalCouponsViews() {
-          // Sum up the length of userIds in all coupons
+        int getTotalViews() {
+          // Total number of views collectively
           return adminBloc.coupons.fold(
             0,
             (sum, coupon) => sum + (coupon.views?.length ?? 0),
           );
         }
 
-        final totalCouponsViews = getTotalCouponsViews();
+        double getConversionRate() {
+          final totalRedeemed = getTotalRedeemed();
+          final totalViews = getTotalViews();
+          if (totalViews == 0) return 0; // Avoid division by zero
+          return (totalRedeemed / totalViews) * 100;
+        }
 
-        if (state is GetAllUsersFailed) {
+        final conversionRate = getConversionRate();
+
+        if (state is GetCouponFailed) {
           return Center(
             child: Text(state.message),
           );
-        } else if (state is GettingAllUsers) {
+        } else if (state is GettingCoupon) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -102,30 +97,10 @@ class _AppLoginsFrequencyState extends State<AppLoginsFrequency> {
             DataRow(
               cells: [
                 const DataCell(
-                  Text('Total App Logins'),
+                  Text('Conversion Rate'),
                 ),
                 DataCell(
-                  Text('$totalLogins'),
-                ),
-              ],
-            ),
-            DataRow(
-              cells: [
-                const DataCell(
-                  Text('Total Coupons Redeemed'),
-                ),
-                DataCell(
-                  Text('$totalCouponsRedeemed'),
-                ),
-              ],
-            ),
-            DataRow(
-              cells: [
-                const DataCell(
-                  Text('Total Coupons Views'),
-                ),
-                DataCell(
-                  Text('$totalCouponsViews'),
+                  Text('${conversionRate.toStringAsFixed(2)}%'),
                 ),
               ],
             ),

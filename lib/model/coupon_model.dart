@@ -8,6 +8,7 @@ class CouponModel {
   String? image;
   List<String>? userIds;
   List<String>? views;
+  List<DateTime>? redemptionDates;
 
   CouponModel({
     this.couponId,
@@ -19,6 +20,7 @@ class CouponModel {
     this.image,
     this.userIds,
     this.views,
+    this.redemptionDates,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +34,8 @@ class CouponModel {
       'image': image,
       'userIds': userIds ?? [],
       'views': views ?? [],
+      'redemptionDates':
+          redemptionDates?.map((e) => e.toIso8601String()).toList() ?? [],
     };
   }
 
@@ -46,6 +50,9 @@ class CouponModel {
       image: map['image'],
       userIds: List<String>.from(map['userIds'] ?? []),
       views: List<String>.from(map['views'] ?? []),
+      redemptionDates: (map['redemptionDates'] as List<dynamic>?)
+          ?.map((e) => DateTime.parse(e as String))
+          .toList(),
     );
   }
 }

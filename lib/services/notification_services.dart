@@ -87,7 +87,7 @@ class NotificationsService {
           hours[i],
         );
 
-        // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
+        scheduledDate = DateTime.now().add(const Duration(minutes: 1));
 
         // Ensure the scheduled time is in the future
         final scheduledTime = tz.TZDateTime.from(scheduledDate, location);

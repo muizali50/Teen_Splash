@@ -33,11 +33,71 @@ class UserBloc extends Bloc<UserEvent, UserState> {
                   data['userIds'] ?? [],
                 );
 
+                final List<DateTime> redemptionDates =
+                    (data['redemptionDates'] as List<dynamic>?)
+                            ?.map((e) => DateTime.parse(e as String))
+                            .toList() ??
+                        [];
+
                 if (!userIds.contains(event.userId)) {
                   userIds.add(event.userId);
+
+                  // Add the current redemption date
+                  final now = DateTime.now();
+                  redemptionDates.add(now);
                   transaction.update(
                     docRef,
-                    {'userIds': userIds},
+                    {
+                      'userIds': userIds,
+                      'redemptionDates': redemptionDates
+                          .map((e) => e.toIso8601String())
+                          .toList(),
+                    },
+                  );
+
+                  String getDayOfWeek(int weekday) {
+                    switch (weekday) {
+                      case 1:
+                        return 'Monday';
+                      case 2:
+                        return 'Tuesday';
+                      case 3:
+                        return 'Wednesday';
+                      case 4:
+                        return 'Thursday';
+                      case 5:
+                        return 'Friday';
+                      case 6:
+                        return 'Saturday';
+                      case 7:
+                        return 'Sunday';
+                      default:
+                        return '';
+                    }
+                  }
+
+                  // Update day-wise count
+                  final dayOfWeek = getDayOfWeek(now.weekday);
+                  final Map<String, int> dayWiseCounts = Map<String, int>.from(
+                    data['dayWiseCounts'] ??
+                        {
+                          'Monday': 0,
+                          'Tuesday': 0,
+                          'Wednesday': 0,
+                          'Thursday': 0,
+                          'Friday': 0,
+                          'Saturday': 0,
+                          'Sunday': 0,
+                        },
+                  );
+
+                  // Increment count for the current day
+                  dayWiseCounts[dayOfWeek] =
+                      (dayWiseCounts[dayOfWeek] ?? 0) + 1;
+
+                  transaction.update(
+                    docRef,
+                    {'dayWiseCounts': dayWiseCounts},
                   );
                 }
               }
