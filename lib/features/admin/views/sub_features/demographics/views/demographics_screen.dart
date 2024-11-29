@@ -100,11 +100,11 @@ class _DemographicsScreenState extends State<DemographicsScreen>
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: [
+                  children: const [
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children:  [
                           AgeGroups(),
                         ],
                       ),
@@ -112,7 +112,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           GenderGroups(),
                         ],
                       ),
@@ -120,7 +120,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           CountryGroups(),
                         ],
                       ),
@@ -128,7 +128,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           AppUsageMetrics(),
                         ],
                       ),
@@ -136,7 +136,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           ConversionRate(),
                         ],
                       ),
@@ -144,7 +144,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           NumberofCouponRedeemed(),
                         ],
                       ),
@@ -152,7 +152,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           PrefferedDays(),
                         ],
                       ),

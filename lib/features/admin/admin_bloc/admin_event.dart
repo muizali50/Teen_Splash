@@ -175,3 +175,27 @@ final class UpdateWaterSponsor extends AdminEvent {
         waterSponsor,
       ];
 }
+
+final class AddPushNotification extends AdminEvent {
+  final PushNotificationModel pushNotification;
+  const AddPushNotification(
+    this.pushNotification,
+  );
+  @override
+  List<Object> get props => [
+        pushNotification,
+      ];
+}
+
+final class GetPushNotification extends AdminEvent {}
+
+final class UpdatePushNotification extends AdminEvent {
+  final PushNotificationModel pushNotification;
+  const UpdatePushNotification(
+    this.pushNotification,
+  );
+  @override
+  List<Object> get props => [
+        pushNotification,
+      ];
+}

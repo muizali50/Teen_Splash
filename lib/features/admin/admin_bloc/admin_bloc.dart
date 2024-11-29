@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
+import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
 part 'admin_event.dart';
@@ -18,6 +19,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<FeaturedOffersModel> featuredOffers = [];
   List<SponsorsModel> sponsors = [];
   List<WaterSponsorModel> waterSponsors = [];
+  List<PushNotificationModel> pushNotifications = [];
+
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
       (
@@ -832,6 +835,144 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           emit(
             UpdateWaterSponsorFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<AddPushNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingPushNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'pushNotification',
+          );
+          final result = await pushNotificationCollection.add(
+            event.pushNotification.toMap(),
+          );
+          event.pushNotification.pushNotificationId = result.id;
+          pushNotifications.add(
+            event.pushNotification,
+          );
+          emit(
+            AddPushNotificationSuccess(
+              event.pushNotification,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddPushNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddPushNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetPushNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingPushNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'pushNotification',
+          );
+          final result = await pushNotificationCollection.get();
+          pushNotifications = result.docs.map(
+            (e) {
+              final pushNotification = PushNotificationModel.fromMap(
+                e.data(),
+              );
+              pushNotification.pushNotificationId = e.id;
+              return pushNotification;
+            },
+          ).toList();
+          emit(
+            GetPushNotificationSuccess(
+              pushNotifications,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetPushNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetPushNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdatePushNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingPushNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'pushNotification',
+          );
+          await pushNotificationCollection
+              .doc(
+                event.pushNotification.pushNotificationId,
+              )
+              .update(
+                event.pushNotification.toMap(),
+              );
+          final index = pushNotifications.indexWhere(
+            (element) =>
+                element.pushNotificationId ==
+                event.pushNotification.pushNotificationId,
+          );
+          pushNotifications[index] = event.pushNotification;
+          emit(
+            UpdatePushNotificationSuccess(
+              event.pushNotification,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdatePushNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdatePushNotificationFailed(
               e.toString(),
             ),
           );

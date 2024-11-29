@@ -398,3 +398,81 @@ final class UpdateWaterSponsorSuccess extends AdminState {
         waterSponsor,
       ];
 }
+
+final class AddPushNotificationFailed extends AdminState {
+  final String message;
+  const AddPushNotificationFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingPushNotification extends AdminState {}
+
+final class AddPushNotificationSuccess extends AdminState {
+  final PushNotificationModel pushNotification;
+  const AddPushNotificationSuccess(
+    this.pushNotification,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotification,
+      ];
+}
+
+final class GetPushNotificationFailed extends AdminState {
+  final String message;
+  const GetPushNotificationFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingPushNotification extends AdminState {}
+
+final class GetPushNotificationSuccess extends AdminState {
+  final List<PushNotificationModel> pushNotifications;
+  const GetPushNotificationSuccess(
+    this.pushNotifications,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotifications,
+      ];
+}
+
+final class UpdatePushNotificationFailed extends AdminState {
+  final String message;
+  const UpdatePushNotificationFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingPushNotification extends AdminState {}
+
+final class UpdatePushNotificationSuccess extends AdminState {
+  final PushNotificationModel pushNotification;
+  const UpdatePushNotificationSuccess(
+    this.pushNotification,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotification,
+      ];
+}

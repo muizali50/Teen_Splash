@@ -1,13 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/features/users/views/scrolling_text.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_bubble.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_input.dart';
 import 'package:teen_splash/features/users/views/chatroom_media.dart';
 import 'package:teen_splash/features/users/views/chats_screen.dart';
 import 'package:teen_splash/model/chat_message.dart';
+import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
@@ -24,6 +27,7 @@ class ChatRoomScreen extends StatefulWidget {
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  late final AdminBloc adminBloc;
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
@@ -32,13 +36,16 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   void initState() {
     authenticationBloc = context.read<AuthenticationBloc>();
-    authenticationBloc.add(
-      const GetUser(),
-    );
     userProvider = context.read<UserProvider>();
     if (userProvider.user == null) {
       authenticationBloc.add(
         const GetUser(),
+      );
+    }
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.pushNotifications.isEmpty) {
+      adminBloc.add(
+        GetPushNotification(),
       );
     }
     super.initState();
@@ -170,16 +177,47 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 ),
               ),
             ),
-            child: const Center(
-              child: Text(
-                'Ticker for push notifications to advertise looped updates.',
-                style: TextStyle(
-                  fontFamily: 'Lexend',
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFFFBFBFB),
-                ),
-              ),
+            child: BlocBuilder<AdminBloc, AdminState>(
+              builder: (context, state) {
+                final latestPushNotification =
+                    adminBloc.pushNotifications.lastWhere(
+                  (noti) => noti.status == 'Active',
+                  orElse: () =>
+                      PushNotificationModel(), // Returns null if no active sponsor is found
+                );
+                if (state is GettingPushNotification) {
+                  return const Center(
+                    child: SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.0,
+                      ),
+                    ),
+                  );
+                } else if (state is GetPushNotificationFailed) {
+                  return Center(
+                    child: Text(state.message),
+                  );
+                }
+
+                // Check if no valid sponsor data
+                if ((latestPushNotification.title ?? '').isEmpty &&
+                    (latestPushNotification.status ?? '').isEmpty) {
+                  return const Center(
+                    child: Text('No active push notification available'),
+                  );
+                }
+                return Center(
+                  child: SizedBox(
+                    height: 20,
+                    child: WordByWordFadeInText(
+                      text: latestPushNotification.title ??
+                          'No active notifications available',
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           Gaps.hGap20,

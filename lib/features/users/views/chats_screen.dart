@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/private_chat_screen.dart';
+import 'package:teen_splash/features/users/views/scrolling_text.dart';
+import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
@@ -14,12 +18,19 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
+  late final AdminBloc adminBloc;
   final TextEditingController searchController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String searchQuery = "";
 
   @override
   void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.pushNotifications.isEmpty) {
+      adminBloc.add(
+        GetPushNotification(),
+      );
+    }
     super.initState();
     searchController.addListener(
       () {
@@ -104,16 +115,47 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  'Ticker for push notifications to advertise looped updates.',
-                  style: TextStyle(
-                    fontFamily: 'Lexend',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFFFBFBFB),
-                  ),
-                ),
+              child: BlocBuilder<AdminBloc, AdminState>(
+                builder: (context, state) {
+                  final latestPushNotification =
+                      adminBloc.pushNotifications.lastWhere(
+                    (noti) => noti.status == 'Active',
+                    orElse: () =>
+                        PushNotificationModel(), // Returns null if no active sponsor is found
+                  );
+                  if (state is GettingPushNotification) {
+                    return const Center(
+                      child: SizedBox(
+                        width: 10,
+                        height: 10,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.0,
+                        ),
+                      ),
+                    );
+                  } else if (state is GetPushNotificationFailed) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  }
+
+                  // Check if no valid sponsor data
+                  if ((latestPushNotification.title ?? '').isEmpty &&
+                      (latestPushNotification.status ?? '').isEmpty) {
+                    return const Center(
+                      child: Text('No active push notification available'),
+                    );
+                  }
+                  return Center(
+                    child: SizedBox(
+                      height: 20,
+                      child: WordByWordFadeInText(
+                        text: latestPushNotification.title ??
+                            'No active notifications available',
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             Gaps.hGap20,
