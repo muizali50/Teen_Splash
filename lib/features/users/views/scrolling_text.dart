@@ -1,79 +1,35 @@
 import 'package:flutter/material.dart';
 
-class WordByWordFadeInText extends StatefulWidget {
+class HorizontalScrollingText extends StatefulWidget {
   final String text;
 
-  const WordByWordFadeInText({required this.text, super.key});
+  const HorizontalScrollingText({
+    required this.text,
+    super.key,
+  });
 
   @override
-  State<WordByWordFadeInText> createState() => _WordByWordFadeInTextState();
+  State<HorizontalScrollingText> createState() =>
+      _HorizontalScrollingTextState();
 }
 
-class _WordByWordFadeInTextState extends State<WordByWordFadeInText>
-    with TickerProviderStateMixin {
-  late final List<AnimationController> _controllers;
-  late final List<Animation<double>> _animations;
+class _HorizontalScrollingTextState extends State<HorizontalScrollingText>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  double textWidth = 0;
+  double screenWidth = 0;
 
   @override
   void initState() {
     super.initState();
-    final words = widget.text.split(' ');
-    _controllers = List.generate(
-      words.length,
-      (index) => AnimationController(
-        duration: const Duration(milliseconds: 500),
-        vsync: this,
-      ),
-    );
-    _animations = _controllers.map((controller) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: controller, curve: Curves.easeIn),
-      );
-    }).toList();
-
-    // Start the infinite animations
-    _startInfiniteAnimation();
-  }
-
-  Future<void> _startInfiniteAnimation() async {
-    while (mounted) {
-      for (var controller in _controllers) {
-        await controller.forward();
-        await Future.delayed(const Duration(milliseconds: 10)); // Delay between words
-      }
-
-      // Reset all controllers to replay the animation
-      for (var controller in _controllers) {
-        controller.reset();
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final words = widget.text.split(' ');
-
-    return Wrap(
-      spacing: 4.0, // Space between words
-      children: List.generate(words.length, (index) {
-        return AnimatedBuilder(
-          animation: _animations[index],
-          builder: (context, child) {
-            return Opacity(
-              opacity: _animations[index].value,
-              child: child,
-            );
-          },
-          child: Text(
-            words[index],
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        // Calculate text width after layout
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: widget.text,
             style: const TextStyle(
               fontFamily: 'Lexend',
               fontSize: 10,
@@ -81,8 +37,70 @@ class _WordByWordFadeInTextState extends State<WordByWordFadeInText>
               color: Color(0xFFFBFBFB),
             ),
           ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        setState(
+          () {
+            textWidth = textPainter.width;
+          },
         );
-      }),
+      },
+    );
+
+    // Animation Controller
+    _controller = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..repeat(); // Repeat the animation infinitely
+
+    // Animation with Linear movement
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    screenWidth = MediaQuery.of(context).size.width;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          if (textWidth == 0) {
+            return const SizedBox
+                .shrink(); // Avoid rendering before text width is calculated
+          }
+
+          // Calculate the x offset
+          final fullScrollWidth = screenWidth + textWidth;
+          final xOffset = _animation.value * fullScrollWidth - textWidth;
+
+          return Transform.translate(
+            offset: Offset(xOffset, 0),
+            child: child,
+          );
+        },
+        child: Text(
+          widget.text,
+          style: const TextStyle(
+            fontFamily: 'Lexend',
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFFBFBFB),
+          ),
+        ),
+      ),
     );
   }
 }

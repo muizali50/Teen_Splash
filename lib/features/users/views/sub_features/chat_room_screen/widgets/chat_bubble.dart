@@ -44,15 +44,18 @@ class _ChatBubbleState extends State<ChatBubble> {
                             ),
                           );
                         },
-                        child: Container(
-                          height: 122,
-                          width: 192,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.0),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(
-                                widget.chatMessage.message,
+                        child: Hero(
+                          tag: 'background-${widget.chatMessage.message}',
+                          child: Container(
+                            height: 122,
+                            width: 192,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  widget.chatMessage.message,
+                                ),
                               ),
                             ),
                           ),
@@ -161,15 +164,18 @@ class _ChatBubbleState extends State<ChatBubble> {
                                   ),
                                 );
                               },
-                              child: Container(
-                                height: 122,
-                                width: 192,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(
-                                      widget.chatMessage.message,
+                              child: Hero(
+                                tag: 'background-${widget.chatMessage.message}',
+                                child: Container(
+                                  height: 122,
+                                  width: 192,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        widget.chatMessage.message,
+                                      ),
                                     ),
                                   ),
                                 ),

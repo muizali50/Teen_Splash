@@ -38,3 +38,15 @@ final class ViewCoupom extends UserEvent {
         userId,
       ];
 }
+
+final class DownloadImage extends UserEvent {
+  final String imageUrl;
+  const DownloadImage(
+    this.imageUrl,
+  );
+
+  @override
+  List<Object> get props => [
+        imageUrl,
+      ];
+}

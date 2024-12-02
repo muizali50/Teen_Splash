@@ -66,3 +66,29 @@ final class ViewCouponFailed extends UserState {
         message,
       ];
 }
+
+final class DownloadingImage extends UserState {}
+
+final class DownloadImageSuccess extends UserState {
+  final String filePath;
+  const DownloadImageSuccess(
+    this.filePath,
+  );
+
+  @override
+  List<Object> get props => [
+        filePath,
+      ];
+}
+
+final class DownloadImageFailed extends UserState {
+  final String message;
+  const DownloadImageFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

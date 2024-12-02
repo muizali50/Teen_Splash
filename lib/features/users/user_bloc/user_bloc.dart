@@ -1,7 +1,10 @@
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:teen_splash/model/app_user.dart';
 part 'user_event.dart';
 part 'user_state.dart';
@@ -219,6 +222,55 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           );
           emit(
             ViewCouponFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<DownloadImage>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DownloadingImage(),
+        );
+        try {
+          final uri = Uri.parse(event.imageUrl);
+          final fileName = uri.pathSegments.last;
+          final response = await Dio().get(
+            event.imageUrl,
+            options: Options(responseType: ResponseType.bytes),
+          );
+
+          final result = await ImageGallerySaver.saveImage(
+            Uint8List.fromList(response.data),
+            quality: 100,
+            name: fileName,
+          );
+
+          if (result['isSuccess']) {
+            emit(
+              const DownloadImageSuccess("Image downloaded successfully!"),
+            );
+          } else {
+            emit(
+              const DownloadImageFailed("Failed to save the image."),
+            );
+          }
+        } on FirebaseException catch (e) {
+          emit(
+            DownloadImageFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            DownloadImageFailed(
               e.toString(),
             ),
           );

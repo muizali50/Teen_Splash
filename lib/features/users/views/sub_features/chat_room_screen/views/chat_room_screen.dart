@@ -208,13 +208,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     child: Text('No active push notification available'),
                   );
                 }
-                return Center(
-                  child: SizedBox(
-                    height: 20,
-                    child: WordByWordFadeInText(
-                      text: latestPushNotification.title ??
-                          'No active notifications available',
-                    ),
+                return SizedBox(
+                  height: 20,
+                  child: HorizontalScrollingText(
+                    text: 
+                    latestPushNotification.title ??
+                        'No active notifications available',
                   ),
                 );
               },

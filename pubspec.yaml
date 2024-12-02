@@ -101,6 +101,18 @@ dependencies:
   permission_handler: ^11.3.1
   timezone: ^0.10.0
 
+  # Path Provider
+  path_provider: ^2.1.5
+
+  # Http
+  http: ^1.2.2
+
+  # dio
+  dio: ^5.7.0
+
+  # image gallery saver
+  image_gallery_saver: ^2.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
