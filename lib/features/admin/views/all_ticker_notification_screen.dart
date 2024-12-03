@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
-import 'package:teen_splash/features/admin/views/add_push_notification_screen.dart';
-import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/features/admin/views/add_ticker_notification_screen.dart';
+import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
-class AllPushNotification extends StatefulWidget {
-  const AllPushNotification({super.key});
+class AllTickerNotification extends StatefulWidget {
+  const AllTickerNotification({super.key});
 
   @override
-  State<AllPushNotification> createState() => _AllPushNotificationState();
+  State<AllTickerNotification> createState() => _AllTickerNotificationState();
 }
 
-class _AllPushNotificationState extends State<AllPushNotification> {
+class _AllTickerNotificationState extends State<AllTickerNotification> {
   late final AdminBloc adminBloc;
-  List<PushNotificationModel> filterPushNotificationData = [];
+  List<TickerNotificationModel> filterPushNotificationData = [];
   final TextEditingController searchController = TextEditingController();
   String _searchText = '';
 
   @override
   void initState() {
     adminBloc = context.read<AdminBloc>();
-    if (adminBloc.pushNotifications.isEmpty) {
+    if (adminBloc.tickerNotifications.isEmpty) {
       adminBloc.add(
-        GetPushNotification(),
+        GetTickerNotification(),
       );
     }
 
@@ -45,9 +45,9 @@ class _AllPushNotificationState extends State<AllPushNotification> {
 
   void _filterPushNotifications() {
     if (_searchText.isEmpty) {
-      filterPushNotificationData = adminBloc.pushNotifications;
+      filterPushNotificationData = adminBloc.tickerNotifications;
     } else {
-      filterPushNotificationData = adminBloc.pushNotifications
+      filterPushNotificationData = adminBloc.tickerNotifications
           .where(
             (offer) => offer.title!.toLowerCase().contains(
                   _searchText.toLowerCase(),
@@ -95,7 +95,7 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                 Row(
                   children: [
                     const Text(
-                      'Push Notifications',
+                      'Ticker Notifications',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 25,
@@ -116,7 +116,7 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                             builder: (
                               context,
                             ) =>
-                                const AddPushNotificationScreen(),
+                                const AddTickerNotificationScreen(),
                           ),
                         );
                       },
@@ -134,7 +134,7 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                           ),
                         ),
                         child: const Text(
-                          '+ Add push notification',
+                          '+ Add ticker notification',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 14,
@@ -158,19 +158,19 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                 Gaps.hGap30,
                 BlocBuilder<AdminBloc, AdminState>(
                   builder: (context, state) {
-                    if (state is GettingPushNotification) {
+                    if (state is GettingTickerNotification) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
-                    } else if (state is GetPushNotificationFailed) {
+                    } else if (state is GetTickerNotificationFailed) {
                       return Center(
                         child: Text(state.message),
                       );
                     }
-                    return adminBloc.pushNotifications.isEmpty
+                    return adminBloc.tickerNotifications.isEmpty
                         ? const Center(
                             child: Text(
-                              'No Push Notifications',
+                              'No Ticker Notifications',
                               style: TextStyle(
                                 color: Color(
                                   0xFF131313,
@@ -203,6 +203,11 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                               ),
                               DataColumn(
                                 label: Text(
+                                  'Status',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
                                   'Actions',
                                 ),
                               ),
@@ -218,6 +223,11 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                                             ),
                                           ),
                                           DataCell(
+                                            Text(
+                                              offer.status ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.push(
@@ -226,7 +236,7 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                                                     builder: (
                                                       context,
                                                     ) =>
-                                                        AddPushNotificationScreen(
+                                                        AddTickerNotificationScreen(
                                                       pushNotification: offer,
                                                     ),
                                                   ),
@@ -251,13 +261,18 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                                       ),
                                     )
                                     .toList()
-                                : adminBloc.pushNotifications
+                                : adminBloc.tickerNotifications
                                     .map(
                                       (offer) => DataRow(
                                         cells: [
                                           DataCell(
                                             Text(
                                               offer.title ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              offer.status ?? '',
                                             ),
                                           ),
                                           DataCell(
@@ -269,7 +284,7 @@ class _AllPushNotificationState extends State<AllPushNotification> {
                                                     builder: (
                                                       context,
                                                     ) =>
-                                                        AddPushNotificationScreen(
+                                                        AddTickerNotificationScreen(
                                                       pushNotification: offer,
                                                     ),
                                                   ),

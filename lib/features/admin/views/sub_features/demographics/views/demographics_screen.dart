@@ -4,8 +4,10 @@ import 'package:teen_splash/features/admin/views/sub_features/demographics/widge
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/conversion_rate.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/country_groups.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/gender_groups.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/interests_prefered_coupons.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/number_of_coupons_redeemed.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/preffered_days.dart';
+import 'package:teen_splash/features/admin/views/sub_features/demographics/widgets/spending_habits.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class DemographicsScreen extends StatefulWidget {
@@ -22,7 +24,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this); // 6 tabs
+    _tabController = TabController(length: 9, vsync: this); // 8 tabs
   }
 
   @override
@@ -94,6 +96,8 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                   Tab(text: "Conversion Rate"),
                   Tab(text: "Coupon's Redeemed"),
                   Tab(text: "Preferred Days of Activity"),
+                  Tab(text: "Interests/Preferences"),
+                  Tab(text: "Spending Habits"),
                 ],
               ),
               Gaps.hGap20,
@@ -104,7 +108,7 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children:  [
+                        children: [
                           AgeGroups(),
                         ],
                       ),
@@ -154,6 +158,22 @@ class _DemographicsScreenState extends State<DemographicsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           PrefferedDays(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InterestsAndPreferences(),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SpendingHabits(),
                         ],
                       ),
                     ),

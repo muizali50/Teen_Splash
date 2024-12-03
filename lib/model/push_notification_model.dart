@@ -1,19 +1,22 @@
 class PushNotificationModel {
   String? pushNotificationId;
   String? title;
-  String? status;
-  
+  String? content;
+  List<String?>? userIds;
+
   PushNotificationModel({
     this.pushNotificationId,
     this.title,
-    this.status,
+    this.content,
+    this.userIds,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'pushNotificationId': pushNotificationId,
       'title': title,
-      'status': status,
+      'content': content,
+      'userIds': userIds,
     };
   }
 
@@ -21,7 +24,12 @@ class PushNotificationModel {
     return PushNotificationModel(
       pushNotificationId: map['pushNotificationId'],
       title: map['title'],
-      status: map['status'],
+      content: map['content'],
+      userIds: map['userIds'] != null
+          ? List<String>.from(
+              map['userIds'],
+            )
+          : [],
     );
   }
 }

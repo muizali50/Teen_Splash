@@ -12,7 +12,7 @@ import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/w
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_input.dart';
 import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/chat_message.dart';
-import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
@@ -52,9 +52,9 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
       );
     }
     adminBloc = context.read<AdminBloc>();
-    if (adminBloc.pushNotifications.isEmpty) {
+    if (adminBloc.tickerNotifications.isEmpty) {
       adminBloc.add(
-        GetPushNotification(),
+        GetTickerNotification(),
       );
     }
     super.initState();
@@ -161,12 +161,12 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             child: BlocBuilder<AdminBloc, AdminState>(
               builder: (context, state) {
                 final latestPushNotification =
-                    adminBloc.pushNotifications.lastWhere(
+                    adminBloc.tickerNotifications.lastWhere(
                   (noti) => noti.status == 'Active',
                   orElse: () =>
-                      PushNotificationModel(), // Returns null if no active sponsor is found
+                      TickerNotificationModel(), // Returns null if no active sponsor is found
                 );
-                if (state is GettingPushNotification) {
+                if (state is GettingTickerNotification) {
                   return const Center(
                     child: SizedBox(
                       width: 10,
@@ -176,7 +176,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                       ),
                     ),
                   );
-                } else if (state is GetPushNotificationFailed) {
+                } else if (state is GetTickerNotificationFailed) {
                   return Center(
                     child: Text(state.message),
                   );
@@ -193,7 +193,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                   height: 20,
                   child: HorizontalScrollingText(
                     text: 
-                    // latestPushNotification.title ??
+                    latestPushNotification.title ??
                         'No active notifications available',
                   ),
                 );

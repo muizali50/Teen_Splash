@@ -8,6 +8,7 @@ import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
 part 'admin_event.dart';
@@ -19,6 +20,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<FeaturedOffersModel> featuredOffers = [];
   List<SponsorsModel> sponsors = [];
   List<WaterSponsorModel> waterSponsors = [];
+  List<TickerNotificationModel> tickerNotifications = [];
   List<PushNotificationModel> pushNotifications = [];
 
   AdminBloc() : super(AdminInitial()) {
@@ -835,6 +837,144 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           emit(
             UpdateWaterSponsorFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<AddTickerNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingTickerNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'tickerNotification',
+          );
+          final result = await pushNotificationCollection.add(
+            event.pushNotification.toMap(),
+          );
+          event.pushNotification.pushNotificationId = result.id;
+          tickerNotifications.add(
+            event.pushNotification,
+          );
+          emit(
+            AddTickerNotificationSuccess(
+              event.pushNotification,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddTickerNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddTickerNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetTickerNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingTickerNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'tickerNotification',
+          );
+          final result = await pushNotificationCollection.get();
+          tickerNotifications = result.docs.map(
+            (e) {
+              final pushNotification = TickerNotificationModel.fromMap(
+                e.data(),
+              );
+              pushNotification.pushNotificationId = e.id;
+              return pushNotification;
+            },
+          ).toList();
+          emit(
+            GetTickerNotificationSuccess(
+              tickerNotifications,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetTickerNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetTickerNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateTickerNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingTickerNotification(),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'tickerNotification',
+          );
+          await pushNotificationCollection
+              .doc(
+                event.pushNotification.pushNotificationId,
+              )
+              .update(
+                event.pushNotification.toMap(),
+              );
+          final index = tickerNotifications.indexWhere(
+            (element) =>
+                element.pushNotificationId ==
+                event.pushNotification.pushNotificationId,
+          );
+          tickerNotifications[index] = event.pushNotification;
+          emit(
+            UpdateTickerNotificationSuccess(
+              event.pushNotification,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateTickerNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateTickerNotificationFailed(
               e.toString(),
             ),
           );

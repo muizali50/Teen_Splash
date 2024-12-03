@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/private_chat_screen.dart';
 import 'package:teen_splash/features/users/views/scrolling_text.dart';
-import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
@@ -26,9 +26,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     adminBloc = context.read<AdminBloc>();
-    if (adminBloc.pushNotifications.isEmpty) {
+    if (adminBloc.tickerNotifications.isEmpty) {
       adminBloc.add(
-        GetPushNotification(),
+        GetTickerNotification(),
       );
     }
     super.initState();
@@ -118,12 +118,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
               child: BlocBuilder<AdminBloc, AdminState>(
                 builder: (context, state) {
                   final latestPushNotification =
-                      adminBloc.pushNotifications.lastWhere(
+                      adminBloc.tickerNotifications.lastWhere(
                     (noti) => noti.status == 'Active',
                     orElse: () =>
-                        PushNotificationModel(), // Returns null if no active sponsor is found
+                        TickerNotificationModel(), // Returns null if no active sponsor is found
                   );
-                  if (state is GettingPushNotification) {
+                  if (state is GettingTickerNotification) {
                     return const Center(
                       child: SizedBox(
                         width: 10,
@@ -133,7 +133,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         ),
                       ),
                     );
-                  } else if (state is GetPushNotificationFailed) {
+                  } else if (state is GetTickerNotificationFailed) {
                     return Center(
                       child: Text(state.message),
                     );
