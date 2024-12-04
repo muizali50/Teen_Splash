@@ -87,6 +87,42 @@ final class UpdateCouponSuccess extends AdminState {
       ];
 }
 
+final class DeleteCouponSuccess extends AdminState {
+  final String couponId;
+  const DeleteCouponSuccess(
+    this.couponId,
+  );
+
+  @override
+  List<Object> get props => [
+        couponId,
+      ];
+}
+
+final class DeleteCouponFailed extends AdminState {
+  final String message;
+  const DeleteCouponFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingCoupon extends AdminState {
+  final String couponId;
+  const DeletingCoupon(
+    this.couponId,
+  );
+
+  @override
+  List<Object> get props => [
+        couponId,
+      ];
+}
+
 final class AddMondayOffersFailed extends AdminState {
   final String message;
   const AddMondayOffersFailed(
@@ -554,3 +590,97 @@ final class UpdatePushNotificationSuccess extends AdminState {
         pushNotification,
       ];
 }
+
+final class AddSurveyFailed extends AdminState {
+  final String message;
+  const AddSurveyFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingSurvey extends AdminState {}
+
+final class AddSurveySuccess extends AdminState {
+  final SurveyModel survey;
+  const AddSurveySuccess(
+    this.survey,
+  );
+
+  @override
+  List<Object> get props => [
+        survey,
+      ];
+}
+
+final class GetSurveyFailed extends AdminState {
+  final String message;
+  const GetSurveyFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingSurvey extends AdminState {}
+
+final class GetSurveySuccess extends AdminState {
+  final List<SurveyModel> surveys;
+  const GetSurveySuccess(
+    this.surveys,
+  );
+
+  @override
+  List<Object> get props => [
+        surveys,
+      ];
+}
+
+final class UpdateSurveyFailed extends AdminState {
+  final String message;
+  const UpdateSurveyFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingSurvey extends AdminState {}
+
+final class UpdateSurveySuccess extends AdminState {
+  final SurveyModel survey;
+  const UpdateSurveySuccess(
+    this.survey,
+  );
+
+  @override
+  List<Object> get props => [
+        survey,
+      ];
+}
+
+final class SubmittingSurveyAnswerFailed extends AdminState {
+  final String message;
+  const SubmittingSurveyAnswerFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class SubmittingSurveyAnswer extends AdminState {}
+
+final class SubmittingSurveyAnswerSuccess extends AdminState {}

@@ -38,6 +38,18 @@ final class UpdateCoupon extends AdminEvent {
       ];
 }
 
+final class DeleteCoupon extends AdminEvent {
+  final String couponId;
+  const DeleteCoupon(
+    this.couponId,
+  );
+
+  @override
+  List<Object> get props => [
+        couponId,
+      ];
+}
+
 final class AddMondayOffers extends AdminEvent {
   final MondayOffersModel mondayOffer;
   final XFile image;
@@ -221,5 +233,43 @@ final class UpdatePushNotification extends AdminEvent {
   @override
   List<Object> get props => [
         pushNotification,
+      ];
+}
+
+final class AddSurvey extends AdminEvent {
+  final SurveyModel survey;
+  const AddSurvey(
+    this.survey,
+  );
+  @override
+  List<Object> get props => [
+        survey,
+      ];
+}
+
+final class GetSurvey extends AdminEvent {}
+
+final class UpdateSurvey extends AdminEvent {
+  final SurveyModel survey;
+  const UpdateSurvey(
+    this.survey,
+  );
+  @override
+  List<Object> get props => [
+        survey,
+      ];
+}
+
+final class SubmitSurveyAnswer extends AdminEvent {
+  final String surveyId;
+  final SurveyAnswerModel answer;
+  const SubmitSurveyAnswer(
+    this.surveyId,
+    this.answer,
+  );
+  @override
+  List<Object> get props => [
+        surveyId,
+        answer,
       ];
 }

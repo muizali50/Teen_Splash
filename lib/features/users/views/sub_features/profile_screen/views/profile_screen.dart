@@ -4,6 +4,7 @@ import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dar
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/membership_card.dart';
 import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/profile_row.dart';
+import 'package:teen_splash/features/users/views/surveys_screen.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
@@ -161,6 +162,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Gaps.hGap15,
                           const Center(
                             child: MembershipCard(),
+                          ),
+                          Gaps.hGap10,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SurveysScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Surveys',
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),

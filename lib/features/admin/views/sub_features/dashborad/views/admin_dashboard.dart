@@ -4,6 +4,7 @@ import 'package:teen_splash/features/admin/views/all_featured_offers.dart';
 import 'package:teen_splash/features/admin/views/all_highlighted_sponsors.dart';
 import 'package:teen_splash/features/admin/views/all_monday_offers.dart';
 import 'package:teen_splash/features/admin/views/all_push_notification_screen.dart';
+import 'package:teen_splash/features/admin/views/all_surveys_screen.dart';
 import 'package:teen_splash/features/admin/views/all_ticker_notification_screen.dart';
 import 'package:teen_splash/features/admin/views/all_water_sponsors_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/views/demographics_screen.dart';
@@ -28,6 +29,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const DemographicsScreen(),
     const AllTickerNotification(),
     const AllPushNotification(),
+    const AllSurveysScreen(),
   ];
 
   void _onItemTapped(
@@ -150,6 +152,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     titleColor: _selectedIndex == 7 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 7 ? 0xFFffffff : 0xFF000000,
+                  ),
+                  Gaps.hGap20,
+                  DashboardFields(
+                    icon: 'assets/icons/offer.png',
+                    onTap: () => _onItemTapped(8),
+                    iconColor: _selectedIndex == 8 ? 0xFF000000 : 0xFFffffff,
+                    title: 'Surveys',
+                    titleColor: _selectedIndex == 8 ? 0xFF000000 : 0xFFffffff,
+                    containerColor:
+                        _selectedIndex == 8 ? 0xFFffffff : 0xFF000000,
                   ),
                 ],
               ),

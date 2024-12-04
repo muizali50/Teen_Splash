@@ -2,12 +2,15 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/model/survey_answer_model.dart';
+import 'package:teen_splash/model/survey_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
@@ -22,6 +25,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<WaterSponsorModel> waterSponsors = [];
   List<TickerNotificationModel> tickerNotifications = [];
   List<PushNotificationModel> pushNotifications = [];
+  List<SurveyModel> surveys = [];
 
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
@@ -173,6 +177,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<DeleteCoupon>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingCoupon(
+            event.couponId,
+          ),
+        );
+        try {
+          final couponCollection = FirebaseFirestore.instance.collection(
+            'coupon',
+          );
+          await couponCollection.doc(event.couponId).delete();
+          coupons.removeWhere(
+            (element) => element.couponId == event.couponId,
+          );
+          emit(
+            DeleteCouponSuccess(
+              event.couponId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteCouponFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteCouponFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteCouponFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );
@@ -1113,6 +1163,174 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           emit(
             UpdatePushNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<AddSurvey>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingSurvey(),
+        );
+        try {
+          final surveyCollection = FirebaseFirestore.instance.collection(
+            'survey',
+          );
+          final result = await surveyCollection.add(
+            event.survey.toMap(),
+          );
+          event.survey.id = result.id;
+          surveys.add(
+            event.survey,
+          );
+          emit(
+            AddSurveySuccess(
+              event.survey,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddSurveyFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddSurveyFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetSurvey>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingSurvey(),
+        );
+        try {
+          final surveyCollection = FirebaseFirestore.instance.collection(
+            'survey',
+          );
+          final result = await surveyCollection.get();
+          surveys = result.docs.map(
+            (e) {
+              final survey = SurveyModel.fromMap(
+                e.data(),
+              );
+              survey.id = e.id;
+              return survey;
+            },
+          ).toList();
+          emit(
+            GetSurveySuccess(
+              surveys,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetSurveyFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetSurveyFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateSurvey>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingSurvey(),
+        );
+        try {
+          final surveyCollection = FirebaseFirestore.instance.collection(
+            'survey',
+          );
+          await surveyCollection
+              .doc(
+                event.survey.id,
+              )
+              .update(
+                event.survey.toMap(),
+              );
+          final index = surveys.indexWhere(
+            (element) => element.id == event.survey.id,
+          );
+          surveys[index] = event.survey;
+          emit(
+            UpdateSurveySuccess(
+              event.survey,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateSurveyFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateSurveyFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<SubmitSurveyAnswer>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          SubmittingSurveyAnswer(),
+        );
+        try {
+          await FirebaseFirestore.instance
+              .collection('surveyAnswers')
+              .doc(event.surveyId)
+              .collection('answers')
+              .add(event.answer.toMap());
+          emit(
+            SubmittingSurveyAnswerSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            SubmittingSurveyAnswerFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            SubmittingSurveyAnswerFailed(
               e.toString(),
             ),
           );
