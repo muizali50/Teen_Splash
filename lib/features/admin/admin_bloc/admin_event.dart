@@ -304,3 +304,15 @@ final class UpdateEvents extends AdminEvent {
         event,
       ];
 }
+
+final class GetSurveyAnswers extends AdminEvent {
+  final String surveyId;
+  const GetSurveyAnswers(
+    this.surveyId,
+  );
+
+  @override
+  List<Object> get props => [
+        surveyId,
+      ];
+}

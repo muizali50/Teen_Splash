@@ -1,17 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/model/events_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class EventsDetailScreen extends StatefulWidget {
-  const EventsDetailScreen({super.key});
+  final EventsModel event;
+  const EventsDetailScreen({
+    super.key,
+    required this.event,
+  });
 
   @override
   State<EventsDetailScreen> createState() => _EventsDetailScreenState();
 }
 
 class _EventsDetailScreenState extends State<EventsDetailScreen> {
+  Future<void> _launchWebsite(String? url, BuildContext context) async {
+    if (url != null && await launchUrlString(url)) {
+      await launchUrlString(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not launch the link.',
+          ),
+        ),
+      );
+    }
+  }
+
+  String getDayOfWeek(String date) {
+    try {
+      final eventDate = DateTime.parse(date); // Parse the date string
+      const daysOfWeek = [
+        'Monday', // 1
+        'Tuesday', // 2
+        'Wednesday', // 3
+        'Thursday', // 4
+        'Friday', // 5
+        'Saturday', // 6
+        'Sunday' // 7
+      ];
+      return daysOfWeek[eventDate.weekday - 1]; // Map to day name
+    } catch (e) {
+      return ''; // Return empty if date parsing fails
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dayOfWeek = getDayOfWeek(widget.event.date!);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -19,11 +63,11 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
             Container(
               height: 227,
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: NetworkImage(
-                    'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    widget.event.image.toString(),
                   ),
                 ),
               ),
@@ -94,7 +138,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Friday, October 25, 08:00 PM',
+                        '$dayOfWeek, ${widget.event.date}, ${widget.event.time}',
                         style: TextStyle(
                           fontFamily: 'Lexend',
                           fontSize: 16,
@@ -104,7 +148,7 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                       ),
                       Gaps.hGap15,
                       Text(
-                        'Teen Splash Brek Fete',
+                        widget.event.name.toString(),
                         style: TextStyle(
                           fontFamily: 'Lexend',
                           fontSize: 18,
@@ -124,9 +168,9 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                           const SizedBox(
                             width: 8.0,
                           ),
-                          const Text(
-                            'Cricket Legends (Barbados)',
-                            style: TextStyle(
+                          Text(
+                            widget.event.location.toString(),
+                            style: const TextStyle(
                               fontFamily: 'OpenSans',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -146,9 +190,9 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                         ),
                       ),
                       Gaps.hGap15,
-                      const Text(
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.',
-                        style: TextStyle(
+                      Text(
+                        widget.event.details.toString(),
+                        style: const TextStyle(
                           fontFamily: 'OpenSans',
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -159,8 +203,11 @@ class _EventsDetailScreenState extends State<EventsDetailScreen> {
                         height: 100,
                       ),
                       AppPrimaryButton(
-                        text: 'Join Now',
-                        onTap: () {},
+                        text: 'Link to Event',
+                        onTap: () => _launchWebsite(
+                          widget.event.websiteUrl.toString(),
+                          context,
+                        ),
                       ),
                     ],
                   ),

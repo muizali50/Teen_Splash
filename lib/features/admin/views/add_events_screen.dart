@@ -25,6 +25,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
+  final TextEditingController _websiteUrlController = TextEditingController();
   String? coverPhoto;
   String _selectedDateString = '';
   String _selectedTimeString = '';
@@ -73,6 +74,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
       coverPhoto = widget.event!.image ?? '';
       _selectedDateString = widget.event!.date ?? '';
       _selectedTimeString = widget.event!.time ?? '';
+      _websiteUrlController.text = widget.event!.websiteUrl ?? '';
     }
     super.initState();
   }
@@ -175,6 +177,19 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                 Gaps.hGap30,
                 Row(
                   children: [
+                    SizedBox(
+                      width: 325,
+                      child: AppTextField(
+                        fillColor: const Color(
+                          0xFFEAEAEA,
+                        ),
+                        controller: _websiteUrlController,
+                        hintText: 'Website url',
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
                     Container(
                       width: 325,
                       padding: const EdgeInsets.symmetric(
@@ -350,6 +365,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                       _nameController.clear();
                       _locationController.clear();
                       _detailsController.clear();
+                      _websiteUrlController.clear();
                       Navigator.pop(
                         context,
                       );
@@ -372,6 +388,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                       _nameController.clear();
                       _locationController.clear();
                       _detailsController.clear();
+                      _websiteUrlController.clear();
                       Navigator.pop(context);
                     } else if (state is UpdateEventsFailed) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -424,6 +441,16 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                             );
                             return;
                           }
+                          if (_websiteUrlController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please enter the website url',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
                           if (_selectedDateString.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -465,6 +492,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                                   date: _selectedDateString,
                                   time: _selectedTimeString,
                                   image: coverPhoto,
+                                  websiteUrl: _websiteUrlController.text,
                                 ),
                                 coverPhoto == widget.event?.image
                                     ? null
@@ -482,6 +510,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                                   date: _selectedDateString,
                                   time: _selectedTimeString,
                                   image: coverPhoto,
+                                  websiteUrl: _websiteUrlController.text,
                                 ),
                                 XFile(coverPhoto!),
                               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/admin/views/add_survey_screen.dart';
+import 'package:teen_splash/features/admin/views/survey_answers_screen.dart';
 import 'package:teen_splash/model/survey_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/search_field.dart';
@@ -216,33 +217,67 @@ class _AllSurveysScreenState extends State<AllSurveysScreen> {
                                             Text(offer.name),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddSurveysScreen(
-                                                      survey: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddSurveysScreen(
+                                                          survey: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            SurveyAnswersScreen(
+                                                          surveyId: offer.id,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Answers',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -259,33 +294,67 @@ class _AllSurveysScreenState extends State<AllSurveysScreen> {
                                             ),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddSurveysScreen(
-                                                      survey: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddSurveysScreen(
+                                                          survey: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            SurveyAnswersScreen(
+                                                          surveyId: offer.id,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Answers',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
+                                              ],
                                             ),
                                           ),
                                         ],

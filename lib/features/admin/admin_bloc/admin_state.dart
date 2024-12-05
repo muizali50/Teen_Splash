@@ -762,3 +762,29 @@ final class UpdateEventsSuccess extends AdminState {
         event,
       ];
 }
+
+final class GetSurveyAnswersFailed extends AdminState {
+  final String message;
+  const GetSurveyAnswersFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingSurveyAnswers extends AdminState {}
+
+final class GetSurveyAnswersSuccess extends AdminState {
+  final List<SurveyAnswerModel> answers;
+  const GetSurveyAnswersSuccess(
+    this.answers,
+  );
+
+  @override
+  List<Object> get props => [
+        answers,
+      ];
+}

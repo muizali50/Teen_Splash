@@ -1491,5 +1491,53 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<GetSurveyAnswers>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingSurveyAnswers(),
+        );
+        try {
+          final answers = await _fetchSurveyAnswers(event.surveyId);
+          emit(
+            GetSurveyAnswersSuccess(
+              answers,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetSurveyAnswersFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetSurveyAnswersFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+  }
+  Future<List<SurveyAnswerModel>> _fetchSurveyAnswers(String surveyId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('surveyAnswers')
+        .doc(surveyId)
+        .collection('answers')
+        .get();
+
+    return snapshot.docs
+        .map(
+          (doc) => SurveyAnswerModel.fromMap(
+            doc.data(),
+          ),
+        )
+        .toList();
   }
 }

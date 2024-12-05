@@ -6,6 +6,7 @@ class EventsModel {
   String? image;
   String? date;
   String? time;
+  String? websiteUrl;
 
   EventsModel({
     this.eventId,
@@ -15,6 +16,7 @@ class EventsModel {
     this.image,
     this.date,
     this.time,
+    this.websiteUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class EventsModel {
       'image': image,
       'date': date,
       'time': time,
+      'websiteUrl': websiteUrl,
     };
   }
 
@@ -37,7 +40,8 @@ class EventsModel {
       details: map['details'],
       image: map['image'],
       date: map['date'],
-      time: map['time'], 
+      time: map['time'],
+      websiteUrl: map['websiteUrl'],
     );
   }
 }
