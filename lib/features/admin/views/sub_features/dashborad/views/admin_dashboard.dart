@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/admin/views/all_coupons.dart';
+import 'package:teen_splash/features/admin/views/all_events_screen.dart';
 import 'package:teen_splash/features/admin/views/all_featured_offers.dart';
 import 'package:teen_splash/features/admin/views/all_highlighted_sponsors.dart';
 import 'package:teen_splash/features/admin/views/all_monday_offers.dart';
@@ -30,6 +31,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const AllTickerNotification(),
     const AllPushNotification(),
     const AllSurveysScreen(),
+    const AllEventsScreen(),
   ];
 
   void _onItemTapped(
@@ -162,6 +164,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     titleColor: _selectedIndex == 8 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 8 ? 0xFFffffff : 0xFF000000,
+                  ),
+                  Gaps.hGap20,
+                  DashboardFields(
+                    icon: 'assets/icons/offer.png',
+                    onTap: () => _onItemTapped(9),
+                    iconColor: _selectedIndex == 9 ? 0xFF000000 : 0xFFffffff,
+                    title: 'Events',
+                    titleColor: _selectedIndex == 9 ? 0xFF000000 : 0xFFffffff,
+                    containerColor:
+                        _selectedIndex == 9 ? 0xFFffffff : 0xFF000000,
                   ),
                 ],
               ),

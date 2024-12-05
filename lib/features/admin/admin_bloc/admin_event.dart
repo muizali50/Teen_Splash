@@ -273,3 +273,34 @@ final class SubmitSurveyAnswer extends AdminEvent {
         answer,
       ];
 }
+
+final class AddEvents extends AdminEvent {
+  final EventsModel event;
+  final XFile image;
+  const AddEvents(
+    this.event,
+    this.image,
+  );
+
+  @override
+  List<Object> get props => [
+        event,
+        image,
+      ];
+}
+
+final class GetEvents extends AdminEvent {}
+
+final class UpdateEvents extends AdminEvent {
+  final EventsModel event;
+  final XFile? image;
+  const UpdateEvents(
+    this.event,
+    this.image,
+  );
+
+  @override
+  List<Object> get props => [
+        event,
+      ];
+}

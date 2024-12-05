@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:teen_splash/model/coupon_model.dart';
+import 'package:teen_splash/model/events_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
@@ -26,6 +27,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<TickerNotificationModel> tickerNotifications = [];
   List<PushNotificationModel> pushNotifications = [];
   List<SurveyModel> surveys = [];
+  List<EventsModel> events = [];
 
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
@@ -1331,6 +1333,158 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           emit(
             SubmittingSurveyAnswerFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<AddEvents>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingEvents(),
+        );
+        try {
+          final ref = FirebaseStorage.instance.ref().child(
+                'event_images/${event.image.path.split('/').last}',
+              );
+
+          await ref.putData(
+            await event.image.readAsBytes(),
+          );
+          final imageUrl = await ref.getDownloadURL();
+          event.event.image = imageUrl;
+          final eventCollection = FirebaseFirestore.instance.collection(
+            'event',
+          );
+          final result = await eventCollection.add(
+            event.event.toMap(),
+          );
+          event.event.eventId = result.id;
+          events.add(
+            event.event,
+          );
+          emit(
+            AddEventsSuccess(
+              event.event,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddEventsFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddEventsFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetEvents>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingEvents(),
+        );
+        try {
+          final eventCollection = FirebaseFirestore.instance.collection(
+            'event',
+          );
+          final result = await eventCollection.get();
+          events = result.docs.map(
+            (e) {
+              final event = EventsModel.fromMap(
+                e.data(),
+              );
+              event.eventId = e.id;
+              return event;
+            },
+          ).toList();
+          emit(
+            GetEventsSuccess(
+              events,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetEventsFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetEventsFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateEvents>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingEvents(),
+        );
+        try {
+          if (event.image != null) {
+            final ref = FirebaseStorage.instance.ref().child(
+                  'event_images/${event.image!.path.split('/').last}',
+                );
+            await ref.putData(
+              await event.image!.readAsBytes(),
+            );
+            final imageUrl = await ref.getDownloadURL();
+            event.event.image = imageUrl;
+          }
+          final eventCollection = FirebaseFirestore.instance.collection(
+            'event',
+          );
+          await eventCollection
+              .doc(
+                event.event.eventId,
+              )
+              .update(
+                event.event.toMap(),
+              );
+          final index = events.indexWhere(
+            (element) => element.eventId == event.event.eventId,
+          );
+          events[index] = event.event;
+          emit(
+            UpdateEventsSuccess(
+              event.event,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateEventsFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateEventsFailed(
               e.toString(),
             ),
           );

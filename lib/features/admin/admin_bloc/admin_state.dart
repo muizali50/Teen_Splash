@@ -684,3 +684,81 @@ final class SubmittingSurveyAnswerFailed extends AdminState {
 final class SubmittingSurveyAnswer extends AdminState {}
 
 final class SubmittingSurveyAnswerSuccess extends AdminState {}
+
+final class AddEventsFailed extends AdminState {
+  final String message;
+  const AddEventsFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingEvents extends AdminState {}
+
+final class AddEventsSuccess extends AdminState {
+  final EventsModel event;
+  const AddEventsSuccess(
+    this.event,
+  );
+
+  @override
+  List<Object> get props => [
+        event,
+      ];
+}
+
+final class GetEventsFailed extends AdminState {
+  final String message;
+  const GetEventsFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingEvents extends AdminState {}
+
+final class GetEventsSuccess extends AdminState {
+  final List<EventsModel> events;
+  const GetEventsSuccess(
+    this.events,
+  );
+
+  @override
+  List<Object> get props => [
+        events,
+      ];
+}
+
+final class UpdateEventsFailed extends AdminState {
+  final String message;
+  const UpdateEventsFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingEvents extends AdminState {}
+
+final class UpdateEventsSuccess extends AdminState {
+  final EventsModel event;
+  const UpdateEventsSuccess(
+    this.event,
+  );
+
+  @override
+  List<Object> get props => [
+        event,
+      ];
+}

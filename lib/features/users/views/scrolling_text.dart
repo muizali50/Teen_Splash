@@ -54,7 +54,7 @@ class _HorizontalScrollingTextState extends State<HorizontalScrollingText>
     )..repeat(); // Repeat the animation infinitely
 
     // Animation with Linear movement
-    _animation = Tween<double>(begin: 0, end: 1).animate(
+    _animation = Tween<double>(begin: 1, end: 0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
   }

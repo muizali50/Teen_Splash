@@ -1,6 +1,6 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:teen_splash/features/users/views/events_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/events_screen/views/events_screen.dart';
 import 'package:teen_splash/features/users/views/notifications_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/coupons_screen/views/coupons_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_guest_user/views/home_guest_user.dart';
