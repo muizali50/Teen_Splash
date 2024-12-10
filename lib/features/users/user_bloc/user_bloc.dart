@@ -6,12 +6,59 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:teen_splash/model/app_user.dart';
+import 'package:teen_splash/model/coupon_model.dart';
 part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
+  List<CouponModel> coupons = [];
   List<AppUser> users = [];
   UserBloc() : super(UserInitial()) {
+    on<GetUserCoupons>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingUserCoupon(),
+        );
+        try {
+          final couponCollection = FirebaseFirestore.instance.collection(
+            'coupon',
+          );
+          final result = await couponCollection.get();
+          coupons = result.docs.map(
+            (e) {
+              final coupon = CouponModel.fromMap(
+                e.data(),
+              );
+              coupon.couponId = e.id;
+              return coupon;
+            },
+          ).toList();
+          emit(
+            GetUserCouponSuccess(
+              coupons,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetUserCouponFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetUserCouponFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
     on<RedeemCoupom>(
       (
         event,
@@ -102,6 +149,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
                     docRef,
                     {'dayWiseCounts': dayWiseCounts},
                   );
+
+                  final index = coupons.indexWhere(
+                      (coupon) => coupon.couponId == event.couponId);
+                  if (index != -1) {
+                    coupons[index].userIds = userIds;
+                  }
                 }
               }
             },

@@ -9,6 +9,32 @@ sealed class UserState extends Equatable {
 
 final class UserInitial extends UserState {}
 
+final class GetUserCouponFailed extends UserState {
+  final String message;
+  const GetUserCouponFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingUserCoupon extends UserState {}
+
+final class GetUserCouponSuccess extends UserState {
+  final List<CouponModel> coupons;
+  const GetUserCouponSuccess(
+    this.coupons,
+  );
+
+  @override
+  List<Object> get props => [
+        coupons,
+      ];
+}
+
 final class ReedeemingCoupon extends UserState {}
 
 final class RedeemCouponSuccess extends UserState {}

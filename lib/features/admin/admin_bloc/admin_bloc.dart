@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/events_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
@@ -28,6 +29,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<PushNotificationModel> pushNotifications = [];
   List<SurveyModel> surveys = [];
   List<EventsModel> events = [];
+  List<AppUser> users = [];
 
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
@@ -738,6 +740,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<DeleteSponsors>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingSponsor(
+            event.sponsorId,
+          ),
+        );
+        try {
+          final sponsorCollection = FirebaseFirestore.instance.collection(
+            'sponsor',
+          );
+          await sponsorCollection.doc(event.sponsorId).delete();
+          sponsors.removeWhere(
+            (element) => element.sponsorId == event.sponsorId,
+          );
+          emit(
+            DeleteSponsorSuccess(
+              event.sponsorId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteSponsorFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteSponsorFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteSponsorFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );
@@ -1488,6 +1536,156 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<GetUnverifiedUsers>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingUnverifiedUsers(),
+        );
+        try {
+          final usersCollection = FirebaseFirestore.instance.collection(
+            'users',
+          );
+          final result = await usersCollection.get();
+          users = result.docs.map(
+            (e) {
+              final user = AppUser.fromMap(
+                e.data(),
+              );
+              user.uid = e.id;
+              return user;
+            },
+          ).toList();
+
+          emit(
+            GetUnverifiedUsersSuccess(
+              users,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetUnverifiedUsersFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetUnverifiedUsersFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<DeclineUser>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DecliningUser(
+            event.userId,
+          ),
+        );
+        try {
+          final usersCollection = FirebaseFirestore.instance.collection(
+            'users',
+          );
+          await usersCollection.doc(event.userId).delete();
+          users.removeWhere(
+            (element) => element.uid == event.userId,
+          );
+          emit(
+            DeclineUserSuccess(
+              event.userId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeclineUserFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeclineUserFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeclineUserFailed(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
+    on<ApproveUser>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          ApprovingUser(
+            event.userId,
+          ),
+        );
+        try {
+          final usersCollection = FirebaseFirestore.instance.collection(
+            'users',
+          );
+          await usersCollection.doc(event.userId).update(
+            {
+              'status': 'Approved',
+            },
+          );
+          // Update the local list
+          final updatedUsers = users.map(
+            (user) {
+              if (user.uid == event.userId) {
+                return user.copyWith(status: 'Approved');
+              }
+              return user;
+            },
+          ).toList();
+
+          users = updatedUsers; // Update the list of users in the bloc
+          emit(
+            ApproveUserSuccess(
+              event.userId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              ApproveUserFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              ApproveUserFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              ApproveUserFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );

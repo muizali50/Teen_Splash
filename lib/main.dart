@@ -61,9 +61,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider<UserProvider>(
-            create: (context) => UserProvider(),
-          ),
+          // ChangeNotifierProvider<UserProvider>(
+          //   create: (context) => UserProvider(),
+          // ),
           ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()..getUser(),
           ),
@@ -81,13 +81,37 @@ class MyApp extends StatelessWidget {
               tertiary: Color(0xFFFF69B4),
             ),
           ),
-          home: FirebaseAuth.instance.currentUser == null
-              ? kIsWeb
-                  ? const LoginScreen()
-                  : const OnboardingScreen()
-              : kIsWeb
-                  ? const AdminDashboard()
-                  : const BottomNavBar(),
+          home: Consumer<UserProvider>(
+            builder: (context, userProvider, child) {
+              final firebaseUser = userProvider.firebaseUser;
+              if (FirebaseAuth.instance.currentUser == null) {
+                return kIsWeb ? const LoginScreen() : const OnboardingScreen();
+              } else if (kIsWeb) {
+                return const AdminDashboard();
+              }
+              // else if (firebaseUser == null) {
+              //   // If the firebaseUser hasn't been fetched yet, show a loading screen
+              //   return const Center(
+              //     child: CircularProgressIndicator(),
+              //   );
+              // }
+              else if (firebaseUser != null &&
+                  firebaseUser.status == 'Pending') {
+                return const LoginScreen();
+              } else {
+                return const BottomNavBar();
+              }
+            },
+          ),
+          // home: FirebaseAuth.instance.currentUser == null
+          //     ? kIsWeb
+          //         ? const LoginScreen()
+          //         : const OnboardingScreen()
+          //     : kIsWeb
+          //         ? const AdminDashboard()
+          //         : UserProvider().firebaseUser?.status == 'Pending'
+          //             ? const LoginScreen()
+          //             : const BottomNavBar(),
         ),
       ),
     );

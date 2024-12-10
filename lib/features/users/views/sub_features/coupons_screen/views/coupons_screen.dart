@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/coupons_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/coupons_screen/widgets/vertical_dashed_line.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
@@ -18,13 +18,13 @@ class CouponsScreen extends StatefulWidget {
 }
 
 class _CouponsScreenState extends State<CouponsScreen> {
-  late final AdminBloc adminBloc;
+  late final UserBloc userBloc;
   @override
   void initState() {
-    adminBloc = context.read<AdminBloc>();
-    if (adminBloc.coupons.isEmpty) {
-      adminBloc.add(
-        GetCoupon(),
+    userBloc = context.read<UserBloc>();
+    if (userBloc.coupons.isEmpty) {
+      userBloc.add(
+        GetUserCoupons(),
       );
     }
     super.initState();
@@ -85,12 +85,12 @@ class _CouponsScreenState extends State<CouponsScreen> {
                         ),
                       ),
                       Gaps.hGap20,
-                      BlocBuilder<AdminBloc, AdminState>(
+                      BlocBuilder<UserBloc, UserState>(
                         builder: (context, state) {
                           final currentDate = DateTime.now();
                           final dateFormat = DateFormat('yyyy-MM-dd');
 
-                          final filteredCoupon = adminBloc.coupons.where(
+                          final filteredCoupon = userBloc.coupons.where(
                             (coupon) {
                               final isUserNotRedeemed = !coupon.userIds!
                                   .contains(
@@ -104,11 +104,11 @@ class _CouponsScreenState extends State<CouponsScreen> {
                               return isUserNotRedeemed && isDateValid;
                             },
                           ).toList();
-                          if (state is GettingCoupon) {
+                          if (state is GettingUserCoupon) {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
-                          } else if (state is GetCouponFailed) {
+                          } else if (state is GetUserCouponFailed) {
                             return Center(
                               child: Text(state.message),
                             );

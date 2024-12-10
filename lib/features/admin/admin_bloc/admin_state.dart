@@ -357,6 +357,42 @@ final class UpdateSponsorSuccess extends AdminState {
       ];
 }
 
+final class DeleteSponsorSuccess extends AdminState {
+  final String sponsorId;
+  const DeleteSponsorSuccess(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
+final class DeleteSponsorFailed extends AdminState {
+  final String message;
+  const DeleteSponsorFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingSponsor extends AdminState {
+  final String sponsorId;
+  const DeletingSponsor(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
 final class AddWaterSponsorFailed extends AdminState {
   final String message;
   const AddWaterSponsorFailed(
@@ -786,5 +822,103 @@ final class GetSurveyAnswersSuccess extends AdminState {
   @override
   List<Object> get props => [
         answers,
+      ];
+}
+
+final class GetUnverifiedUsersFailed extends AdminState {
+  final String message;
+  const GetUnverifiedUsersFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingUnverifiedUsers extends AdminState {}
+
+final class GetUnverifiedUsersSuccess extends AdminState {
+  final List<AppUser> users;
+  const GetUnverifiedUsersSuccess(
+    this.users,
+  );
+
+  @override
+  List<Object> get props => [
+        users,
+      ];
+}
+
+final class DeclineUserSuccess extends AdminState {
+  final String userId;
+  const DeclineUserSuccess(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
+      ];
+}
+
+final class DeclineUserFailed extends AdminState {
+  final String message;
+  const DeclineUserFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DecliningUser extends AdminState {
+  final String userId;
+  const DecliningUser(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
+      ];
+}
+
+final class ApproveUserSuccess extends AdminState {
+  final String userId;
+  const ApproveUserSuccess(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
+      ];
+}
+
+final class ApproveUserFailed extends AdminState {
+  final String message;
+  const ApproveUserFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class ApprovingUser extends AdminState {
+  final String userId;
+  const ApprovingUser(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
       ];
 }

@@ -65,6 +65,7 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
 
   @override
   Widget build(BuildContext context) {
+    final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       backgroundColor: const Color(
         0xFFF1F1F1,
@@ -228,33 +229,108 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
                                             ),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddHighlightedSponsorScreen(
-                                                      sponsor: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddHighlightedSponsorScreen(
+                                                          sponsor: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
-                                                  ),
                                                 ),
-                                              ),
+                                                TextButton(
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          titleTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          contentTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          title: const Text(
+                                                            'Delete Sponsor',
+                                                          ),
+                                                          content: const Text(
+                                                            'Are you sure you want to delete this sponsor?',
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                  context,
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                'Cancel',
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                adminBloc.add(
+                                                                  DeleteSponsors(
+                                                                    offer.sponsorId ??
+                                                                        '',
+                                                                  ),
+                                                                );
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'Delete',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -276,33 +352,108 @@ class _AllHighlightedSponsorState extends State<AllHighlightedSponsor> {
                                             ),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddHighlightedSponsorScreen(
-                                                      sponsor: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddHighlightedSponsorScreen(
+                                                          sponsor: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
-                                                  ),
                                                 ),
-                                              ),
+                                                TextButton(
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          titleTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          contentTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          title: const Text(
+                                                            'Delete Sponsor',
+                                                          ),
+                                                          content: const Text(
+                                                            'Are you sure you want to delete this sponsor?',
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                  context,
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                'Cancel',
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                adminBloc.add(
+                                                                  DeleteSponsors(
+                                                                    offer.sponsorId ??
+                                                                        '',
+                                                                  ),
+                                                                );
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'Delete',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],

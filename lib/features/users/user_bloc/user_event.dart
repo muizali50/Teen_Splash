@@ -7,6 +7,8 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class GetUserCoupons extends UserEvent {}
+
 final class RedeemCoupom extends UserEvent {
   final String couponId;
   final String userId;

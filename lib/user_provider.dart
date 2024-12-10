@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:teen_splash/main.dart';
@@ -9,6 +10,7 @@ import 'package:teen_splash/model/chat_message.dart';
 
 class UserProvider extends ChangeNotifier {
   AppUser? user;
+  AppUser? firebaseUser;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void setUser(AppUser user) {
@@ -26,6 +28,23 @@ class UserProvider extends ChangeNotifier {
           userString,
         ),
       );
+    }
+    await getUserFromFirestore(); // Fetch updated data from Firestore.
+    notifyListeners();
+  }
+
+  Future<void> getUserFromFirestore() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .get();
+        firebaseUser = AppUser.fromMap(userData.data()!);
+      }
+    } catch (e) {
+      debugPrint('Error fetching user: $e');
     }
   }
 

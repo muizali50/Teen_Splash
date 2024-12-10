@@ -110,43 +110,56 @@ class AuthenticationBloc
           const AuthenticationLoading(),
         );
         try {
+          // Authenticate user with email and password
           final userCreds =
               await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: event.email,
             password: event.password,
           );
-          final userDoc = await FirebaseFirestore.instance
-              .collection(
-                'users',
-              )
-              .doc(
-                userCreds.user!.uid,
-              )
-              .get();
-          if (kIsWeb != true) {
+          if (!kIsWeb) {
+            // Fetch user document from Firestore
+            final userDoc = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCreds.user!.uid)
+                .get();
+
+            // Parse user data
+            final userData = userDoc.data();
+            if (userData == null) {
+              emit(
+                const AuthenticationFailure(
+                  message: 'User data not found.',
+                ),
+              );
+              return;
+            }
+            final AppUser user = AppUser.fromMap(userData);
+            user.uid = userCreds.user!.uid;
+
+            // Check if the user status is "Pending"
+            if (user.status == 'Pending') {
+              emit(
+                const AuthenticationFailure(
+                  message: 'Your request is under verification',
+                ),
+              );
+              return;
+            }
+
+            // Update login frequency (if not on web)
             await FirebaseFirestore.instance
-                .collection(
-                  'users',
-                )
-                .doc(
-                  userCreds.user!.uid,
-                )
+                .collection('users')
+                .doc(userCreds.user!.uid)
                 .update(
               {
                 'loginFrequency': FieldValue.increment(1),
               },
             );
+
+            // Set user data in UserProvider (if not on web)
+            userProvider.setUser(user);
           }
-          AppUser? user;
-          if (kIsWeb != true) {
-            user = AppUser.fromMap(
-              userDoc.data()!,
-            );
-            user.uid = userCreds.user!.uid;
-            userProvider.setUser(
-              user,
-            );
-          }
+
           emit(
             const AuthenticationSuccess(),
           );

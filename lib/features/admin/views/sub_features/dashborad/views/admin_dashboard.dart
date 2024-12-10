@@ -10,6 +10,7 @@ import 'package:teen_splash/features/admin/views/all_ticker_notification_screen.
 import 'package:teen_splash/features/admin/views/all_water_sponsors_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/views/demographics_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/dashborad/widgets/dashboard_fields.dart';
+import 'package:teen_splash/features/admin/views/verify_users_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -32,6 +33,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const AllPushNotification(),
     const AllSurveysScreen(),
     const AllEventsScreen(),
+    const VerifyUsers(),
   ];
 
   void _onItemTapped(
@@ -174,6 +176,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     titleColor: _selectedIndex == 9 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 9 ? 0xFFffffff : 0xFF000000,
+                  ),
+                  Gaps.hGap20,
+                  DashboardFields(
+                    icon: 'assets/icons/person.png',
+                    onTap: () => _onItemTapped(10),
+                    iconColor: _selectedIndex == 10 ? 0xFF000000 : 0xFFffffff,
+                    title: 'Verify Users',
+                    titleColor: _selectedIndex == 10 ? 0xFF000000 : 0xFFffffff,
+                    containerColor:
+                        _selectedIndex == 10 ? 0xFFffffff : 0xFF000000,
                   ),
                 ],
               ),

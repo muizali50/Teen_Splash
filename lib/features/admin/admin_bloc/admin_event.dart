@@ -158,6 +158,18 @@ final class UpdateSponsors extends AdminEvent {
       ];
 }
 
+final class DeleteSponsors extends AdminEvent {
+  final String sponsorId;
+  const DeleteSponsors(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
 final class AddWaterSponsor extends AdminEvent {
   final WaterSponsorModel waterSponsor;
   final XFile image;
@@ -314,5 +326,31 @@ final class GetSurveyAnswers extends AdminEvent {
   @override
   List<Object> get props => [
         surveyId,
+      ];
+}
+
+final class GetUnverifiedUsers extends AdminEvent {}
+
+final class DeclineUser extends AdminEvent {
+  final String userId;
+  const DeclineUser(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
+      ];
+}
+
+final class ApproveUser extends AdminEvent {
+  final String userId;
+  const ApproveUser(
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        userId,
       ];
 }
