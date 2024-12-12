@@ -118,3 +118,101 @@ final class DownloadImageFailed extends UserState {
         message,
       ];
 }
+
+final class ChangePasswordLoading extends UserState {
+  const ChangePasswordLoading();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class ChangePasswordSuccess extends UserState {
+  const ChangePasswordSuccess();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class ChangePasswordFailure extends UserState {
+  final String message;
+  const ChangePasswordFailure({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class LoggingOut extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class LoggedOut extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class LogOutFailed extends UserState {
+  final String message;
+  const LogOutFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+class UploadPictureFailure extends UserState {
+  final String message;
+  const UploadPictureFailure({
+    required this.message,
+  });
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+class UploadPictureLoading extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+class UploadPictureSuccess extends UserState {
+  final String userImage;
+  const UploadPictureSuccess(
+    this.userImage,
+  );
+
+  @override
+  List<Object> get props => [
+        userImage,
+      ];
+}
+
+final class EditingProfile extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class EditProfileSuccess extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class EditProfileFailed extends UserState {
+  final String message;
+  const EditProfileFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

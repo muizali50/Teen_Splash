@@ -8,6 +8,7 @@ import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dar
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
+import 'package:teen_splash/widgets/app_text_field.dart';
 
 class VerifyIdcardScreen extends StatefulWidget {
   final String name;
@@ -33,6 +34,7 @@ class VerifyIdcardScreen extends StatefulWidget {
 }
 
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
+  final TextEditingController _ageController = TextEditingController();
   String status = 'Pending';
   String? idCardPhoto;
   @override
@@ -147,52 +149,13 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                         ),
                       ),
                       Gaps.hGap20,
-                      Container(
-                        padding: const EdgeInsets.all(
-                          5.0,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.tertiary,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                            12.0,
-                          ),
-                          color: const Color(
-                            0xFFF4F4F4,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            ImageIcon(
-                              color: Theme.of(context).colorScheme.primary,
-                              const AssetImage(
-                                'assets/icons/person.png',
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Text(
-                              '18 years old',
-                              style: TextStyle(
-                                fontFamily: 'OpenSans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                size: 22,
-                                color: Color(0xFF1FAF08),
-                                Icons.check_circle_outline,
-                              ),
-                            ),
-                          ],
-                        ),
+                      AppTextField(
+                        isInputTypeNumber: true,
+                        isInputFormattersDigits: true,
+                        controller: _ageController,
+                        isPrefixIcon: true,
+                        iconImageAddress: 'assets/icons/person.png',
+                        hintText: 'Age',
                       ),
                       Gaps.hGap40,
                       BlocConsumer<AuthenticationBloc, AuthenticationState>(
@@ -250,6 +213,16 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                 );
                                 return;
                               }
+                              if (_ageController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your age',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
                               authenticationBloc.add(
                                 RegisterEvent(
                                   name: widget.name,
@@ -262,6 +235,7 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   status: status,
                                   idCardPhoto: idCardPhoto.toString(),
                                   image: XFile(idCardPhoto!),
+                                  age: _ageController.text,
                                 ),
                               );
                             },

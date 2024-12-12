@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
@@ -20,6 +21,8 @@ class AppTextField extends StatefulWidget {
     this.prefixIconColor = const Color(0xFF999999),
     this.isCopyIcon = false,
     this.copyOnTap,
+    this.isInputTypeNumber = false,
+    this.isInputFormattersDigits = false,
   });
 
   final TextEditingController? controller;
@@ -38,6 +41,8 @@ class AppTextField extends StatefulWidget {
   final Color prefixIconColor;
   final bool isCopyIcon;
   final VoidCallback? copyOnTap;
+  final bool isInputTypeNumber;
+  final bool isInputFormattersDigits;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -54,6 +59,10 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: widget.isInputTypeNumber ? TextInputType.number : null,
+      inputFormatters: widget.isInputFormattersDigits
+          ? [FilteringTextInputFormatter.digitsOnly]
+          : null,
       style: TextStyle(
         color: Theme.of(context).colorScheme.primary,
       ),

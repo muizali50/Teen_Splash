@@ -1,12 +1,18 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:teen_splash/main.dart';
 import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/coupon_model.dart';
+import 'package:teen_splash/user_provider.dart';
 part 'user_event.dart';
 part 'user_state.dart';
 
@@ -330,5 +336,187 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       },
     );
+    on<ChangePassword>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          const ChangePasswordLoading(),
+        );
+        try {
+          final currentUser = FirebaseAuth.instance.currentUser;
+          if (currentUser != null) {
+            final credential = EmailAuthProvider.credential(
+              email: currentUser.email!,
+              password: event.currentPassword,
+            );
+            await currentUser.reauthenticateWithCredential(
+              credential,
+            );
+            await currentUser.updatePassword(
+              event.newPassword,
+            );
+
+            emit(
+              const ChangePasswordSuccess(),
+            );
+          }
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              ChangePasswordFailure(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              ChangePasswordFailure(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              ChangePasswordFailure(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
+    on<LogOut>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          LoggingOut(),
+        );
+        try {
+          await FirebaseAuth.instance.signOut();
+          emit(
+            LoggedOut(),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            LogOutFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UploadPicture>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UploadPictureLoading(),
+        );
+        try {
+          String userImage = await uploadPicture(event.file, event.userId);
+          UserProvider userProvider =
+              navigatorKey.currentContext!.read<UserProvider>();
+          userProvider.user!.picture = userImage;
+          emit(
+            UploadPictureSuccess(
+              userImage,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseException) {
+            emit(
+              UploadPictureFailure(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              UploadPictureFailure(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
+    on<EditProfile>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          EditingProfile(),
+        );
+        try {
+          String userId = FirebaseAuth.instance.currentUser!.uid;
+          UserProvider userProvider =
+              navigatorKey.currentContext!.read<UserProvider>();
+          await FirebaseFirestore.instance
+              .collection(
+                'users',
+              )
+              .doc(
+                userId,
+              )
+              .update(
+            {
+              'name': event.name,
+              'email': event.email,
+              'age': event.age,
+              'gender': event.gender,
+              'country': event.country,
+              'countryFlag': event.countryFlag,
+            },
+          );
+          userProvider.user!.name = event.name;
+          userProvider.user!.email = event.email;
+          userProvider.user!.age = event.age;
+          userProvider.user!.gender = event.gender;
+          userProvider.user!.country = event.country;
+          userProvider.user!.countryFlag = event.countryFlag;
+          emit(
+            EditProfileSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            EditProfileFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            EditProfileFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
+}
+
+Future<String> uploadPicture(String file, String userId) async {
+  File imageFile = File(file);
+  Reference firebaseStoreRef = FirebaseStorage.instance.ref().child(
+        '$userId/ProfilePictures/${userId}_lead',
+      );
+  await firebaseStoreRef.putFile(
+    imageFile,
+  );
+  String url = await firebaseStoreRef.getDownloadURL();
+  await FirebaseFirestore.instance.collection('users').doc(userId).update(
+    {
+      'picture': url,
+    },
+  );
+  return url;
 }

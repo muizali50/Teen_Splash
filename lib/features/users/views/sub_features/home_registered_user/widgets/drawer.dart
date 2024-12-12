@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/authentication/views/login_screen.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/about_screen.dart';
 import 'package:teen_splash/features/users/views/favorites_screen.dart';
 import 'package:teen_splash/features/users/views/offers_history_screen.dart';
@@ -19,6 +22,7 @@ class DrawerWidget extends StatefulWidget {
 class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
+    final userBloc = context.read<UserBloc>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,20 +280,57 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                         Theme.of(context).colorScheme.tertiary,
                                     isBorder: true,
                                     text: 'Cancel',
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
                                   ),
                                 ),
                                 const SizedBox(
                                   width: 12,
                                 ),
-                                SizedBox(
-                                  height: 50,
-                                  width: 106,
-                                  child: AppPrimaryButton(
-                                    isPrimaryColor: true,
-                                    text: 'Logout',
-                                    onTap: () {},
-                                  ),
+                                BlocConsumer<UserBloc, UserState>(
+                                  listener: (context, state) {
+                                    if (state is LoggedOut) {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) =>
+                                              const LoginScreen(),
+                                        ),
+                                        (route) => false,
+                                      );
+                                    } else if (state is LogOutFailed) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            state.message,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  builder: (context, state) {
+                                    if (state is LoggingOut) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    return SizedBox(
+                                      height: 50,
+                                      width: 106,
+                                      child: AppPrimaryButton(
+                                        isPrimaryColor: true,
+                                        text: 'Logout',
+                                        onTap: () {
+                                          userBloc.add(
+                                            LogOut(),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

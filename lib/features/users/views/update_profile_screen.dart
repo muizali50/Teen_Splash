@@ -1,6 +1,12 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/widgets/select_gender_popup.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
+import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
@@ -14,10 +20,14 @@ class UpdateProfileScreen extends StatefulWidget {
 }
 
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  late final AuthenticationBloc authenticationBloc;
+  late final UserProvider userProvider;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   String? selectedCountry;
+  String? selectedCountryFlag;
   String selectedGender = '';
   void updateGender(
     String gender,
@@ -30,7 +40,37 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   @override
+  void initState() {
+    authenticationBloc = context.read<AuthenticationBloc>();
+    userProvider = context.read<UserProvider>();
+    if (userProvider.user == null) {
+      authenticationBloc.add(
+        const GetUser(),
+      );
+    }
+
+    _nameController.text = userProvider.user!.name;
+    _emailController.text = userProvider.user!.email;
+    if (userProvider.user!.age != null) {
+      _ageController.text = userProvider.user!.age ?? '';
+    }
+    if (userProvider.user!.gender != null) {
+      selectedGender = userProvider.user!.gender ?? '';
+    }
+    if (userProvider.user!.country != null) {
+      selectedCountry = userProvider.user!.country ?? '';
+    }
+    if (userProvider.user!.countryFlag != null) {
+      selectedCountryFlag = userProvider.user!.countryFlag ?? '';
+    }
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userBloc = context.watch<UserBloc>();
+    final UserProvider userProvider = context.watch<UserProvider>();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
@@ -79,34 +119,65 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 ),
                               ),
                               shape: BoxShape.circle,
-                              image: const DecorationImage(
+                              image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(
-                                  'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                ),
+                                image: userProvider.user?.picture == null ||
+                                        userProvider.user!.picture!.isEmpty
+                                    ? const AssetImage(
+                                        'assets/images/user.png',
+                                      )
+                                    : NetworkImage(
+                                        userProvider.user!.picture!,
+                                      ) as ImageProvider,
                               ),
                             ),
                           ),
                           Positioned(
                             top: 70,
                             left: 75,
-                            child: Container(
-                              padding: const EdgeInsets.all(7.0),
-                              height: 32,
-                              width: 32,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                                color: Theme.of(context).colorScheme.surface,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/icons/edit.png',
-                                ),
-                              ),
+                            child: BlocBuilder<UserBloc, UserState>(
+                              builder: (context, state) {
+                                if (state is UploadPictureLoading) {
+                                  return const CircularProgressIndicator();
+                                }
+                                return GestureDetector(
+                                  onTap: () async {
+                                    final result =
+                                        await FilePicker.platform.pickFiles(
+                                      type: FileType.image,
+                                    );
+                                    if (result != null) {
+                                      userBloc.add(
+                                        UploadPicture(
+                                          result.files.single.path!,
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(7.0),
+                                    height: 32,
+                                    width: 32,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Image.asset(
+                                        'assets/icons/edit.png',
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -125,6 +196,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         isPrefixIcon: true,
                         hintText: 'Email',
                         iconImageAddress: 'assets/icons/email.png',
+                        prefixIconColor: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      Gaps.hGap15,
+                      AppTextField(
+                        controller: _ageController,
+                        isPrefixIcon: true,
+                        hintText: 'Age',
+                        iconImageAddress: 'assets/icons/person.png',
                         prefixIconColor: Theme.of(context).colorScheme.tertiary,
                       ),
                       Gaps.hGap15,
@@ -238,6 +317,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               setState(
                                 () {
                                   selectedCountry = country.name;
+                                  selectedCountryFlag = country.flagEmoji;
                                   _countryController.text = country.name;
                                 },
                               );
@@ -266,19 +346,23 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               ),
                               prefixIcon: Padding(
                                 padding: const EdgeInsets.all(10),
-                                child: Image.asset(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                  'assets/icons/flag.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
+                                child: selectedCountryFlag != null
+                                    ? Text(
+                                        selectedCountryFlag!,
+                                        style: const TextStyle(fontSize: 24),
+                                      )
+                                    : Image.asset(
+                                        'assets/icons/flag.png',
+                                        width: 24,
+                                        height: 24,
+                                      ),
                               ),
-                              hintText: 'Select Country',
-                              hintStyle: const TextStyle(
+                              hintText: selectedCountry,
+                              hintStyle: TextStyle(
                                 fontFamily: 'OpenSans',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF999999),
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               fillColor: const Color(0xFFF4F4F4),
                               border: const OutlineInputBorder(
@@ -292,9 +376,103 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         ),
                       ),
                       Gaps.hGap50,
-                      AppPrimaryButton(
-                        text: 'Update',
-                        onTap: () {},
+                      BlocConsumer<UserBloc, UserState>(
+                        listener: (context, state) {
+                          if (state is EditProfileSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Profile edited successfully',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(
+                              context,
+                            );
+                          } else if (state is EditProfileFailed) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  state.message,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is EditingProfile) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return AppPrimaryButton(
+                            text: 'Update',
+                            onTap: () {
+                              if (_nameController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your name',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (_ageController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your age',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (_emailController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your email',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (selectedCountry!.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select your country',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (selectedGender.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select your gender',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              userBloc.add(
+                                EditProfile(
+                                  _nameController.text,
+                                  _emailController.text,
+                                  _ageController.text,
+                                  selectedGender,
+                                  selectedCountry.toString(),
+                                  selectedCountryFlag.toString(),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

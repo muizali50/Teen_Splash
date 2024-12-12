@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
@@ -10,6 +14,18 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  late final AdminBloc adminBloc;
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.pushNotifications.isEmpty) {
+      adminBloc.add(
+        GetPushNotification(),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,66 +67,107 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 16.0,
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(
-                                12.0,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFFF8F8F8,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  8.0,
-                                ),
-                              ),
-                              child: const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'New Offers on your way!',
-                                    style: TextStyle(
-                                      fontFamily: 'Lexend',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF000000),
-                                    ),
+                      BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          final filteredNotification =
+                              adminBloc.pushNotifications.where(
+                            (noti) {
+                              final isUserNotification = noti.userIds!.contains(
+                                  FirebaseAuth.instance.currentUser!.uid);
+
+                              return isUserNotification;
+                            },
+                          ).toList();
+                          if (state is GettingPushNotification) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetPushNotificationFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return filteredNotification.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'No Notifications',
                                   ),
-                                  Gaps.hGap05,
-                                  Text(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ',
-                                    style: TextStyle(
-                                      fontFamily: 'OpenSans',
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF767676),
-                                    ),
-                                  ),
-                                  SizedBox(height: 2.0),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      'On 03 July 2023',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 8,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF767676),
+                                )
+                              : ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: filteredNotification.length,
+                                  itemBuilder: (context, index) {
+                                    String isoDate = filteredNotification[index]
+                                        .date
+                                        .toString();
+                                    DateTime parsedDate =
+                                        DateTime.parse(isoDate);
+                                    String formattedDate =
+                                        DateFormat('d MMMM yyyy')
+                                            .format(parsedDate);
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 16.0,
                                       ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
+                                      child: Container(
+                                        padding: const EdgeInsets.all(
+                                          12.0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFFF8F8F8,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8.0,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              filteredNotification[index]
+                                                      .title ??
+                                                  '',
+                                              style: const TextStyle(
+                                                fontFamily: 'Lexend',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF000000),
+                                              ),
+                                            ),
+                                            Gaps.hGap05,
+                                            Text(
+                                              filteredNotification[index]
+                                                      .content ??
+                                                  '',
+                                              style: const TextStyle(
+                                                fontFamily: 'OpenSans',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: Color(0xFF767676),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2.0),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Text(
+                                                'On $formattedDate',
+                                                style: const TextStyle(
+                                                  fontFamily: 'Lexend',
+                                                  fontSize: 8,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
                         },
                       ),
                     ],

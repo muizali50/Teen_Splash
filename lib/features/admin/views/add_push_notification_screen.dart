@@ -400,6 +400,7 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                       .pushNotification!.pushNotificationId,
                                   title: _titleController.text,
                                   content: _contentController.text,
+                                  date: widget.pushNotification!.date,
                                   userIds: _userIds,
                                 ),
                               ),
@@ -410,6 +411,7 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                 PushNotificationModel(
                                   pushNotificationId:
                                       DateTime.now().toIso8601String(),
+                                  date: DateTime.now().toIso8601String(),
                                   title: _titleController.text,
                                   content: _contentController.text,
                                   userIds: _userIds,

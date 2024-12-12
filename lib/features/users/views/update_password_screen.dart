@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
@@ -19,6 +21,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final userBloc = context.watch<UserBloc>();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
@@ -88,9 +91,91 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                         hintText: 'Confirm New Password',
                       ),
                       Gaps.hGap50,
-                      AppPrimaryButton(
-                        text: 'Update',
-                        onTap: () {},
+                      BlocConsumer<UserBloc, UserState>(
+                        listener: (context, state) {
+                          if (state is ChangePasswordSuccess) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Password changed successfully',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          } else if (state is ChangePasswordFailure) {
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  state.message,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is ChangePasswordLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return AppPrimaryButton(
+                            text: 'Update',
+                            onTap: () {
+                              if (_currentPasswordController.text
+                                  .trim()
+                                  .isEmpty) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your current password',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (_newPasswordController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter your new password',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (_newPasswordController.text !=
+                                  _confirmNewPasswordController.text) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Passwords do not match',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                              userBloc.add(
+                                ChangePassword(
+                                  currentPassword:
+                                      _currentPasswordController.text,
+                                  newPassword: _newPasswordController.text,
+                                  confirmNewPassword:
+                                      _confirmNewPasswordController.text,
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

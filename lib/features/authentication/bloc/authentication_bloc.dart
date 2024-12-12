@@ -58,6 +58,7 @@ class AuthenticationBloc
               'countryFlag': event.countryFlag,
               'idCardPicture': event.idCardPhoto,
               'status': event.status,
+              'age': event.age,
             },
           );
           userProvider.setUser(
@@ -71,6 +72,7 @@ class AuthenticationBloc
               countryFlag: event.countryFlag,
               idCardPicture: event.idCardPhoto,
               status: event.status,
+              age: event.age,
             ),
           );
           emit(

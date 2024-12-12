@@ -15,6 +15,7 @@ final class RegisterEvent extends AuthenticationEvent {
   String idCardPhoto;
   final String status;
   final XFile? image;
+  final String age;
   RegisterEvent({
     required this.name,
     required this.email,
@@ -26,6 +27,7 @@ final class RegisterEvent extends AuthenticationEvent {
     required this.idCardPhoto,
     required this.status,
     this.image,
+    required this.age,
   });
 
   @override
@@ -40,6 +42,7 @@ final class RegisterEvent extends AuthenticationEvent {
         idCardPhoto,
         status,
         image,
+        age,
       ];
 }
 
