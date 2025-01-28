@@ -86,6 +86,18 @@ final class UpdateMondayOffers extends AdminEvent {
       ];
 }
 
+final class DeleteMondayOffer extends AdminEvent {
+  final String offerId;
+  const DeleteMondayOffer(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+      ];
+}
+
 final class AddFeaturedOffers extends AdminEvent {
   final FeaturedOffersModel featuredOffer;
   final XFile image;
@@ -119,6 +131,18 @@ final class UpdateFeaturedOffers extends AdminEvent {
   @override
   List<Object> get props => [
         featuredOffer,
+      ];
+}
+
+final class DeleteFeaturedOffer extends AdminEvent {
+  final String offerId;
+  const DeleteFeaturedOffer(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
       ];
 }
 
@@ -200,6 +224,18 @@ final class UpdateWaterSponsor extends AdminEvent {
       ];
 }
 
+final class DeleteWaterSponsor extends AdminEvent {
+  final String sponsorId;
+  const DeleteWaterSponsor(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
 final class AddTickerNotification extends AdminEvent {
   final TickerNotificationModel pushNotification;
   const AddTickerNotification(
@@ -224,6 +260,18 @@ final class UpdateTickerNotification extends AdminEvent {
       ];
 }
 
+final class DeleteTickerNotification extends AdminEvent {
+  final String tickerNotificationId;
+  const DeleteTickerNotification(
+    this.tickerNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        tickerNotificationId,
+      ];
+}
+
 final class AddPushNotification extends AdminEvent {
   final PushNotificationModel pushNotification;
   const AddPushNotification(
@@ -245,6 +293,18 @@ final class UpdatePushNotification extends AdminEvent {
   @override
   List<Object> get props => [
         pushNotification,
+      ];
+}
+
+final class DeletePushNotification extends AdminEvent {
+  final String pushNotificationId;
+  const DeletePushNotification(
+    this.pushNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotificationId,
       ];
 }
 
@@ -352,5 +412,53 @@ final class ApproveUser extends AdminEvent {
   @override
   List<Object> get props => [
         userId,
+      ];
+}
+
+final class AddTeenBusiness extends AdminEvent {
+  final TeenBusinessModel teenBusiness;
+  final XFile image;
+  final XFile businessLogo;
+  const AddTeenBusiness(
+    this.teenBusiness,
+    this.image,
+    this.businessLogo,
+  );
+
+  @override
+  List<Object> get props => [
+        teenBusiness,
+        image,
+        businessLogo,
+      ];
+}
+
+final class GetTeenBusiness extends AdminEvent {}
+
+final class UpdateTeenBusiness extends AdminEvent {
+  final TeenBusinessModel teenBusiness;
+  final XFile? image;
+  final XFile? businessLogo;
+  const UpdateTeenBusiness(
+    this.teenBusiness,
+    this.image,
+    this.businessLogo,
+  );
+
+  @override
+  List<Object> get props => [
+        teenBusiness,
+      ];
+}
+
+final class DeleteTeenBusiness extends AdminEvent {
+  final String businessId;
+  const DeleteTeenBusiness(
+    this.businessId,
+  );
+
+  @override
+  List<Object> get props => [
+        businessId,
       ];
 }

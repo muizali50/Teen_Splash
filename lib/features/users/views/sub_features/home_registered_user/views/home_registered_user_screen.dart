@@ -52,7 +52,9 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen>
         ),
       ),
       drawer: const Drawer(
-        child: DrawerWidget(),
+        child: DrawerWidget(
+          isGuest: false,
+        ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SingleChildScrollView(

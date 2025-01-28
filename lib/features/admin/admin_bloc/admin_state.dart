@@ -201,6 +201,42 @@ final class UpdateMondayOffersSuccess extends AdminState {
       ];
 }
 
+final class DeleteMondayOfferSuccess extends AdminState {
+  final String offerId;
+  const DeleteMondayOfferSuccess(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+      ];
+}
+
+final class DeleteMondayOfferFailed extends AdminState {
+  final String message;
+  const DeleteMondayOfferFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingMondayOffer extends AdminState {
+  final String offerId;
+  const DeletingMondayOffer(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+      ];
+}
+
 final class AddFeaturedOffersFailed extends AdminState {
   final String message;
   const AddFeaturedOffersFailed(
@@ -276,6 +312,42 @@ final class UpdateFeaturedOffersSuccess extends AdminState {
   @override
   List<Object> get props => [
         featuredOffer,
+      ];
+}
+
+final class DeleteFeaturedOfferSuccess extends AdminState {
+  final String offerId;
+  const DeleteFeaturedOfferSuccess(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+      ];
+}
+
+final class DeleteFeaturedOfferFailed extends AdminState {
+  final String message;
+  const DeleteFeaturedOfferFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingFeaturedOffer extends AdminState {
+  final String offerId;
+  const DeletingFeaturedOffer(
+    this.offerId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
       ];
 }
 
@@ -471,6 +543,42 @@ final class UpdateWaterSponsorSuccess extends AdminState {
       ];
 }
 
+final class DeleteWaterSponsorSuccess extends AdminState {
+  final String sponsorId;
+  const DeleteWaterSponsorSuccess(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
+final class DeleteWaterSponsorFailed extends AdminState {
+  final String message;
+  const DeleteWaterSponsorFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingWaterSponsor extends AdminState {
+  final String sponsorId;
+  const DeletingWaterSponsor(
+    this.sponsorId,
+  );
+
+  @override
+  List<Object> get props => [
+        sponsorId,
+      ];
+}
+
 final class AddTickerNotificationFailed extends AdminState {
   final String message;
   const AddTickerNotificationFailed(
@@ -549,6 +657,42 @@ final class UpdateTickerNotificationSuccess extends AdminState {
       ];
 }
 
+final class DeleteTickerNotificationSuccess extends AdminState {
+  final String tickerNotificationId;
+  const DeleteTickerNotificationSuccess(
+    this.tickerNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        tickerNotificationId,
+      ];
+}
+
+final class DeleteTickerNotificationFailed extends AdminState {
+  final String message;
+  const DeleteTickerNotificationFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingTickerNotification extends AdminState {
+  final String tickerNotificationId;
+  const DeletingTickerNotification(
+    this.tickerNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        tickerNotificationId,
+      ];
+}
+
 final class AddPushNotificationFailed extends AdminState {
   final String message;
   const AddPushNotificationFailed(
@@ -624,6 +768,42 @@ final class UpdatePushNotificationSuccess extends AdminState {
   @override
   List<Object> get props => [
         pushNotification,
+      ];
+}
+
+final class DeletePushNotificationSuccess extends AdminState {
+  final String pushNotificationId;
+  const DeletePushNotificationSuccess(
+    this.pushNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotificationId,
+      ];
+}
+
+final class DeletePushNotificationFailed extends AdminState {
+  final String message;
+  const DeletePushNotificationFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingPushNotification extends AdminState {
+  final String pushNotificationId;
+  const DeletingPushNotification(
+    this.pushNotificationId,
+  );
+
+  @override
+  List<Object> get props => [
+        pushNotificationId,
       ];
 }
 
@@ -920,5 +1100,119 @@ final class ApprovingUser extends AdminState {
   @override
   List<Object> get props => [
         userId,
+      ];
+}
+
+final class AddTeenBusinessFailed extends AdminState {
+  final String message;
+  const AddTeenBusinessFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingTeenBusiness extends AdminState {}
+
+final class AddTeenBusinessSuccess extends AdminState {
+  final TeenBusinessModel teenBusiness;
+  const AddTeenBusinessSuccess(
+    this.teenBusiness,
+  );
+
+  @override
+  List<Object> get props => [
+        teenBusiness,
+      ];
+}
+
+final class GetTeenBusinessFailed extends AdminState {
+  final String message;
+  const GetTeenBusinessFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingTeenBusiness extends AdminState {}
+
+final class GetTeenBusinessSuccess extends AdminState {
+  final List<TeenBusinessModel> teenBusinessess;
+  const GetTeenBusinessSuccess(
+    this.teenBusinessess,
+  );
+
+  @override
+  List<Object> get props => [
+        teenBusinessess,
+      ];
+}
+
+final class UpdateTeenBusinessFailed extends AdminState {
+  final String message;
+  const UpdateTeenBusinessFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingTeenBusiness extends AdminState {}
+
+final class UpdateTeenBusinessSuccess extends AdminState {
+  final TeenBusinessModel teenBusiness;
+  const UpdateTeenBusinessSuccess(
+    this.teenBusiness,
+  );
+
+  @override
+  List<Object> get props => [
+        teenBusiness,
+      ];
+}
+
+final class DeleteTeenBusinessSuccess extends AdminState {
+  final String businessId;
+  const DeleteTeenBusinessSuccess(
+    this.businessId,
+  );
+
+  @override
+  List<Object> get props => [
+        businessId,
+      ];
+}
+
+final class DeleteTeenBusinessFailed extends AdminState {
+  final String message;
+  const DeleteTeenBusinessFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingTeenBusiness extends AdminState {
+  final String businessId;
+  const DeletingTeenBusiness(
+    this.businessId,
+  );
+
+  @override
+  List<Object> get props => [
+        businessId,
       ];
 }

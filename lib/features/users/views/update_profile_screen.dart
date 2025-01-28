@@ -1,10 +1,8 @@
-import 'package:country_picker/country_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
-import 'package:teen_splash/features/authentication/views/sub_features/widgets/select_gender_popup.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
@@ -25,7 +23,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+  // final TextEditingController _countryController = TextEditingController();
   String? selectedCountry;
   String? selectedCountryFlag;
   String selectedGender = '';
@@ -198,183 +196,183 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         iconImageAddress: 'assets/icons/email.png',
                         prefixIconColor: Theme.of(context).colorScheme.tertiary,
                       ),
-                      Gaps.hGap15,
-                      AppTextField(
-                        controller: _ageController,
-                        isPrefixIcon: true,
-                        hintText: 'Age',
-                        iconImageAddress: 'assets/icons/person.png',
-                        prefixIconColor: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      Gaps.hGap15,
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 13,
-                          horizontal: 13,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF4F4F4),
-                          borderRadius: BorderRadius.circular(
-                            12.0,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              'assets/icons/gender.png',
-                              width: 24,
-                              height: 24,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              selectedGender == 'male'
-                                  ? 'Male'
-                                  : selectedGender == 'female'
-                                      ? 'Female'
-                                      : 'Select Gender',
-                              style: TextStyle(
-                                fontFamily: 'OpenSans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: selectedGender == 'male'
-                                    ? Theme.of(context).colorScheme.primary
-                                    : selectedGender == 'female'
-                                        ? Theme.of(context).colorScheme.primary
-                                        : const Color(0xFF999999),
-                              ),
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return SelectGenderPopup(
-                                      maleOnTap: () {
-                                        updateGender(
-                                          'male',
-                                        );
-                                        Navigator.pop(context);
-                                      },
-                                      femaleOnTap: () {
-                                        updateGender(
-                                          'female',
-                                        );
-                                        Navigator.pop(context);
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              child: ImageIcon(
-                                size: 20,
-                                color: Theme.of(context).colorScheme.secondary,
-                                const AssetImage(
-                                  'assets/icons/arrow.png',
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Gaps.hGap15,
-                      GestureDetector(
-                        onTap: () {
-                          showCountryPicker(
-                            context: context,
-                            showPhoneCode: false,
-                            countryListTheme: CountryListThemeData(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.surface,
-                              textStyle: TextStyle(
-                                fontFamily: 'OpenSans',
-                                fontSize: 16,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              inputDecoration: InputDecoration(
-                                hintText: 'Search Country',
-                                hintStyle: const TextStyle(
-                                  color: Color(0xFF999999),
-                                ),
-                                filled: true,
-                                fillColor: const Color(0xFFF4F4F4),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                border: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(12),
-                                  ),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                            ),
-                            onSelect: (Country country) {
-                              setState(
-                                () {
-                                  selectedCountry = country.name;
-                                  selectedCountryFlag = country.flagEmoji;
-                                  _countryController.text = country.name;
-                                },
-                              );
-                            },
-                          );
-                        },
-                        child: AbsorbPointer(
-                          child: TextFormField(
-                            controller: _countryController,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              filled: true,
-                              suffixIcon: IconButton(
-                                onPressed: () {},
-                                icon: ImageIcon(
-                                  size: 24,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  const AssetImage(
-                                    'assets/icons/arrow.png',
-                                  ),
-                                ),
-                              ),
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: selectedCountryFlag != null
-                                    ? Text(
-                                        selectedCountryFlag!,
-                                        style: const TextStyle(fontSize: 24),
-                                      )
-                                    : Image.asset(
-                                        'assets/icons/flag.png',
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                              ),
-                              hintText: selectedCountry,
-                              hintStyle: TextStyle(
-                                fontFamily: 'OpenSans',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              fillColor: const Color(0xFFF4F4F4),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Gaps.hGap15,
+                      // AppTextField(
+                      //   controller: _ageController,
+                      //   isPrefixIcon: true,
+                      //   hintText: 'Age',
+                      //   iconImageAddress: 'assets/icons/person.png',
+                      //   prefixIconColor: Theme.of(context).colorScheme.tertiary,
+                      // ),
+                      // Gaps.hGap15,
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     vertical: 13,
+                      //     horizontal: 13,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     color: const Color(0xFFF4F4F4),
+                      //     borderRadius: BorderRadius.circular(
+                      //       12.0,
+                      //     ),
+                      //   ),
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         color: Theme.of(context).colorScheme.tertiary,
+                      //         'assets/icons/gender.png',
+                      //         width: 24,
+                      //         height: 24,
+                      //       ),
+                      //       const SizedBox(
+                      //         width: 10,
+                      //       ),
+                      //       Text(
+                      //         selectedGender == 'male'
+                      //             ? 'Male'
+                      //             : selectedGender == 'female'
+                      //                 ? 'Female'
+                      //                 : 'Select Gender',
+                      //         style: TextStyle(
+                      //           fontFamily: 'OpenSans',
+                      //           fontSize: 16,
+                      //           fontWeight: FontWeight.w400,
+                      //           color: selectedGender == 'male'
+                      //               ? Theme.of(context).colorScheme.primary
+                      //               : selectedGender == 'female'
+                      //                   ? Theme.of(context).colorScheme.primary
+                      //                   : const Color(0xFF999999),
+                      //         ),
+                      //       ),
+                      //       const Spacer(),
+                      //       InkWell(
+                      //         onTap: () {
+                      //           showModalBottomSheet(
+                      //             context: context,
+                      //             builder: (BuildContext context) {
+                      //               return SelectGenderPopup(
+                      //                 maleOnTap: () {
+                      //                   updateGender(
+                      //                     'male',
+                      //                   );
+                      //                   Navigator.pop(context);
+                      //                 },
+                      //                 femaleOnTap: () {
+                      //                   updateGender(
+                      //                     'female',
+                      //                   );
+                      //                   Navigator.pop(context);
+                      //                 },
+                      //               );
+                      //             },
+                      //           );
+                      //         },
+                      //         child: ImageIcon(
+                      //           size: 20,
+                      //           color: Theme.of(context).colorScheme.secondary,
+                      //           const AssetImage(
+                      //             'assets/icons/arrow.png',
+                      //           ),
+                      //         ),
+                      //       )
+                      //     ],
+                      //   ),
+                      // ),
+                      // Gaps.hGap15,
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     showCountryPicker(
+                      //       context: context,
+                      //       showPhoneCode: false,
+                      //       countryListTheme: CountryListThemeData(
+                      //         backgroundColor:
+                      //             Theme.of(context).colorScheme.surface,
+                      //         textStyle: TextStyle(
+                      //           fontFamily: 'OpenSans',
+                      //           fontSize: 16,
+                      //           color: Theme.of(context).colorScheme.primary,
+                      //         ),
+                      //         inputDecoration: InputDecoration(
+                      //           hintText: 'Search Country',
+                      //           hintStyle: const TextStyle(
+                      //             color: Color(0xFF999999),
+                      //           ),
+                      //           filled: true,
+                      //           fillColor: const Color(0xFFF4F4F4),
+                      //           prefixIcon: Icon(
+                      //             Icons.search,
+                      //             color: Theme.of(context).colorScheme.primary,
+                      //           ),
+                      //           border: const OutlineInputBorder(
+                      //             borderRadius: BorderRadius.all(
+                      //               Radius.circular(12),
+                      //             ),
+                      //             borderSide: BorderSide.none,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       onSelect: (Country country) {
+                      //         setState(
+                      //           () {
+                      //             selectedCountry = country.name;
+                      //             selectedCountryFlag = country.flagEmoji;
+                      //             _countryController.text = country.name;
+                      //           },
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      //   child: AbsorbPointer(
+                      //     child: TextFormField(
+                      //       controller: _countryController,
+                      //       style: TextStyle(
+                      //         color: Theme.of(context).colorScheme.primary,
+                      //       ),
+                      //       decoration: InputDecoration(
+                      //         isDense: true,
+                      //         filled: true,
+                      //         suffixIcon: IconButton(
+                      //           onPressed: () {},
+                      //           icon: ImageIcon(
+                      //             size: 24,
+                      //             color:
+                      //                 Theme.of(context).colorScheme.secondary,
+                      //             const AssetImage(
+                      //               'assets/icons/arrow.png',
+                      //             ),
+                      //           ),
+                      //         ),
+                      //         prefixIcon: Padding(
+                      //           padding: const EdgeInsets.all(10),
+                      //           child: selectedCountryFlag != null
+                      //               ? Text(
+                      //                   selectedCountryFlag!,
+                      //                   style: const TextStyle(fontSize: 24),
+                      //                 )
+                      //               : Image.asset(
+                      //                   'assets/icons/flag.png',
+                      //                   width: 24,
+                      //                   height: 24,
+                      //                 ),
+                      //         ),
+                      //         hintText: selectedCountry,
+                      //         hintStyle: TextStyle(
+                      //           fontFamily: 'OpenSans',
+                      //           fontSize: 16,
+                      //           fontWeight: FontWeight.w400,
+                      //           color: Theme.of(context).colorScheme.primary,
+                      //         ),
+                      //         fillColor: const Color(0xFFF4F4F4),
+                      //         border: const OutlineInputBorder(
+                      //           borderRadius: BorderRadius.all(
+                      //             Radius.circular(12),
+                      //           ),
+                      //           borderSide: BorderSide.none,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       Gaps.hGap50,
                       BlocConsumer<UserBloc, UserState>(
                         listener: (context, state) {

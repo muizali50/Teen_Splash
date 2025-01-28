@@ -65,6 +65,7 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
 
   @override
   Widget build(BuildContext context) {
+    final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       backgroundColor: const Color(
         0xFFF1F1F1,
@@ -206,7 +207,7 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                   'Offer Name',
                                 ),
                               ),
-                               DataColumn(
+                              DataColumn(
                                 label: Text(
                                   'Discount Type',
                                 ),
@@ -237,7 +238,7 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                               offer.offerName ?? '',
                                             ),
                                           ),
-                                           DataCell(
+                                          DataCell(
                                             Text(
                                               offer.discountType ?? '',
                                             ),
@@ -248,33 +249,108 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                             ),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddMondayOffersScreen(
-                                                      mondayOffer: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddMondayOffersScreen(
+                                                          mondayOffer: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
-                                                  ),
                                                 ),
-                                              ),
+                                                TextButton(
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          titleTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          contentTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          title: const Text(
+                                                            'Delete Offer',
+                                                          ),
+                                                          content: const Text(
+                                                            'Are you sure you want to delete this offer?',
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                  context,
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                'Cancel',
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                adminBloc.add(
+                                                                  DeleteMondayOffer(
+                                                                    offer.offerId ??
+                                                                        '',
+                                                                  ),
+                                                                );
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'Delete',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -295,7 +371,7 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                               offer.offerName ?? '',
                                             ),
                                           ),
-                                           DataCell(
+                                          DataCell(
                                             Text(
                                               offer.discountType ?? '',
                                             ),
@@ -306,33 +382,108 @@ class _AllMondayOffersState extends State<AllMondayOffers> {
                                             ),
                                           ),
                                           DataCell(
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
                                                       context,
-                                                    ) =>
-                                                        AddMondayOffersScreen(
-                                                      mondayOffer: offer,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) =>
+                                                            AddMondayOffersScreen(
+                                                          mondayOffer: offer,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Edit',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                              child: const Text(
-                                                'Edit',
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Color(
-                                                    0xFF131313,
-                                                  ),
                                                 ),
-                                              ),
+                                                TextButton(
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(
+                                                        0xFF131313,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          titleTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          contentTextStyle:
+                                                              const TextStyle(
+                                                            color: Color(
+                                                              0xFF131313,
+                                                            ),
+                                                          ),
+                                                          title: const Text(
+                                                            'Delete Offer',
+                                                          ),
+                                                          content: const Text(
+                                                            'Are you sure you want to delete this offer?',
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                  context,
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                'Cancel',
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                adminBloc.add(
+                                                                  DeleteMondayOffer(
+                                                                    offer.offerId ??
+                                                                        '',
+                                                                  ),
+                                                                );
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'Delete',
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],

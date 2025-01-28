@@ -43,15 +43,6 @@ class _SelectGenderPopupState extends State<SelectGenderPopup> {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          Gaps.hGap15,
-          const Text(
-            'Lorem ipsum dolor sit amet.',
-            style: TextStyle(
-                fontFamily: 'OpenSans',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF999999)),
-          ),
           Gaps.hGap40,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

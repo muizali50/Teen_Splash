@@ -190,31 +190,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               ],
             ),
-            Positioned(
-              // bottom: 670, // Adjust the position as necessary
-              // left: 0,
-              // right: 0,
-              top: 0, // Reduced value from 30 to 15 to pull the card up.
-              left: 20,
-              right: 20,
-              child: Container(
-                height: 105,
-                width: 105,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(
-                      0xFFFFD700,
+            Consumer<UserProvider>(
+              builder: (context, userProvider, child) {
+                return Positioned(
+                  // bottom: 670, // Adjust the position as necessary
+                  // left: 0,
+                  // right: 0,
+                  top: 0, // Reduced value from 30 to 15 to pull the card up.
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    height: 105,
+                    width: 105,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(
+                          0xFFFFD700,
+                        ),
+                      ),
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: userProvider.user?.picture == null ||
+                                userProvider.user!.picture!.isEmpty
+                            ? const AssetImage(
+                                'assets/images/user.png',
+                              )
+                            : NetworkImage(
+                                userProvider.user!.picture!,
+                              ) as ImageProvider,
+                      ),
                     ),
                   ),
-                  shape: BoxShape.circle,
-                  image: const DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(
-                      'https://plus.unsplash.com/premium_photo-1722945691819-e58990e7fb27?q=80&w=1442&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    ),
-                  ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),

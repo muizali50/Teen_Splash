@@ -21,8 +21,10 @@ class ChatBubble extends StatefulWidget {
 class _ChatBubbleState extends State<ChatBubble> {
   @override
   Widget build(BuildContext context) {
-    bool isSentByCurrentUser =
-        widget.chatMessage.senderId == FirebaseAuth.instance.currentUser!.uid;
+    bool isSentByCurrentUser = widget.chatMessage.senderId ==
+        (FirebaseAuth.instance.currentUser?.uid ?? '');
+    // bool isSentByCurrentUser =
+    //     widget.chatMessage.senderId == FirebaseAuth.instance.currentUser!.uid;
     return isSentByCurrentUser
         ? Align(
             alignment: Alignment.centerRight,

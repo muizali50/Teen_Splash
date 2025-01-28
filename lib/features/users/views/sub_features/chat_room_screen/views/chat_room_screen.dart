@@ -37,11 +37,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   void initState() {
     authenticationBloc = context.read<AuthenticationBloc>();
     userProvider = context.read<UserProvider>();
-    if (userProvider.user == null) {
-      authenticationBloc.add(
-        const GetUser(),
-      );
+    if (widget.isGuest == false) {
+      if (userProvider.user == null) {
+        authenticationBloc.add(
+          const GetUser(),
+        );
+      }
     }
+
     adminBloc = context.read<AdminBloc>();
     if (adminBloc.tickerNotifications.isEmpty) {
       adminBloc.add(
@@ -211,8 +214,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 return SizedBox(
                   height: 20,
                   child: HorizontalScrollingText(
-                    text: 
-                    latestPushNotification.title ??
+                    text: latestPushNotification.title ??
                         'No active notifications available',
                   ),
                 );

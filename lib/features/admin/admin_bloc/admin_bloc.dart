@@ -13,6 +13,7 @@ import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/model/survey_answer_model.dart';
 import 'package:teen_splash/model/survey_model.dart';
+import 'package:teen_splash/model/teen_business_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
@@ -29,6 +30,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<PushNotificationModel> pushNotifications = [];
   List<SurveyModel> surveys = [];
   List<EventsModel> events = [];
+  List<TeenBusinessModel> teenBusinesses = [];
   List<AppUser> users = [];
 
   AdminBloc() : super(AdminInitial()) {
@@ -401,6 +403,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<DeleteMondayOffer>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingMondayOffer(
+            event.offerId,
+          ),
+        );
+        try {
+          final mondayOffersCollection = FirebaseFirestore.instance.collection(
+            'monday_offer',
+          );
+          await mondayOffersCollection.doc(event.offerId).delete();
+          mondayOffers.removeWhere(
+            (element) => element.offerId == event.offerId,
+          );
+          emit(
+            DeleteMondayOfferSuccess(
+              event.offerId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteMondayOfferFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteMondayOfferFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteMondayOfferFailed(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
     on<AddFeaturedOffers>(
       (
         event,
@@ -569,6 +617,53 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<DeleteFeaturedOffer>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingFeaturedOffer(
+            event.offerId,
+          ),
+        );
+        try {
+          final featuredOffersCollection =
+              FirebaseFirestore.instance.collection(
+            'featured_offer',
+          );
+          await featuredOffersCollection.doc(event.offerId).delete();
+          featuredOffers.removeWhere(
+            (element) => element.offerId == event.offerId,
+          );
+          emit(
+            DeleteFeaturedOfferSuccess(
+              event.offerId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteFeaturedOfferFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteFeaturedOfferFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteFeaturedOfferFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );
@@ -943,6 +1038,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<DeleteWaterSponsor>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingWaterSponsor(
+            event.sponsorId,
+          ),
+        );
+        try {
+          final waterSponsorCollection = FirebaseFirestore.instance.collection(
+            'waterSponsor',
+          );
+          await waterSponsorCollection.doc(event.sponsorId).delete();
+          waterSponsors.removeWhere(
+            (element) => element.waterSponsorId == event.sponsorId,
+          );
+          emit(
+            DeleteWaterSponsorSuccess(
+              event.sponsorId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteWaterSponsorFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteWaterSponsorFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteWaterSponsorFailed(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
     on<AddTickerNotification>(
       (
         event,
@@ -1081,6 +1222,56 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<DeleteTickerNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingTickerNotification(
+            event.tickerNotificationId,
+          ),
+        );
+        try {
+          final tickerNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'tickerNotification',
+          );
+          await tickerNotificationCollection
+              .doc(event.tickerNotificationId)
+              .delete();
+          tickerNotifications.removeWhere(
+            (element) =>
+                element.pushNotificationId == event.tickerNotificationId,
+          );
+          emit(
+            DeleteTickerNotificationSuccess(
+              event.tickerNotificationId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteTickerNotificationFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteTickerNotificationFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteTickerNotificationFailed(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
     on<AddPushNotification>(
       (
         event,
@@ -1216,6 +1407,55 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<DeletePushNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingPushNotification(
+            event.pushNotificationId,
+          ),
+        );
+        try {
+          final pushNotificationCollection =
+              FirebaseFirestore.instance.collection(
+            'pushNotification',
+          );
+          await pushNotificationCollection
+              .doc(event.pushNotificationId)
+              .delete();
+          pushNotifications.removeWhere(
+            (element) => element.pushNotificationId == event.pushNotificationId,
+          );
+          emit(
+            DeletePushNotificationSuccess(
+              event.pushNotificationId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeletePushNotificationFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeletePushNotificationFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeletePushNotificationFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );
@@ -1719,6 +1959,222 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               e.toString(),
             ),
           );
+        }
+      },
+    );
+    on<AddTeenBusiness>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingTeenBusiness(),
+        );
+        try {
+          final ref = FirebaseStorage.instance.ref().child(
+                'teen_businesses_images/${event.image.path.split('/').last}',
+              );
+          await ref.putData(
+            await event.image.readAsBytes(),
+          );
+          final imageUrl = await ref.getDownloadURL();
+          event.teenBusiness.image = imageUrl;
+          final logoRef = FirebaseStorage.instance.ref().child(
+                'teen_businesses_logos/${event.businessLogo.path.split('/').last}',
+              );
+
+          await logoRef.putData(
+            await event.businessLogo.readAsBytes(),
+          );
+          final logoUrl = await logoRef.getDownloadURL();
+          event.teenBusiness.businessLogo = logoUrl;
+          final teenBusinessCollection = FirebaseFirestore.instance.collection(
+            'teen_business',
+          );
+          final result = await teenBusinessCollection.add(
+            event.teenBusiness.toMap(),
+          );
+          event.teenBusiness.businessId = result.id;
+          teenBusinesses.add(
+            event.teenBusiness,
+          );
+          emit(
+            AddTeenBusinessSuccess(
+              event.teenBusiness,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddTeenBusinessFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddTeenBusinessFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetTeenBusiness>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingTeenBusiness(),
+        );
+        try {
+          final teenBusinessCollection = FirebaseFirestore.instance.collection(
+            'teen_business',
+          );
+          final result = await teenBusinessCollection.get();
+          teenBusinesses = result.docs.map(
+            (e) {
+              final teenBusiness = TeenBusinessModel.fromMap(
+                e.data(),
+              );
+              teenBusiness.businessId = e.id;
+              return teenBusiness;
+            },
+          ).toList();
+          emit(
+            GetTeenBusinessSuccess(
+              teenBusinesses,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetTeenBusinessFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetTeenBusinessFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateTeenBusiness>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingTeenBusiness(),
+        );
+        try {
+          if (event.image != null) {
+            final ref = FirebaseStorage.instance.ref().child(
+                  'teen_businesses_images/${event.image!.path.split('/').last}',
+                );
+            await ref.putData(
+              await event.image!.readAsBytes(),
+            );
+            final imageUrl = await ref.getDownloadURL();
+            event.teenBusiness.image = imageUrl;
+          }
+          if (event.businessLogo != null) {
+            final logoRef = FirebaseStorage.instance.ref().child(
+                  'teen_businesses_logos/${event.businessLogo!.path.split('/').last}',
+                );
+            await logoRef.putData(
+              await event.businessLogo!.readAsBytes(),
+            );
+            final logoUrl = await logoRef.getDownloadURL();
+            event.teenBusiness.businessLogo = logoUrl;
+          }
+          final teenBusinessCollection = FirebaseFirestore.instance.collection(
+            'teen_business',
+          );
+          await teenBusinessCollection
+              .doc(
+                event.teenBusiness.businessId,
+              )
+              .update(
+                event.teenBusiness.toMap(),
+              );
+          final index = teenBusinesses.indexWhere(
+            (element) => element.businessId == event.teenBusiness.businessId,
+          );
+          teenBusinesses[index] = event.teenBusiness;
+          emit(
+            UpdateTeenBusinessSuccess(
+              event.teenBusiness,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateTeenBusinessFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateTeenBusinessFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<DeleteTeenBusiness>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingTeenBusiness(
+            event.businessId,
+          ),
+        );
+        try {
+          final teenBusinessCollection = FirebaseFirestore.instance.collection(
+            'teen_business',
+          );
+          await teenBusinessCollection.doc(event.businessId).delete();
+          teenBusinesses.removeWhere(
+            (element) => element.businessId == event.businessId,
+          );
+          emit(
+            DeleteTeenBusinessSuccess(
+              event.businessId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeleteTeenBusinessFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeleteTeenBusinessFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeleteTeenBusinessFailed(
+                message: e.toString(),
+              ),
+            );
+          }
         }
       },
     );
