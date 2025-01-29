@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/offer_redeemed.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/redeem_offer.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
@@ -13,12 +16,16 @@ class FeaturedOfferDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<FeaturedOfferDetailsScreen> createState() => _FeaturedOfferDetailsScreenState();
+  State<FeaturedOfferDetailsScreen> createState() =>
+      _FeaturedOfferDetailsScreenState();
 }
 
-class _FeaturedOfferDetailsScreenState extends State<FeaturedOfferDetailsScreen> {
+class _FeaturedOfferDetailsScreenState
+    extends State<FeaturedOfferDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -67,8 +74,15 @@ class _FeaturedOfferDetailsScreenState extends State<FeaturedOfferDetailsScreen>
                           ),
                         ),
                         const Spacer(),
-                        InkWell(
-                          onTap: () {},
+                        GestureDetector(
+                          onTap: () {
+                            adminBloc.add(
+                              AddFavouriteFeaturedOffer(
+                                widget.featuredOffer.offerId.toString(),
+                                userId,
+                              ),
+                            );
+                          },
                           child: Container(
                             height: 40,
                             width: 40,
@@ -80,7 +94,10 @@ class _FeaturedOfferDetailsScreenState extends State<FeaturedOfferDetailsScreen>
                               padding: const EdgeInsets.all(6.0),
                               child: Icon(
                                 size: 27,
-                                Icons.favorite,
+                                widget.featuredOffer.isFavorite!
+                                        .contains(userId)
+                                    ? Icons.favorite
+                                    : Icons.favorite_outline,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),

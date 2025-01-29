@@ -3,7 +3,6 @@ class TeenBusinessModel {
   String? businessName;
   String? details;
   String? image;
-  String? offerName;
   String? businessLogo;
   String? websiteLink;
 
@@ -12,7 +11,6 @@ class TeenBusinessModel {
     this.businessName,
     this.details,
     this.image,
-    this.offerName,
     this.businessLogo,
     this.websiteLink,
   });
@@ -23,7 +21,6 @@ class TeenBusinessModel {
       'businessName': businessName,
       'details': details,
       'image': image,
-      'offerName': offerName,
       'businessLogo': businessLogo,
       'websiteLink': websiteLink,
     };
@@ -35,7 +32,6 @@ class TeenBusinessModel {
       businessName: map['businessName'],
       details: map['details'],
       image: map['image'],
-      offerName: map['offerName'],
       businessLogo: map['businessLogo'],
       websiteLink: map['websiteLink'],
     );

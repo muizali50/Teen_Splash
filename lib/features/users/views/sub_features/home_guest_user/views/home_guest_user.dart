@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/views/signup_screen.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/clothing_screen.dart';
+import 'package:teen_splash/features/users/views/events_photo_gallery.dart';
+import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
+import 'package:teen_splash/features/users/views/highlighted_sponsors_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/events_screen.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/finanicial_screen.dart';
-import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/food_screen.dart';
+import 'package:teen_splash/features/users/views/view_more_featured_offers.dart';
+import 'package:teen_splash/features/users/views/view_more_highlighted_sponsors.dart';
+import 'package:teen_splash/model/featured_offers_model.dart';
+import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 import 'package:teen_splash/widgets/search_field.dart';
@@ -16,12 +21,77 @@ class HomeGuestUser extends StatefulWidget {
   State<HomeGuestUser> createState() => _HomeGuestUserState();
 }
 
-class _HomeGuestUserState extends State<HomeGuestUser>
-    with TickerProviderStateMixin {
+class _HomeGuestUserState extends State<HomeGuestUser> {
+  late final AdminBloc adminBloc;
+  List<FeaturedOffersModel> filteredFeaturedOfferData = [];
+  List<SponsorsModel> filterSponsorData = [];
+  String _searchText = '';
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.mondayOffers.isEmpty) {
+      adminBloc.add(
+        GetMondayOffers(),
+      );
+    }
+    if (adminBloc.featuredOffers.isEmpty) {
+      adminBloc.add(
+        GetFeaturedOffers(),
+      );
+    }
+    if (adminBloc.sponsors.isEmpty) {
+      adminBloc.add(
+        GetSponsors(),
+      );
+    }
+
+    searchController.addListener(
+      _onSearchChanged,
+    );
+    super.initState();
+  }
+
+  void _onSearchChanged() {
+    setState(
+      () {
+        _searchText = searchController.text;
+        _filterFeaturedOffers();
+        _filterSponsors();
+      },
+    );
+  }
+
+  void _filterFeaturedOffers() {
+    if (_searchText.isEmpty) {
+      filteredFeaturedOfferData = adminBloc.featuredOffers;
+    } else {
+      filteredFeaturedOfferData = adminBloc.featuredOffers
+          .where(
+            (offer) => offer.businessName!.toLowerCase().contains(
+                  _searchText.toLowerCase(),
+                ),
+          )
+          .toList();
+    }
+  }
+
+  void _filterSponsors() {
+    if (_searchText.isEmpty) {
+      filterSponsorData = adminBloc.sponsors;
+    } else {
+      filterSponsorData = adminBloc.sponsors
+          .where(
+            (offer) => offer.businessName!.toLowerCase().contains(
+                  _searchText.toLowerCase(),
+                ),
+          )
+          .toList();
+    }
+  }
+
   final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    TabController tabController = TabController(length: 4, vsync: this);
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
@@ -115,74 +185,397 @@ class _HomeGuestUserState extends State<HomeGuestUser>
                       controller: searchController,
                     ),
                     Gaps.hGap20,
-                    Container(
-                      width: double.infinity,
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 5,
-                      ),
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(
-                            38,
+                    Row(
+                      children: [
+                        Text(
+                          'Featured Offers',
+                          style: TextStyle(
+                            fontFamily: 'Lexend',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                      ),
-                      child: TabBar(
-                        isScrollable: true,
-                        tabAlignment: TabAlignment.start,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        indicator: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(
-                              30,
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const ViewMoreFeaturedOffers(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'View More >',
+                            style: TextStyle(
+                              fontFamily: 'Lexend',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                           ),
                         ),
-                        labelColor: Theme.of(context).colorScheme.surface,
-                        unselectedLabelColor: const Color(0xFF999999),
-                        unselectedLabelStyle: const TextStyle(
-                          fontFamily: 'OpenSans',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        labelStyle: const TextStyle(
-                          fontFamily: 'OpenSans',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        controller: tabController,
-                        tabs: const [
-                          Tab(
-                            text: 'Food',
-                          ),
-                          Tab(
-                            text: 'Clothing',
-                          ),
-                          Tab(
-                            text: 'Events',
-                          ),
-                          Tab(
-                            text: 'Financial',
-                          ),
-                        ],
+                      ],
+                    ),
+                    SizedBox(
+                      height: 110,
+                      child: BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          final featuredOffers =
+                              filteredFeaturedOfferData.isEmpty
+                                  ? adminBloc.featuredOffers
+                                  : filteredFeaturedOfferData;
+                          if (state is GettingFeaturedOffers) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetFeaturedOffersFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return featuredOffers.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'No offers',
+                                  ),
+                                )
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: featuredOffers.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) =>
+                                                      FeaturedOfferDetailsScreen(
+                                                    featuredOffer:
+                                                        featuredOffers[index],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 6.0,
+                                              ),
+                                              width: 131,
+                                              height: 89,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  8.0,
+                                                ),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    featuredOffers[index]
+                                                            .image ??
+                                                        '',
+                                                  ),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 2,
+                                                    ),
+                                                    color:
+                                                        const Color(0xFFEF589F),
+                                                    child: Text(
+                                                      featuredOffers[index]
+                                                                  .discountType ==
+                                                              'Cash Discount'
+                                                          ? '\$${featuredOffers[index].discount ?? ''} off'
+                                                          : '${featuredOffers[index].discount ?? ''}% off',
+                                                      style: TextStyle(
+                                                        fontFamily: 'OpenSans',
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                      5.0,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .surface
+                                                          .withOpacity(0.9),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      size: 10,
+                                                      Icons.favorite,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Gaps.hGap05,
+                                          Text(
+                                            featuredOffers[index]
+                                                    .businessName ??
+                                                '',
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                        },
                       ),
                     ),
-                    // Gaps.hGap0,
+                    Gaps.hGap05,
+                    Row(
+                      children: [
+                        const Text(
+                          'Highlighted Sponsors',
+                          style: TextStyle(
+                            fontFamily: 'Lexend',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFFF36F21),
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const ViewMoreHighlightedSponsors(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'View More >',
+                            style: TextStyle(
+                              fontFamily: 'Lexend',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFFF36F21),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(
-                      height: 500,
-                      width: double.maxFinite,
-                      child: TabBarView(
-                        controller: tabController,
-                        children: const [
-                          FoodScreen(),
-                          ClothingScreen(),
-                          EventsScreen(),
-                          FinanicialScreen(),
-                        ],
+                      height: 110,
+                      child: BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          final sponsor = filterSponsorData.isNotEmpty
+                              ? filterSponsorData
+                              : adminBloc.sponsors;
+                          if (state is GettingSponsor) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetSponsorFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return sponsor.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'No sponsors',
+                                  ),
+                                )
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: sponsor.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) =>
+                                                      HighlightedSponsorDetailsScreen(
+                                                    sponsor: sponsor[index],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 6.0,
+                                              ),
+                                              width: 131,
+                                              height: 89,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  8.0,
+                                                ),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    sponsor[index].image ?? '',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Gaps.hGap05,
+                                          Text(
+                                            sponsor[index].businessName ?? '',
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                        },
+                      ),
+                    ),
+                    Gaps.hGap05,
+                    Row(
+                      children: [
+                        Text(
+                          'Event Photo Galleries',
+                          style: TextStyle(
+                            fontFamily: 'Lexend',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const EventsPhotoGallery(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'View More >',
+                            style: TextStyle(
+                              fontFamily: 'Lexend',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 110,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                    horizontal: 6.0,
+                                  ),
+                                  width: 131,
+                                  height: 89,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      8.0,
+                                    ),
+                                    image: const DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Gaps.hGap05,
+                                Text(
+                                  'Little Caesars Pizza',
+                                  style: TextStyle(
+                                    fontFamily: 'OpenSans',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

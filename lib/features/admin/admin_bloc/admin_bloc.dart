@@ -2178,6 +2178,62 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<AddFavouriteFeaturedOffer>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingFavouriteFeaturedOffer(),
+        );
+        try {
+          final offerDoc = FirebaseFirestore.instance
+              .collection('featured_offer')
+              .doc(event.offerId);
+          final docSnapshot = await offerDoc.get();
+          final data = docSnapshot.data()!;
+          final List<String> favorites =
+              List<String>.from(data['isFavorite'] ?? []);
+
+          if (favorites.contains(event.userId)) {
+            favorites.remove(event.userId);
+          } else {
+            favorites.add(event.userId);
+          }
+
+          await offerDoc.update(
+            {
+              'isFavorite': favorites,
+            },
+          );
+
+          for (var offer in featuredOffers) {
+            if (offer.offerId == event.offerId) {
+              offer.isFavorite = favorites;
+              break;
+            }
+          }
+          emit(
+            AddFavouriteFeaturedOfferSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddFavouriteFeaturedOfferFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddFavouriteFeaturedOfferFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
   Future<List<SurveyAnswerModel>> _fetchSurveyAnswers(String surveyId) async {
     final snapshot = await FirebaseFirestore.instance

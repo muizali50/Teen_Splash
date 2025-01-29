@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/views/teen_business_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
@@ -10,6 +13,19 @@ class TopTeensScreen extends StatefulWidget {
 }
 
 class _TopTeensScreenState extends State<TopTeensScreen> {
+  late final AdminBloc adminBloc;
+
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.teenBusinesses.isEmpty) {
+      adminBloc.add(
+        GetTeenBusiness(),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,62 +74,93 @@ class _TopTeensScreenState extends State<TopTeensScreen> {
                         ),
                       ),
                       Gaps.hGap50,
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (
-                                    //       context,
-                                    //     ) =>
-                                    //         const OfferDetailsScreen(),
-                                    //   ),
-                                    // );
+                      BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          if (state is GettingTeenBusiness) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetTeenBusinessFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return adminBloc.teenBusinesses.isEmpty
+                              ? const Center(
+                                  child: Text('No Teen Businesses'),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: adminBloc.teenBusinesses.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) =>
+                                                      TeenBusinessDetailsScreen(
+                                                    teenBusiness: adminBloc
+                                                        .teenBusinesses[index],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 12.0,
+                                                horizontal: 12.0,
+                                              ),
+                                              width: double.infinity,
+                                              height: 140,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  8.0,
+                                                ),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    adminBloc
+                                                            .teenBusinesses[
+                                                                index]
+                                                            .image ??
+                                                        '',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Gaps.hGap05,
+                                          Text(
+                                            adminBloc.teenBusinesses[index]
+                                                    .businessName ??
+                                                '',
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
                                   },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0,
-                                      horizontal: 12.0,
-                                    ),
-                                    width: double.infinity,
-                                    height: 140,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        8.0,
-                                      ),
-                                      image: const DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(
-                                          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1398&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Text(
-                                  'ABC Restaurant',
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                                );
                         },
                       ),
                       // GridView.builder(

@@ -462,3 +462,17 @@ final class DeleteTeenBusiness extends AdminEvent {
         businessId,
       ];
 }
+
+final class AddFavouriteFeaturedOffer extends AdminEvent {
+  final String offerId;
+  final String userId;
+  const AddFavouriteFeaturedOffer(
+    this.offerId,
+    this.userId,
+  );
+  @override
+  List<Object> get props => [
+        offerId,
+        userId,
+      ];
+}

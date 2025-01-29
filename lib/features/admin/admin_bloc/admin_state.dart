@@ -1216,3 +1216,25 @@ final class DeletingTeenBusiness extends AdminState {
         businessId,
       ];
 }
+
+final class AddingFavouriteFeaturedOffer extends AdminState {
+  @override
+  List<Object> get props => [];
+}
+
+final class AddFavouriteFeaturedOfferSuccess extends AdminState {
+  @override
+  List<Object> get props => [];
+}
+
+final class AddFavouriteFeaturedOfferFailed extends AdminState {
+  final String message;
+  const AddFavouriteFeaturedOfferFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

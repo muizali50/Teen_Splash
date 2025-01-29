@@ -85,26 +85,26 @@ class _TeenBusinessDetailsScreenState extends State<TeenBusinessDetailsScreen> {
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF4F4F4),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(
-                                size: 27,
-                                Icons.favorite,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // const Spacer(),
+                        // InkWell(
+                        //   onTap: () {},
+                        //   child: Container(
+                        //     height: 40,
+                        //     width: 40,
+                        //     decoration: BoxDecoration(
+                        //       color: const Color(0xFFF4F4F4),
+                        //       borderRadius: BorderRadius.circular(10.0),
+                        //     ),
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.all(6.0),
+                        //       child: Icon(
+                        //         size: 27,
+                        //         Icons.favorite,
+                        //         color: Theme.of(context).colorScheme.secondary,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
