@@ -15,6 +15,7 @@ import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/firebase_options.dart';
 import 'package:teen_splash/services/notification_services.dart';
+import 'package:teen_splash/services/splash_screen.dart';
 import 'package:teen_splash/user_provider.dart';
 
 late final SharedPreferences prefs;
@@ -81,28 +82,29 @@ class MyApp extends StatelessWidget {
               tertiary: Color(0xFFFF69B4),
             ),
           ),
-          home: Consumer<UserProvider>(
-            builder: (context, userProvider, child) {
-              final firebaseUser = userProvider.firebaseUser;
-              if (FirebaseAuth.instance.currentUser == null) {
-                return kIsWeb ? const LoginScreen() : const OnboardingScreen();
-              } else if (kIsWeb) {
-                return const AdminDashboard();
-              }
-              // else if (firebaseUser == null) {
-              //   // If the firebaseUser hasn't been fetched yet, show a loading screen
-              //   return const Center(
-              //     child: CircularProgressIndicator(),
-              //   );
-              // }
-              else if (firebaseUser != null &&
-                  firebaseUser.status == 'Pending') {
-                return const LoginScreen();
-              } else {
-                return const BottomNavBar();
-              }
-            },
-          ),
+          home: const SplashScreen(),
+          // Consumer<UserProvider>(
+          //   builder: (context, userProvider, child) {
+          //     final firebaseUser = userProvider.firebaseUser;
+          //     if (FirebaseAuth.instance.currentUser == null) {
+          //       return kIsWeb ? const LoginScreen() : const OnboardingScreen();
+          //     } else if (kIsWeb) {
+          //       return const AdminDashboard();
+          //     }
+          // else if (firebaseUser == null) {
+          //   // If the firebaseUser hasn't been fetched yet, show a loading screen
+          //   return const Center(
+          //     child: CircularProgressIndicator(),
+          //   );
+          // }
+          //     else if (firebaseUser != null &&
+          //         firebaseUser.status == 'Pending') {
+          //       return const LoginScreen();
+          //     } else {
+          //       return const BottomNavBar();
+          //     }
+          //   },
+          // ),
           // home: FirebaseAuth.instance.currentUser == null
           //     ? kIsWeb
           //         ? const LoginScreen()
