@@ -132,9 +132,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       content: userProvider.user?.gender ?? '',
                                     ),
                                     Gaps.hGap10,
-                                    const ProfileRow(
+                                    ProfileRow(
                                       title: 'Age',
-                                      content: '25 y/o',
+                                      content:
+                                          '${userProvider.user?.age ?? ''} y/o',
                                     ),
                                     Gaps.hGap10,
                                     ProfileRow(

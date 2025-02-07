@@ -37,6 +37,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   void initState() {
     authenticationBloc = context.read<AuthenticationBloc>();
     userProvider = context.read<UserProvider>();
+
     if (widget.isGuest == false) {
       if (userProvider.user == null) {
         authenticationBloc.add(
@@ -51,7 +52,19 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         GetTickerNotification(),
       );
     }
+    adminBloc.add(
+      GetRestrictedWords(),
+    );
     super.initState();
+  }
+
+  bool containsRestrictedWords(String message, List<String> restrictedWords) {
+    for (String word in restrictedWords) {
+      if (message.toLowerCase().contains(word.toLowerCase())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -405,6 +418,19 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   void _sendTextMessage(UserProvider userProvider, String message) {
     if (message.isNotEmpty) {
+      final state = context.read<AdminBloc>().state;
+      if (state is GetRestrictedWordsSuccess) {
+        if (containsRestrictedWords(
+            _messageController.text, state.restrictedWords.words)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Your message contains restricted words!"),
+            ),
+          );
+          return;
+        }
+        print("Message Sent: ${_messageController.text}");
+      }
       final currentUser = userProvider.user;
       if (currentUser != null) {
         userProvider.sendTextMessage(

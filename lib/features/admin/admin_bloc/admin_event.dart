@@ -403,9 +403,9 @@ final class DeclineUser extends AdminEvent {
       ];
 }
 
-final class ApproveUser extends AdminEvent {
+final class RemoveUser extends AdminEvent {
   final String userId;
-  const ApproveUser(
+  const RemoveUser(
     this.userId,
   );
 
@@ -476,3 +476,30 @@ final class AddFavouriteFeaturedOffer extends AdminEvent {
         userId,
       ];
 }
+
+final class AddFavouriteMondayOffer extends AdminEvent {
+  final String offerId;
+  final String userId;
+  const AddFavouriteMondayOffer(
+    this.offerId,
+    this.userId,
+  );
+  @override
+  List<Object> get props => [
+        offerId,
+        userId,
+      ];
+}
+
+final class UpdateRestrictedWords extends AdminEvent {
+  final List<String> words;
+  const UpdateRestrictedWords(
+    this.words,
+  );
+  @override
+  List<Object> get props => [
+        words,
+      ];
+}
+
+final class GetRestrictedWords extends AdminEvent {}

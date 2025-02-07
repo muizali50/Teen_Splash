@@ -45,20 +45,13 @@ class _VerifyUsersState extends State<VerifyUsers> {
 
   void _filterUsers() {
     if (_searchText.isEmpty) {
-      filterUserData = adminBloc.users
-          .where(
-            (user) => user.status == 'Pending',
-          )
-          .toList();
+      filterUserData = adminBloc.users.toList();
     } else {
       filterUserData = adminBloc.users
           .where(
             (coupon) => coupon.name.toLowerCase().contains(
                   _searchText.toLowerCase(),
                 ),
-          )
-          .where(
-            (user) => user.status == 'Pending',
           )
           .toList();
     }
@@ -103,7 +96,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                 Row(
                   children: [
                     const Text(
-                      'Verify Users',
+                      'Members Information',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 25,
@@ -127,7 +120,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                   builder: (context, state) {
                     final unverifiedUsers = adminBloc.users
                         .where(
-                          (user) => user.status == 'Pending',
+                          (user) => user.status == 'Approved',
                         )
                         .toList();
                     if (state is GettingUnverifiedUsers) {
@@ -185,6 +178,21 @@ class _VerifyUsersState extends State<VerifyUsers> {
                               ),
                               DataColumn(
                                 label: Text(
+                                  'Date of Birth',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'Age',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
+                                  'Membership Number',
+                                ),
+                              ),
+                              DataColumn(
+                                label: Text(
                                   'Actions',
                                 ),
                               ),
@@ -210,6 +218,21 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                             ),
                                           ),
                                           DataCell(
+                                            Text(
+                                              user.dateOfBirth ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              user.age ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              user.membershipNumber ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
                                             Row(
                                               children: [
                                                 TextButton(
@@ -231,10 +254,10 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                             ),
                                                           ),
                                                           title: const Text(
-                                                            'Approve Request',
+                                                            'Remove Member',
                                                           ),
                                                           content: const Text(
-                                                            'Are you sure you want to approve this request?',
+                                                            'Are you sure you want to remove this member?',
                                                           ),
                                                           actions: [
                                                             TextButton(
@@ -250,7 +273,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                             TextButton(
                                                               onPressed: () {
                                                                 adminBloc.add(
-                                                                  ApproveUser(
+                                                                  RemoveUser(
                                                                     user.uid ??
                                                                         '',
                                                                   ),
@@ -259,7 +282,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                                     context);
                                                               },
                                                               child: const Text(
-                                                                'Approve',
+                                                                'Remove',
                                                               ),
                                                             ),
                                                           ],
@@ -268,7 +291,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                     );
                                                   },
                                                   child: const Text(
-                                                    'Approve',
+                                                    'Remove',
                                                     style: TextStyle(
                                                       fontFamily: 'Inter',
                                                       decoration: TextDecoration
@@ -282,76 +305,76 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                     ),
                                                   ),
                                                 ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          titleTextStyle:
-                                                              const TextStyle(
-                                                            color: Color(
-                                                              0xFF131313,
-                                                            ),
-                                                          ),
-                                                          contentTextStyle:
-                                                              const TextStyle(
-                                                            color: Color(
-                                                              0xFF131313,
-                                                            ),
-                                                          ),
-                                                          title: const Text(
-                                                            'Decline Request',
-                                                          ),
-                                                          content: const Text(
-                                                            'Are you sure you want to decline this request?',
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                  context,
-                                                                );
-                                                              },
-                                                              child: const Text(
-                                                                'Cancel',
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                adminBloc.add(
-                                                                  DeclineUser(
-                                                                    user.uid ??
-                                                                        '',
-                                                                  ),
-                                                                );
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                              child: const Text(
-                                                                'Decline',
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: const Text(
-                                                    'Declined',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Inter',
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Color(
-                                                        0xFF131313,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
+                                                // TextButton(
+                                                //   onPressed: () {
+                                                //     showDialog(
+                                                //       context: context,
+                                                //       builder: (context) {
+                                                //         return AlertDialog(
+                                                //           titleTextStyle:
+                                                //               const TextStyle(
+                                                //             color: Color(
+                                                //               0xFF131313,
+                                                //             ),
+                                                //           ),
+                                                //           contentTextStyle:
+                                                //               const TextStyle(
+                                                //             color: Color(
+                                                //               0xFF131313,
+                                                //             ),
+                                                //           ),
+                                                //           title: const Text(
+                                                //             'Decline Request',
+                                                //           ),
+                                                //           content: const Text(
+                                                //             'Are you sure you want to decline this request?',
+                                                //           ),
+                                                //           actions: [
+                                                //             TextButton(
+                                                //               onPressed: () {
+                                                //                 Navigator.pop(
+                                                //                   context,
+                                                //                 );
+                                                //               },
+                                                //               child: const Text(
+                                                //                 'Cancel',
+                                                //               ),
+                                                //             ),
+                                                //             TextButton(
+                                                //               onPressed: () {
+                                                //                 adminBloc.add(
+                                                //                   DeclineUser(
+                                                //                     user.uid ??
+                                                //                         '',
+                                                //                   ),
+                                                //                 );
+                                                //                 Navigator.pop(
+                                                //                     context);
+                                                //               },
+                                                //               child: const Text(
+                                                //                 'Decline',
+                                                //               ),
+                                                //             ),
+                                                //           ],
+                                                //         );
+                                                //       },
+                                                //     );
+                                                //   },
+                                                //   child: const Text(
+                                                //     'Declined',
+                                                //     style: TextStyle(
+                                                //       fontFamily: 'Inter',
+                                                //       decoration: TextDecoration
+                                                //           .underline,
+                                                //       fontSize: 15,
+                                                //       fontWeight:
+                                                //           FontWeight.w700,
+                                                //       color: Color(
+                                                //         0xFF131313,
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                // ),
                                                 TextButton(
                                                   onPressed: () {
                                                     showDialog(
@@ -408,6 +431,21 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                             ),
                                           ),
                                           DataCell(
+                                            Text(
+                                              user.dateOfBirth ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              user.age ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
+                                            Text(
+                                              user.membershipNumber ?? '',
+                                            ),
+                                          ),
+                                          DataCell(
                                             Row(
                                               children: [
                                                 TextButton(
@@ -429,10 +467,10 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                             ),
                                                           ),
                                                           title: const Text(
-                                                            'Approve Request',
+                                                            'Remove Member',
                                                           ),
                                                           content: const Text(
-                                                            'Are you sure you want to approve this request?',
+                                                            'Are you sure you want to remove this member?',
                                                           ),
                                                           actions: [
                                                             TextButton(
@@ -448,7 +486,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                             TextButton(
                                                               onPressed: () {
                                                                 adminBloc.add(
-                                                                  ApproveUser(
+                                                                  RemoveUser(
                                                                     user.uid ??
                                                                         '',
                                                                   ),
@@ -457,7 +495,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                                     context);
                                                               },
                                                               child: const Text(
-                                                                'Approve',
+                                                                'Remove',
                                                               ),
                                                             ),
                                                           ],
@@ -466,7 +504,7 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                     );
                                                   },
                                                   child: const Text(
-                                                    'Approve',
+                                                    'Remove',
                                                     style: TextStyle(
                                                       fontFamily: 'Inter',
                                                       decoration: TextDecoration
@@ -480,76 +518,76 @@ class _VerifyUsersState extends State<VerifyUsers> {
                                                     ),
                                                   ),
                                                 ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          titleTextStyle:
-                                                              const TextStyle(
-                                                            color: Color(
-                                                              0xFF131313,
-                                                            ),
-                                                          ),
-                                                          contentTextStyle:
-                                                              const TextStyle(
-                                                            color: Color(
-                                                              0xFF131313,
-                                                            ),
-                                                          ),
-                                                          title: const Text(
-                                                            'Decline Request',
-                                                          ),
-                                                          content: const Text(
-                                                            'Are you sure you want to decline this request?',
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                  context,
-                                                                );
-                                                              },
-                                                              child: const Text(
-                                                                'Cancel',
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                adminBloc.add(
-                                                                  DeclineUser(
-                                                                    user.uid ??
-                                                                        '',
-                                                                  ),
-                                                                );
-                                                                Navigator.pop(
-                                                                    context);
-                                                              },
-                                                              child: const Text(
-                                                                'Decline',
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: const Text(
-                                                    'Declined',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Inter',
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Color(
-                                                        0xFF131313,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
+                                                // TextButton(
+                                                //   onPressed: () {
+                                                //     showDialog(
+                                                //       context: context,
+                                                //       builder: (context) {
+                                                //         return AlertDialog(
+                                                //           titleTextStyle:
+                                                //               const TextStyle(
+                                                //             color: Color(
+                                                //               0xFF131313,
+                                                //             ),
+                                                //           ),
+                                                //           contentTextStyle:
+                                                //               const TextStyle(
+                                                //             color: Color(
+                                                //               0xFF131313,
+                                                //             ),
+                                                //           ),
+                                                //           title: const Text(
+                                                //             'Decline Request',
+                                                //           ),
+                                                //           content: const Text(
+                                                //             'Are you sure you want to decline this request?',
+                                                //           ),
+                                                //           actions: [
+                                                //             TextButton(
+                                                //               onPressed: () {
+                                                //                 Navigator.pop(
+                                                //                   context,
+                                                //                 );
+                                                //               },
+                                                //               child: const Text(
+                                                //                 'Cancel',
+                                                //               ),
+                                                //             ),
+                                                //             TextButton(
+                                                //               onPressed: () {
+                                                //                 adminBloc.add(
+                                                //                   DeclineUser(
+                                                //                     user.uid ??
+                                                //                         '',
+                                                //                   ),
+                                                //                 );
+                                                //                 Navigator.pop(
+                                                //                     context);
+                                                //               },
+                                                //               child: const Text(
+                                                //                 'Decline',
+                                                //               ),
+                                                //             ),
+                                                //           ],
+                                                //         );
+                                                //       },
+                                                //     );
+                                                //   },
+                                                //   child: const Text(
+                                                //     'Declined',
+                                                //     style: TextStyle(
+                                                //       fontFamily: 'Inter',
+                                                //       decoration: TextDecoration
+                                                //           .underline,
+                                                //       fontSize: 15,
+                                                //       fontWeight:
+                                                //           FontWeight.w700,
+                                                //       color: Color(
+                                                //         0xFF131313,
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                // ),
                                                 TextButton(
                                                   onPressed: () {
                                                     showDialog(

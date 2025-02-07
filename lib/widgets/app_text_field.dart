@@ -23,6 +23,8 @@ class AppTextField extends StatefulWidget {
     this.copyOnTap,
     this.isInputTypeNumber = false,
     this.isInputFormattersDigits = false,
+    this.isMaxLine = false,
+    this.maxLines,
   });
 
   final TextEditingController? controller;
@@ -43,6 +45,8 @@ class AppTextField extends StatefulWidget {
   final VoidCallback? copyOnTap;
   final bool isInputTypeNumber;
   final bool isInputFormattersDigits;
+  final bool isMaxLine;
+  final int? maxLines;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -59,6 +63,7 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: widget.isMaxLine ? widget.maxLines : 1,
       keyboardType: widget.isInputTypeNumber ? TextInputType.number : null,
       inputFormatters: widget.isInputFormattersDigits
           ? [FilteringTextInputFormatter.digitsOnly]

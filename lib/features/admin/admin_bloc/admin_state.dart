@@ -1067,9 +1067,9 @@ final class DecliningUser extends AdminState {
       ];
 }
 
-final class ApproveUserSuccess extends AdminState {
+final class RemoveUserSuccess extends AdminState {
   final String userId;
-  const ApproveUserSuccess(
+  const RemoveUserSuccess(
     this.userId,
   );
 
@@ -1079,9 +1079,9 @@ final class ApproveUserSuccess extends AdminState {
       ];
 }
 
-final class ApproveUserFailed extends AdminState {
+final class RemoveUserFailed extends AdminState {
   final String message;
-  const ApproveUserFailed({
+  const RemoveUserFailed({
     required this.message,
   });
 
@@ -1091,9 +1091,9 @@ final class ApproveUserFailed extends AdminState {
       ];
 }
 
-final class ApprovingUser extends AdminState {
+final class RemovingUser extends AdminState {
   final String userId;
-  const ApprovingUser(
+  const RemovingUser(
     this.userId,
   );
 
@@ -1236,5 +1236,79 @@ final class AddFavouriteFeaturedOfferFailed extends AdminState {
   @override
   List<Object> get props => [
         message,
+      ];
+}
+
+final class AddingFavouriteMondayOffer extends AdminState {
+  @override
+  List<Object> get props => [];
+}
+
+final class AddFavouriteMondayOfferSuccess extends AdminState {
+  @override
+  List<Object> get props => [];
+}
+
+final class AddFavouriteMondayOfferFailed extends AdminState {
+  final String message;
+  const AddFavouriteMondayOfferFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdateRestrictedWordsFailed extends AdminState {
+  final String message;
+  const UpdateRestrictedWordsFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingRestrictedWords extends AdminState {}
+
+final class UpdateRestrictedWordsSuccess extends AdminState {
+  final RestrictedWordsModel restricedWords;
+  const UpdateRestrictedWordsSuccess(
+    this.restricedWords,
+  );
+
+  @override
+  List<Object> get props => [
+        restricedWords,
+      ];
+}
+
+final class GetRestrictedWordsFailed extends AdminState {
+  final String message;
+  const GetRestrictedWordsFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingRestrictedWords extends AdminState {}
+
+final class GetRestrictedWordsSuccess extends AdminState {
+  final RestrictedWordsModel restrictedWords;
+  const GetRestrictedWordsSuccess(
+    this.restrictedWords,
+  );
+
+  @override
+  List<Object> get props => [
+        restrictedWords,
       ];
 }

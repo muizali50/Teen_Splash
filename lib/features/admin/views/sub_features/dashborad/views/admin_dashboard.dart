@@ -9,6 +9,7 @@ import 'package:teen_splash/features/admin/views/all_surveys_screen.dart';
 import 'package:teen_splash/features/admin/views/all_teen_businesses.dart';
 import 'package:teen_splash/features/admin/views/all_ticker_notification_screen.dart';
 import 'package:teen_splash/features/admin/views/all_water_sponsors_screen.dart';
+import 'package:teen_splash/features/admin/views/restricted_words_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/demographics/views/demographics_screen.dart';
 import 'package:teen_splash/features/admin/views/sub_features/dashborad/widgets/dashboard_fields.dart';
 import 'package:teen_splash/features/admin/views/verify_users_screen.dart';
@@ -36,6 +37,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const AllEventsScreen(),
     const VerifyUsers(),
     const AllTeenBusinesses(),
+    const RestrictedWordsScreen(),
   ];
 
   void _onItemTapped(
@@ -184,7 +186,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     icon: 'assets/icons/person.png',
                     onTap: () => _onItemTapped(10),
                     iconColor: _selectedIndex == 10 ? 0xFF000000 : 0xFFffffff,
-                    title: 'Verify Users',
+                    title: 'Members Information',
                     titleColor: _selectedIndex == 10 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 10 ? 0xFFffffff : 0xFF000000,
@@ -198,6 +200,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     titleColor: _selectedIndex == 11 ? 0xFF000000 : 0xFFffffff,
                     containerColor:
                         _selectedIndex == 11 ? 0xFFffffff : 0xFF000000,
+                  ),
+                  Gaps.hGap20,
+                  DashboardFields(
+                    icon: 'assets/icons/offer.png',
+                    onTap: () => _onItemTapped(12),
+                    iconColor: _selectedIndex == 12 ? 0xFF000000 : 0xFFffffff,
+                    title: 'Restricted Words',
+                    titleColor: _selectedIndex == 12 ? 0xFF000000 : 0xFFffffff,
+                    containerColor:
+                        _selectedIndex == 12 ? 0xFFffffff : 0xFF000000,
                   ),
                 ],
               ),

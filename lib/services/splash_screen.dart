@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teen_splash/features/admin/views/sub_features/dashborad/views/admin_dashboard.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/onboarding_screen.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
@@ -18,16 +19,25 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  late final AuthenticationBloc authenticationBloc;
+  late final UserProvider userProvider;
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-
+    authenticationBloc = context.read<AuthenticationBloc>();
+    userProvider = context.read<UserProvider>();
+    if (FirebaseAuth.instance.currentUser != null &&
+        userProvider.firebaseUser == null) {
+      authenticationBloc.add(
+        const GetUser(),
+      );
+    }
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), 
+      duration: const Duration(seconds: 2),
     )..forward();
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
@@ -54,7 +64,8 @@ class _SplashScreenState extends State<SplashScreen>
           builder: (context) => const AdminDashboard(),
         ),
       );
-    } else if (firebaseUser != null && firebaseUser.status == 'Pending') {
+    } else if (firebaseUser != null && firebaseUser.status == 'Pending' ||
+        int.tryParse(firebaseUser!.age!)! > 19) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -79,8 +90,8 @@ class _SplashScreenState extends State<SplashScreen>
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: Image.asset(
-            'assets/images/logo.png', 
-            width: 150, 
+            'assets/images/logo.png',
+            width: 150,
             height: 150,
           ),
         ),

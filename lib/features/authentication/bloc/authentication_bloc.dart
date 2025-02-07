@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:teen_splash/main.dart';
 import 'package:teen_splash/model/app_user.dart';
@@ -28,6 +29,7 @@ class AuthenticationBloc
           const Registering(),
         );
         try {
+          String membershipNumber = await generateMembershipNumber();
           final ref = FirebaseStorage.instance.ref().child(
                 'idcard_images/${event.image!.path.split('/').last}',
               );
@@ -59,6 +61,8 @@ class AuthenticationBloc
               'idCardPicture': event.idCardPhoto,
               'status': event.status,
               'age': event.age,
+              'dateOfBirth': event.dateOfBirth,
+              'membershipNumber': membershipNumber,
             },
           );
           userProvider.setUser(
@@ -73,6 +77,8 @@ class AuthenticationBloc
               idCardPicture: event.idCardPhoto,
               status: event.status,
               age: event.age,
+              dateOfBirth: event.dateOfBirth,
+              membershipNumber: membershipNumber,
             ),
           );
           emit(
@@ -142,10 +148,34 @@ class AuthenticationBloc
             if (user.status == 'Pending') {
               emit(
                 const AuthenticationFailure(
-                  message: 'Your request is under verification',
+                  message: 'Teens Only',
                 ),
               );
               return;
+            }
+
+            // Check and update age
+            if (user.dateOfBirth != null && user.dateOfBirth!.isNotEmpty) {
+              int calculatedAge =
+                  calculateAgeFromDateOfBirth(user.dateOfBirth!);
+
+              if (user.age == null || user.age != calculatedAge.toString()) {
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .update(
+                  {
+                    'age': calculatedAge.toString(),
+                  },
+                );
+              }
+
+              if (calculatedAge > 19) {
+                emit(
+                  const AuthenticationFailure(message: 'Teens Only'),
+                );
+                return;
+              }
             }
 
             // Update login frequency (if not on web)
@@ -283,4 +313,48 @@ class AuthenticationBloc
       },
     );
   }
+}
+
+int calculateAgeFromDateOfBirth(String dateOfBirth) {
+  try {
+    DateTime dob = DateFormat('dd/MM/yyyy').parse(dateOfBirth);
+    DateTime now = DateTime.now();
+    int age = now.year - dob.year;
+
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
+      age--;
+    }
+
+    return age;
+  } catch (e) {
+    print("Error parsing dateOfBirth: $e");
+    return 0;
+  }
+}
+
+Future<String> generateMembershipNumber() async {
+  final usersCollection = FirebaseFirestore.instance.collection('users');
+
+  // Fetch the latest user document sorted by membership number in descending order
+  final latestUserQuery = await usersCollection
+      .orderBy('membershipNumber', descending: true)
+      .limit(1)
+      .get();
+
+  String newMembershipNumber;
+
+  if (latestUserQuery.docs.isNotEmpty) {
+    // Get the latest membership number and increment it
+    String latestMembershipNumber =
+        latestUserQuery.docs.first['membershipNumber'];
+    int latestNumber = int.tryParse(latestMembershipNumber) ?? 0;
+    newMembershipNumber =
+        (latestNumber + 1).toString().padLeft(16, '0'); // Ensuring 16 digits
+  } else {
+    // First membership number starts at 0000000000000001
+    newMembershipNumber = '0000000000000001';
+  }
+
+  return newMembershipNumber;
 }

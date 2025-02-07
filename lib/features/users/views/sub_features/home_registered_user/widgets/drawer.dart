@@ -5,7 +5,7 @@ import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dar
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/about_screen.dart';
-import 'package:teen_splash/features/users/views/favorites_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/favorites/views/favorites_screen.dart';
 import 'package:teen_splash/features/users/views/offers_history_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/settings_screen/views/settings_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer_row.dart';

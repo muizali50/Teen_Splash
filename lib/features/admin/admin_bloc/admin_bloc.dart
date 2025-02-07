@@ -11,6 +11,7 @@ import 'package:teen_splash/model/events_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
+import 'package:teen_splash/model/restricted_words.dart';
 import 'package:teen_splash/model/survey_answer_model.dart';
 import 'package:teen_splash/model/survey_model.dart';
 import 'package:teen_splash/model/teen_business_model.dart';
@@ -32,6 +33,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<EventsModel> events = [];
   List<TeenBusinessModel> teenBusinesses = [];
   List<AppUser> users = [];
+  RestrictedWordsModel? restricedWords;
 
   AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
@@ -1871,13 +1873,13 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
-    on<ApproveUser>(
+    on<RemoveUser>(
       (
         event,
         emit,
       ) async {
         emit(
-          ApprovingUser(
+          RemovingUser(
             event.userId,
           ),
         );
@@ -1887,14 +1889,14 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           await usersCollection.doc(event.userId).update(
             {
-              'status': 'Approved',
+              'status': 'Pending',
             },
           );
           // Update the local list
           final updatedUsers = users.map(
             (user) {
               if (user.uid == event.userId) {
-                return user.copyWith(status: 'Approved');
+                return user.copyWith(status: 'Pending');
               }
               return user;
             },
@@ -1902,26 +1904,26 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
           users = updatedUsers; // Update the list of users in the bloc
           emit(
-            ApproveUserSuccess(
+            RemoveUserSuccess(
               event.userId,
             ),
           );
         } catch (e) {
           if (e is FirebaseAuthException) {
             emit(
-              ApproveUserFailed(
+              RemoveUserFailed(
                 message: e.message ?? '',
               ),
             );
           } else if (e is FirebaseException) {
             emit(
-              ApproveUserFailed(
+              RemoveUserFailed(
                 message: e.message ?? '',
               ),
             );
           } else {
             emit(
-              ApproveUserFailed(
+              RemoveUserFailed(
                 message: e.toString(),
               ),
             );
@@ -2234,7 +2236,153 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<AddFavouriteMondayOffer>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingFavouriteMondayOffer(),
+        );
+        try {
+          final offerDoc = FirebaseFirestore.instance
+              .collection('monday_offer')
+              .doc(event.offerId);
+          final docSnapshot = await offerDoc.get();
+          final data = docSnapshot.data()!;
+          final List<String> favorites =
+              List<String>.from(data['isFavorite'] ?? []);
+
+          if (favorites.contains(event.userId)) {
+            favorites.remove(event.userId);
+          } else {
+            favorites.add(event.userId);
+          }
+          await offerDoc.update(
+            {
+              'isFavorite': favorites,
+            },
+          );
+
+          for (var offer in mondayOffers) {
+            if (offer.offerId == event.offerId) {
+              offer.isFavorite = favorites;
+              break;
+            }
+          }
+          emit(
+            AddFavouriteMondayOfferSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddFavouriteMondayOfferFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddFavouriteMondayOfferFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdateRestrictedWords>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingRestrictedWords(),
+        );
+        try {
+          final updatedWords = RestrictedWordsModel(
+            words: event.words,
+            updatedAt: DateTime.now(),
+          );
+          await FirebaseFirestore.instance
+              .collection("restricted_words")
+              .doc('bad_words')
+              .set(
+                updatedWords.toMap(),
+              );
+          restricedWords = updatedWords;
+          emit(
+            UpdateRestrictedWordsSuccess(
+              restricedWords!,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdateRestrictedWordsFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdateRestrictedWordsFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetRestrictedWords>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingRestrictedWords(),
+        );
+        try {
+          final words = await fetchRestrictedWords();
+          if (words != null) {
+            restricedWords = words;
+            emit(GetRestrictedWordsSuccess(words));
+          } else {
+            emit(const GetRestrictedWordsFailed("No restricted words found"));
+          }
+        } on FirebaseException catch (e) {
+          emit(
+            GetRestrictedWordsFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetRestrictedWordsFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
+  Future<RestrictedWordsModel?> fetchRestrictedWords() async {
+    final doc = await FirebaseFirestore.instance
+        .collection("restricted_words")
+        .doc('bad_words')
+        .get();
+    final restrictedWords = RestrictedWordsModel.fromMap(
+      doc.data()!,
+    );
+    if (doc.exists) {
+      return restrictedWords;
+    }
+    return null;
+  }
+
   Future<List<SurveyAnswerModel>> _fetchSurveyAnswers(String surveyId) async {
     final snapshot = await FirebaseFirestore.instance
         .collection('surveyAnswers')

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/user_provider.dart';
@@ -33,6 +32,15 @@ class _MembershipCardState extends State<MembershipCard> {
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
+        String formatMembershipNumber(String membershipNumber) {
+          return membershipNumber
+              .replaceAllMapped(
+                RegExp(r".{4}"),
+                (match) => "${match.group(0)} ",
+              )
+              .trim();
+        }
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           height: 168,
@@ -67,9 +75,9 @@ class _MembershipCardState extends State<MembershipCard> {
               const SizedBox(
                 height: 4,
               ),
-              const Text(
-                '0000 1234 0000 0000',
-                style: TextStyle(
+              Text(
+                formatMembershipNumber(userProvider.user?.membershipNumber ?? ''),
+                style: const TextStyle(
                   fontFamily: 'Lexend',
                   fontSize: 22,
                   fontWeight: FontWeight.w800,

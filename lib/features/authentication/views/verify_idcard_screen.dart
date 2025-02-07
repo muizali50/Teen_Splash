@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:teen_splash/widgets/app_text_field.dart';
@@ -35,8 +38,125 @@ class VerifyIdcardScreen extends StatefulWidget {
 
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
   final TextEditingController _ageController = TextEditingController();
-  String status = 'Pending';
+  String status = 'Approved';
   String? idCardPhoto;
+  String dateOfBirth = '';
+
+  Future<void> pickImageAndExtractDOB() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile != null) {
+      final imagePath = pickedFile.path;
+      setState(
+        () {
+          idCardPhoto = imagePath;
+        },
+      );
+
+      // Extract text from the image
+      final recognizedText = await extractTextFromImage(imagePath);
+
+      // Extract DOB from the recognized text
+      final dob = extractDOBFromText(recognizedText);
+
+      if (dob != null) {
+        setState(
+          () {
+            dateOfBirth = dob; // Update the UI with extracted DOB
+            _ageController.text = calculateAge(dob).toString(); // Auto-fill age
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not detect Date of Birth'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<String> extractTextFromImage(String imagePath) async {
+    final InputImage inputImage = InputImage.fromFilePath(imagePath);
+    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+
+    final RecognizedText recognizedText =
+        await textRecognizer.processImage(inputImage);
+    textRecognizer.close();
+
+    return recognizedText.text;
+  }
+
+  String? extractDOBFromText(String text) {
+    // Possible terms around DOB
+    List<String> dobIndicators = [
+      'Date of Birth',
+      'Date of birth',
+      'DOB',
+      'Born on',
+      'Birthdate',
+      'Date of Birth:',
+      'DATE OF BIRTH',
+    ];
+
+    // Look for these terms in the text
+    for (String indicator in dobIndicators) {
+      final indicatorIndex = text.indexOf(indicator);
+      if (indicatorIndex != -1) {
+        // Found DOB indicator, now look for date format nearby
+        final dateRegex =
+            RegExp(r'\b\d{2}[-\s./]?\d{2}[-\s./]?\d{4}\b'); // Date formats
+        final match = dateRegex.firstMatch(text.substring(indicatorIndex));
+        if (match != null) {
+          final dobString = match.group(0);
+          if (dobString != null) {
+            return dobString;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  int calculateAge(String dobString) {
+    // Parse the dobString to a DateTime object
+    List<String> formats = [
+      "dd.MM.yyyy", // 12.09.2001
+      "dd MM yyyy", // 12 09 2002
+      "dd/MM/yyyy", // 12/09/2002
+      "dd MMMM yyyy", // 12 September 2001
+      "dd-MM-yyyy", // 12-09-2001
+    ];
+
+    DateTime? dob;
+    for (var format in formats) {
+      try {
+        dob = DateFormat(format).parse(dobString);
+        break; // Exit loop once valid date is found
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (dob == null) {
+      throw FormatException("Invalid Date of Birth format.");
+    }
+
+    // Calculate age
+    DateTime now = DateTime.now();
+    int age = now.year - dob.year;
+
+    // Adjust age if birthday has not occurred yet this year
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
+      age--;
+    }
+
+    return age;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authenticationBloc = context.watch<AuthenticationBloc>();
@@ -112,18 +232,19 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                       Gaps.hGap40,
                       GestureDetector(
                         onTap: () async {
-                          final pickedFile = await ImagePicker().pickImage(
-                            source: ImageSource.gallery,
-                          );
+                          pickImageAndExtractDOB();
+                          // final pickedFile = await ImagePicker().pickImage(
+                          //   source: ImageSource.gallery,
+                          // );
 
-                          if (pickedFile != null) {
-                            final coverPhotoUrl = pickedFile.path;
-                            setState(
-                              () {
-                                idCardPhoto = coverPhotoUrl;
-                              },
-                            );
-                          }
+                          // if (pickedFile != null) {
+                          //   final coverPhotoUrl = pickedFile.path;
+                          //   setState(
+                          //     () {
+                          //       idCardPhoto = coverPhotoUrl;
+                          //     },
+                          //   );
+                          // }
                         },
                         child: Container(
                           height: 162,
@@ -161,24 +282,24 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                       BlocConsumer<AuthenticationBloc, AuthenticationState>(
                         listener: (context, state) {
                           if (state is Registered) {
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Request is sent to admin for verification',
-                                ),
-                              ),
-                            );
-                            // Navigator.of(context).pushAndRemoveUntil(
-                            //   MaterialPageRoute(
-                            //     builder: (
-                            //       context,
-                            //     ) =>
-                            //         const BottomNavBar(),
+                            // ScaffoldMessenger.of(
+                            //   context,
+                            // ).showSnackBar(
+                            //   const SnackBar(
+                            //     content: Text(
+                            //       'Request is sent to admin for verification',
+                            //     ),
                             //   ),
-                            //   (route) => false,
                             // );
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (
+                                  context,
+                                ) =>
+                                    const BottomNavBar(),
+                              ),
+                              (route) => false,
+                            );
                           }
                         },
                         builder: (context, state) {
@@ -203,6 +324,42 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                           return AppPrimaryButton(
                             text: 'Sign Up',
                             onTap: () {
+                              String formatDOB(String dateOfBirth) {
+                                // List of possible formats the DOB can be in
+                                List<String> formats = [
+                                  "dd.MM.yyyy", // 12.09.2001
+                                  "dd/MM/yyyy", // 12/09/2002
+                                  "dd-MM-yyyy", // 12-09-2002
+                                  "dd MMMM yyyy", // 12 September 2001
+                                ];
+
+                                DateTime? parsedDate;
+
+                                // Try each format to parse the date
+                                for (var format in formats) {
+                                  try {
+                                    parsedDate =
+                                        DateFormat(format).parse(dateOfBirth);
+                                    break; // If we succeed in parsing, exit the loop
+                                  } catch (e) {
+                                    continue; // Continue to try other formats if parsing fails
+                                  }
+                                }
+
+                                // If no valid date found, return an empty string or throw an error
+                                if (parsedDate == null) {
+                                  throw const FormatException(
+                                      "Invalid Date of Birth format");
+                                }
+
+                                // Return the date in "dd/MM/yyyy" format
+                                return DateFormat("dd/MM/yyyy")
+                                    .format(parsedDate);
+                              }
+
+                              final ageText = _ageController.text;
+                              final age = int.tryParse(ageText);
+
                               if (idCardPhoto!.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -213,16 +370,17 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                 );
                                 return;
                               }
-                              if (_ageController.text.trim().isEmpty) {
+                              if (age == null || age < 13 || age > 19) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      'Please enter your age',
+                                      'Teens Only',
                                     ),
                                   ),
                                 );
                                 return;
                               }
+                              String formattedDOB = formatDOB(dateOfBirth);
                               authenticationBloc.add(
                                 RegisterEvent(
                                   name: widget.name,
@@ -236,6 +394,7 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   idCardPhoto: idCardPhoto.toString(),
                                   image: XFile(idCardPhoto!),
                                   age: _ageController.text,
+                                  dateOfBirth: formattedDOB,
                                 ),
                               );
                             },

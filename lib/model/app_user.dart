@@ -13,6 +13,8 @@ class AppUser {
   String? status;
   String? age;
   int? loginFrequency;
+  String? dateOfBirth;
+  String? membershipNumber;
 
   AppUser({
     required this.uid,
@@ -27,6 +29,8 @@ class AppUser {
     this.status,
     this.age,
     this.loginFrequency,
+    this.dateOfBirth,
+    this.membershipNumber,
   });
 
   AppUser copyWith({
@@ -41,6 +45,8 @@ class AppUser {
     String? status,
     String? age,
     int? loginFrequency,
+    String? dateOfBirth,
+    String? membershipNumber,
   }) {
     return AppUser(
       uid: uid ?? uid,
@@ -55,6 +61,8 @@ class AppUser {
       status: status ?? this.status,
       age: age ?? this.age,
       loginFrequency: loginFrequency ?? this.loginFrequency,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      membershipNumber: membershipNumber ?? this.membershipNumber,
     );
   }
 
@@ -76,6 +84,8 @@ class AppUser {
       status: map['status'] ?? '',
       age: map['age'] ?? '',
       loginFrequency: map['loginFrequency'] ?? 0,
+      dateOfBirth: map['dateOfBirth'] ?? 0,
+      membershipNumber: map['membershipNumber'] ?? 0,
     );
   }
   Map<String, dynamic> toMap() {
@@ -92,6 +102,8 @@ class AppUser {
       'status': status,
       'age': age,
       'loginFrequency': loginFrequency,
+      'dateOfBirth': dateOfBirth,
+      'membershipNumber': membershipNumber,
     };
   }
 }
