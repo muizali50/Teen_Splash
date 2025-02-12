@@ -1312,3 +1312,117 @@ final class GetRestrictedWordsSuccess extends AdminState {
         restrictedWords,
       ];
 }
+
+final class AddPhotoGalleryFailed extends AdminState {
+  final String message;
+  const AddPhotoGalleryFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class AddingPhotoGallery extends AdminState {}
+
+final class AddPhotoGallerySuccess extends AdminState {
+  final PhotoGalleryModel photoGallery;
+  const AddPhotoGallerySuccess(
+    this.photoGallery,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGallery,
+      ];
+}
+
+final class GetPhotoGalleryFailed extends AdminState {
+  final String message;
+  const GetPhotoGalleryFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class GettingPhotoGallery extends AdminState {}
+
+final class GetPhotoGallerySuccess extends AdminState {
+  final List<PhotoGalleryModel> photoGalleries;
+  const GetPhotoGallerySuccess(
+    this.photoGalleries,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGalleries,
+      ];
+}
+
+final class UpdatePhotoGalleryFailed extends AdminState {
+  final String message;
+  const UpdatePhotoGalleryFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class UpdatingPhotoGallery extends AdminState {}
+
+final class UpdatePhotoGallerySuccess extends AdminState {
+  final PhotoGalleryModel photoGallery;
+  const UpdatePhotoGallerySuccess(
+    this.photoGallery,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGallery,
+      ];
+}
+
+final class DeletePhotoGallerySuccess extends AdminState {
+  final String photoGalleryId;
+  const DeletePhotoGallerySuccess(
+    this.photoGalleryId,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGalleryId,
+      ];
+}
+
+final class DeletePhotoGalleryFailed extends AdminState {
+  final String message;
+  const DeletePhotoGalleryFailed({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class DeletingPhotoGallery extends AdminState {
+  final String photoGalleryId;
+  const DeletingPhotoGallery(
+    this.photoGalleryId,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGalleryId,
+      ];
+}

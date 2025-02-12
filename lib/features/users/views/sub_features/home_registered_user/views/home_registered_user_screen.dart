@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +6,7 @@ import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/events_photo_gallery.dart';
 import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
 import 'package:teen_splash/features/users/views/highlighted_sponsors_details_screen.dart';
+import 'package:teen_splash/features/users/views/photo_gallery_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/profile_screen/widgets/membership_card.dart';
@@ -13,6 +15,7 @@ import 'package:teen_splash/features/users/views/view_more_highlighted_sponsors.
 import 'package:teen_splash/features/users/views/view_more_monday_offers.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
+import 'package:teen_splash/model/photo_gallery_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
@@ -31,6 +34,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
   List<MondayOffersModel> filteredMondayOfferData = [];
   List<FeaturedOffersModel> filteredFeaturedOfferData = [];
   List<SponsorsModel> filterSponsorData = [];
+  List<PhotoGalleryModel> filterPhotoGalleryData = [];
   String _searchText = '';
 
   @override
@@ -52,6 +56,12 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
       );
     }
 
+    if (adminBloc.photoGalleries.isEmpty) {
+      adminBloc.add(
+        GetPhotoGallery(),
+      );
+    }
+
     searchController.addListener(
       _onSearchChanged,
     );
@@ -65,6 +75,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
         _filterMondayOffers();
         _filterFeaturedOffers();
         _filterSponsors();
+        _filterPhotoGalleries();
       },
     );
   }
@@ -111,9 +122,25 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
     }
   }
 
+  void _filterPhotoGalleries() {
+    if (_searchText.isEmpty) {
+      filterPhotoGalleryData = adminBloc.photoGalleries;
+    } else {
+      filterPhotoGalleryData = adminBloc.photoGalleries
+          .where(
+            (offer) => offer.name!.toLowerCase().contains(
+                  _searchText.toLowerCase(),
+                ),
+          )
+          .toList();
+    }
+  }
+
   final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final adminBloc = context.read<AdminBloc>();
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: const PreferredSize(
@@ -336,29 +363,50 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                                                         ),
                                                       ),
                                                       const Spacer(),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(
-                                                          5.0,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .colorScheme
-                                                              .surface
-                                                              .withOpacity(0.9),
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                        child: Icon(
-                                                          size: 10,
-                                                          Icons.favorite,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary,
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          adminBloc.add(
+                                                            AddFavouriteMondayOffer(
+                                                              filteredMondayOffers[
+                                                                      index]
+                                                                  .offerId
+                                                                  .toString(),
+                                                              userId,
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(
+                                                            5.0,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .surface
+                                                                .withOpacity(
+                                                                    0.9),
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                          child: Icon(
+                                                            size: 10,
+                                                            filteredMondayOffers[
+                                                                        index]
+                                                                    .isFavorite!
+                                                                    .contains(
+                                                                        userId)
+                                                                ? Icons.favorite
+                                                                : Icons
+                                                                    .favorite_outline,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
@@ -531,29 +579,50 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                                                         ),
                                                       ),
                                                       const Spacer(),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(
-                                                          5.0,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .colorScheme
-                                                              .surface
-                                                              .withOpacity(0.9),
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                        child: Icon(
-                                                          size: 10,
-                                                          Icons.favorite,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary,
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          adminBloc.add(
+                                                            AddFavouriteFeaturedOffer(
+                                                              featuredOffers[
+                                                                      index]
+                                                                  .offerId
+                                                                  .toString(),
+                                                              userId,
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(
+                                                            5.0,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .surface
+                                                                .withOpacity(
+                                                                    0.9),
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                          child: Icon(
+                                                            size: 10,
+                                                            featuredOffers[
+                                                                        index]
+                                                                    .isFavorite!
+                                                                    .contains(
+                                                                        userId)
+                                                                ? Icons.favorite
+                                                                : Icons
+                                                                    .favorite_outline,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
@@ -749,49 +818,94 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                         ),
                         SizedBox(
                           height: 110,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0,
-                                        horizontal: 6.0,
+                          child: BlocBuilder<AdminBloc, AdminState>(
+                            builder: (context, state) {
+                              final photoGallery =
+                                  filterPhotoGalleryData.isNotEmpty
+                                      ? filterPhotoGalleryData
+                                      : adminBloc.photoGalleries;
+                              if (state is GettingPhotoGallery) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (state is GetPhotoGalleryFailed) {
+                                return Center(
+                                  child: Text(state.message),
+                                );
+                              }
+                              return photoGallery.isEmpty
+                                  ? const Center(
+                                      child: Text(
+                                        'No Photo Gallery',
                                       ),
-                                      width: 131,
-                                      height: 89,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          8.0,
-                                        ),
-                                        image: const DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                            'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: photoGallery.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 10.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) =>
+                                                          PhotoGalleryDetailsScreen(
+                                                        photoGallery:
+                                                            photoGallery[index],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 8.0,
+                                                    horizontal: 6.0,
+                                                  ),
+                                                  width: 131,
+                                                  height: 89,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      8.0,
+                                                    ),
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.cover,
+                                                      image: NetworkImage(
+                                                        photoGallery[index]
+                                                                .image ??
+                                                            '',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Gaps.hGap05,
+                                              Text(
+                                                photoGallery[index].name ?? '',
+                                                style: TextStyle(
+                                                  fontFamily: 'OpenSans',
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    Gaps.hGap05,
-                                    Text(
-                                      'Little Caesars Pizza',
-                                      style: TextStyle(
-                                        fontFamily: 'OpenSans',
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
+                                        );
+                                      },
+                                    );
                             },
                           ),
                         ),

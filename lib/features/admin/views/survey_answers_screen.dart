@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/services/push_notification_service.dart';
 
 class SurveyAnswersScreen extends StatefulWidget {
   final String surveyId;
+
   const SurveyAnswersScreen({
     super.key,
     required this.surveyId,
@@ -15,6 +17,7 @@ class SurveyAnswersScreen extends StatefulWidget {
 }
 
 class _SurveyAnswersScreenState extends State<SurveyAnswersScreen> {
+  final pushNotificationService = PushNotificationService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +69,7 @@ class _SurveyAnswersScreenState extends State<SurveyAnswersScreen> {
             ),
           ),
           child: BlocProvider(
-            create: (_) => AdminBloc()
+            create: (_) => AdminBloc(pushNotificationService)
               ..add(
                 GetSurveyAnswers(
                   widget.surveyId,

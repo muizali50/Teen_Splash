@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/views/photo_gallery_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
@@ -10,6 +13,18 @@ class EventsPhotoGallery extends StatefulWidget {
 }
 
 class _EventsPhotoGalleryState extends State<EventsPhotoGallery> {
+  late final AdminBloc adminBloc;
+  @override
+  void initState() {
+    adminBloc = context.read<AdminBloc>();
+    if (adminBloc.photoGalleries.isEmpty) {
+      adminBloc.add(
+        GetPhotoGallery(),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,62 +62,106 @@ class _EventsPhotoGalleryState extends State<EventsPhotoGallery> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  onTap: () {},
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0,
-                                      horizontal: 12.0,
-                                    ),
-                                    width: double.infinity,
-                                    height: 140,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        8.0,
-                                      ),
-                                      image: const DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(
-                                          'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                        ),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.25),
-                                          offset: const Offset(0, 4),
-                                          blurRadius: 4,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Align(
-                                  alignment: Alignment.center,
+                      BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          if (state is GettingPhotoGallery) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetPhotoGalleryFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return adminBloc.photoGalleries.isEmpty
+                              ? const Center(
                                   child: Text(
-                                    'Back 2 School Fun Day',
-                                    style: TextStyle(
-                                      fontFamily: 'OpenSans',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
+                                    'No photo gallery',
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: adminBloc.photoGalleries.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) =>
+                                                          PhotoGalleryDetailsScreen(
+                                                        photoGallery:
+                                                            adminBloc.photoGalleries[index],
+                                                      ),
+                                                    ),
+                                                  );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 12.0,
+                                                horizontal: 12.0,
+                                              ),
+                                              width: double.infinity,
+                                              height: 140,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  8.0,
+                                                ),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    adminBloc
+                                                            .photoGalleries[
+                                                                index]
+                                                            .image ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.25),
+                                                    offset: const Offset(0, 4),
+                                                    blurRadius: 4,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Gaps.hGap05,
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              adminBloc.photoGalleries[index]
+                                                      .name ??
+                                                  '',
+                                              style: TextStyle(
+                                                fontFamily: 'OpenSans',
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
                         },
                       ),
                     ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/sub_features/favorites/widgets/favorites_featured_offers.dart';
+import 'package:teen_splash/features/users/views/sub_features/favorites/widgets/favorites_monday_offers.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
@@ -9,7 +11,21 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> {
+class _FavoritesScreenState extends State<FavoritesScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,114 +60,64 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     ),
                   ],
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (
-                                    //       context,
-                                    //     ) =>
-                                    //         const OfferDetailsScreen(),
-                                    //   ),
-                                    // );
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0,
-                                      horizontal: 12.0,
-                                    ),
-                                    width: double.infinity,
-                                    height: 140,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        8.0,
-                                      ),
-                                      image: const DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(
-                                          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1398&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                                        ),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 3,
-                                          ),
-                                          color: const Color(0xFFEF589F),
-                                          child: Text(
-                                            '20% off',
-                                            style: TextStyle(
-                                              fontFamily: 'OpenSans',
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface,
-                                            ),
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Container(
-                                          padding: const EdgeInsets.all(
-                                            5.0,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .surface
-                                                .withOpacity(0.9),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            size: 10,
-                                            Icons.favorite,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Text(
-                                  'ABC Restaurant',
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 5,
                       ),
-                    ],
-                  ),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(
+                            38,
+                          ),
+                        ),
+                      ),
+                      child: TabBar(
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        indicator: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(
+                              30,
+                            ),
+                          ),
+                        ),
+                        labelColor: Theme.of(context).colorScheme.surface,
+                        unselectedLabelColor: const Color(0xFF999999),
+                        unselectedLabelStyle: const TextStyle(
+                          fontFamily: 'OpenSans',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        labelStyle: const TextStyle(
+                          fontFamily: 'OpenSans',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        controller: _tabController,
+                        tabs: const [
+                          Tab(text: "Monday Offers"),
+                          Tab(text: "Featured Offers"),
+                        ],
+                      ),
+                    ),
+                    Gaps.hGap10,
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: const [
+                          FavoritesMondayOffers(),
+                          FavoritesFeauturedOffers(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

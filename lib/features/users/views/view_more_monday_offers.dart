@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +29,8 @@ class _ViewMoreMondayOffersState extends State<ViewMoreMondayOffers> {
 
   @override
   Widget build(BuildContext context) {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
@@ -174,24 +177,44 @@ class _ViewMoreMondayOffersState extends State<ViewMoreMondayOffers> {
                                                     ),
                                                   ),
                                                   const Spacer(),
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                      5.0,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surface
-                                                          .withOpacity(0.9),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: Icon(
-                                                      size: 10,
-                                                      Icons.favorite,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary,
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      adminBloc.add(
+                                                        AddFavouriteMondayOffer(
+                                                          filteredMondayOffers[
+                                                                  index]
+                                                              .offerId
+                                                              .toString(),
+                                                          userId,
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                        5.0,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface
+                                                            .withOpacity(0.9),
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        size: 10,
+                                                        filteredMondayOffers[
+                                                                    index]
+                                                                .isFavorite!
+                                                                .contains(
+                                                                    userId)
+                                                            ? Icons.favorite
+                                                            : Icons
+                                                                .favorite_outline,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                      ),
                                                     ),
                                                   ),
                                                 ],

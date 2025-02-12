@@ -204,20 +204,21 @@ class _CouponsDetailsScreenState extends State<CouponsDetailsScreen> {
                                 Container(
                                   height: 117,
                                   width: 117,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: AssetImage(
-                                        'assets/images/qrcode.png',
+                                      image: NetworkImage(
+                                        widget.coupon!.qrCodeUrl.toString(),
                                       ),
                                     ),
                                   ),
                                 ),
+                                
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'MD524BGDGD8552',
+                                      widget.coupon!.couponId.toString(),
                                       style: TextStyle(
                                         fontFamily: 'Lexend',
                                         fontSize: 12,

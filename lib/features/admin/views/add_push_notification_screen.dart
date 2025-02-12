@@ -161,19 +161,16 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                 context: context,
                                 builder: (context) => Dialog(
                                   child: Container(
-                                    height: 200,
+                                    height:
+                                        300, // Increased height for better UI
                                     width: 300,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 15,
                                       horizontal: 20,
                                     ),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        12,
-                                      ),
-                                      color: const Color(
-                                        0xFFffffff,
-                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: const Color(0xFFFFFFFF),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -186,19 +183,21 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                             fontFamily: 'Inter',
                                             fontSize: 20,
                                             fontWeight: FontWeight.w700,
-                                            color: Color(
-                                              0xFF131313,
-                                            ),
+                                            color: Color(0xFF131313),
                                           ),
                                         ),
-                                        Gaps.hGap15,
+                                        const SizedBox(height: 10),
                                         StatefulBuilder(
                                           builder: (context, localState) {
+                                            bool _selectAll = _userIds.length ==
+                                                userBloc.users.length;
+
                                             return BlocBuilder<UserBloc,
                                                 UserState>(
                                               builder: (context, state) {
-                                                final filteredusers =
+                                                final filteredUsers =
                                                     userBloc.users;
+
                                                 if (state is GettingAllUsers) {
                                                   return const Center(
                                                     child:
@@ -210,20 +209,15 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                                     child: Text(state.message),
                                                   );
                                                 }
+
                                                 return Expanded(
-                                                  child: ListView.builder(
-                                                    itemCount:
-                                                        filteredusers.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return Row(
+                                                  child: Column(
+                                                    children: [
+                                                      Row(
                                                         children: [
-                                                          Text(
-                                                            filteredusers[index]
-                                                                .name
-                                                                .toString(),
-                                                            style:
-                                                                const TextStyle(
+                                                          const Text(
+                                                            "Select All",
+                                                            style: TextStyle(
                                                               fontFamily:
                                                                   'Inter',
                                                               fontSize: 16,
@@ -231,59 +225,99 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                                                   FontWeight
                                                                       .w700,
                                                               color: Color(
-                                                                0xFF131313,
-                                                              ),
+                                                                  0xFF131313),
                                                             ),
                                                           ),
                                                           const Spacer(),
-                                                          IconButton(
-                                                            onPressed: () {
+                                                          Checkbox(
+                                                            value: _selectAll,
+                                                            onChanged: (value) {
                                                               localState(
                                                                 () {
-                                                                  if (_userIds
-                                                                          .contains(
-                                                                        filteredusers[index]
-                                                                            .uid
-                                                                            .toString(),
-                                                                      ) ==
+                                                                  if (value ==
                                                                       true) {
                                                                     _userIds
-                                                                        .remove(
-                                                                      filteredusers[
-                                                                              index]
-                                                                          .uid
-                                                                          .toString(),
+                                                                        .clear();
+                                                                    _userIds
+                                                                        .addAll(
+                                                                      filteredUsers
+                                                                          .map(
+                                                                        (user) => user
+                                                                            .uid
+                                                                            .toString(),
+                                                                      ),
                                                                     );
                                                                   } else {
                                                                     _userIds
-                                                                        .add(
-                                                                      filteredusers[
-                                                                              index]
-                                                                          .uid
-                                                                          .toString(),
-                                                                    );
+                                                                        .clear();
                                                                   }
                                                                 },
                                                               );
                                                             },
-                                                            icon: Icon(
-                                                              color: const Color(
-                                                                  0xFF131313),
-                                                              _userIds.contains(
-                                                                        filteredusers[index]
-                                                                            .uid
-                                                                            .toString(),
-                                                                      ) ==
-                                                                      true
-                                                                  ? Icons
-                                                                      .check_box
-                                                                  : Icons
-                                                                      .check_box_outline_blank,
-                                                            ),
                                                           ),
                                                         ],
-                                                      );
-                                                    },
+                                                      ),
+                                                      Expanded(
+                                                        child: ListView.builder(
+                                                          itemCount:
+                                                              filteredUsers
+                                                                  .length,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            final user =
+                                                                filteredUsers[
+                                                                    index];
+                                                            return Row(
+                                                              children: [
+                                                                Text(
+                                                                  user.name
+                                                                      .toString(),
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                    color: Color(
+                                                                        0xFF131313),
+                                                                  ),
+                                                                ),
+                                                                const Spacer(),
+                                                                Checkbox(
+                                                                  value: _userIds
+                                                                      .contains(
+                                                                    user.uid
+                                                                        .toString(),
+                                                                  ),
+                                                                  onChanged:
+                                                                      (value) {
+                                                                    localState(
+                                                                      () {
+                                                                        if (value ==
+                                                                            true) {
+                                                                          _userIds
+                                                                              .add(
+                                                                            user.uid.toString(),
+                                                                          );
+                                                                        } else {
+                                                                          _userIds
+                                                                              .remove(
+                                                                            user.uid.toString(),
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 );
                                               },

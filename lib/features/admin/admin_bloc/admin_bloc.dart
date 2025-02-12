@@ -1,15 +1,19 @@
 import 'dart:developer';
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/coupon_model.dart';
 import 'package:teen_splash/model/events_model.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
+import 'package:teen_splash/model/photo_gallery_model.dart';
 import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/model/restricted_words.dart';
 import 'package:teen_splash/model/survey_answer_model.dart';
@@ -18,10 +22,12 @@ import 'package:teen_splash/model/teen_business_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
+import 'package:teen_splash/services/push_notification_service.dart';
 part 'admin_event.dart';
 part 'admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
+  final PushNotificationService pushNotificationService;
   List<CouponModel> coupons = [];
   List<MondayOffersModel> mondayOffers = [];
   List<FeaturedOffersModel> featuredOffers = [];
@@ -34,8 +40,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   List<TeenBusinessModel> teenBusinesses = [];
   List<AppUser> users = [];
   RestrictedWordsModel? restricedWords;
+  List<PhotoGalleryModel> photoGalleries = [];
 
-  AdminBloc() : super(AdminInitial()) {
+  AdminBloc(this.pushNotificationService) : super(AdminInitial()) {
     on<AddCoupon>(
       (
         event,
@@ -54,13 +61,30 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           );
           final imageUrl = await ref.getDownloadURL();
           event.coupon.image = imageUrl;
+
           final couponCollection = FirebaseFirestore.instance.collection(
             'coupon',
           );
           final result = await couponCollection.add(
             event.coupon.toMap(),
           );
-          event.coupon.couponId = result.id;
+          final documentId = result.id;
+          event.coupon.couponId = documentId;
+          await couponCollection.doc(documentId).update(
+            {
+              'couponId': documentId,
+            },
+          );
+          // Generate and upload QR code (now we have a document ID)
+          String? qrCodeUrl = await generateAndUploadQRCode(documentId);
+
+          // Update Firestore with the QR code URL
+          await couponCollection.doc(documentId).update(
+            {
+              'qrCodeUrl': qrCodeUrl,
+            },
+          );
+          event.coupon.qrCodeUrl = qrCodeUrl;
           coupons.add(
             event.coupon,
           );
@@ -1299,6 +1323,12 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               event.pushNotification,
             ),
           );
+
+          // ✅ Trigger local notification
+          await pushNotificationService.showInstantNotification(
+            title: event.pushNotification.title.toString(),
+            body: event.pushNotification.content.toString(),
+          );
         } on FirebaseException catch (e) {
           emit(
             AddPushNotificationFailed(
@@ -2368,7 +2398,257 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         }
       },
     );
+    on<AddPhotoGallery>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          AddingPhotoGallery(),
+        );
+        try {
+          final ref = FirebaseStorage.instance.ref().child(
+                'photo_gallery_images/${event.image.path.split('/').last}',
+              );
+
+          await ref.putData(
+            await event.image.readAsBytes(),
+          );
+          final imageUrl = await ref.getDownloadURL();
+          event.photoGallery.image = imageUrl;
+          final photoGalleryCollection = FirebaseFirestore.instance.collection(
+            'photo_gallery',
+          );
+          final result = await photoGalleryCollection.add(
+            event.photoGallery.toMap(),
+          );
+          final documentId = result.id;
+          event.photoGallery.photoGalleryId = documentId;
+          await photoGalleryCollection.doc(documentId).update(
+            {
+              'photoGalleryId': documentId,
+            },
+          );
+
+          photoGalleries.add(
+            event.photoGallery,
+          );
+          emit(
+            AddPhotoGallerySuccess(
+              event.photoGallery,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            AddPhotoGalleryFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            AddPhotoGalleryFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<GetPhotoGallery>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          GettingPhotoGallery(),
+        );
+        try {
+          final photoGalleryCollection = FirebaseFirestore.instance.collection(
+            'photo_gallery',
+          );
+          final result = await photoGalleryCollection.get();
+          photoGalleries = result.docs.map(
+            (e) {
+              final photoGallery = PhotoGalleryModel.fromMap(
+                e.data(),
+              );
+              photoGallery.photoGalleryId = e.id;
+              return photoGallery;
+            },
+          ).toList();
+          emit(
+            GetPhotoGallerySuccess(
+              photoGalleries,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            GetPhotoGalleryFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            GetPhotoGalleryFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<UpdatePhotoGallery>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          UpdatingPhotoGallery(),
+        );
+        try {
+          if (event.image != null) {
+            final ref = FirebaseStorage.instance.ref().child(
+                  'photo_gallery_images/${event.image!.path.split('/').last}',
+                );
+            await ref.putData(
+              await event.image!.readAsBytes(),
+            );
+            final imageUrl = await ref.getDownloadURL();
+            event.photoGallery.image = imageUrl;
+          }
+          final photoGalleryCollection = FirebaseFirestore.instance.collection(
+            'photo_gallery',
+          );
+          await photoGalleryCollection
+              .doc(
+                event.photoGallery.photoGalleryId,
+              )
+              .update(
+                event.photoGallery.toMap(),
+              );
+          final index = photoGalleries.indexWhere(
+            (element) =>
+                element.photoGalleryId == event.photoGallery.photoGalleryId,
+          );
+          photoGalleries[index] = event.photoGallery;
+          emit(
+            UpdatePhotoGallerySuccess(
+              event.photoGallery,
+            ),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            UpdatePhotoGalleryFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            UpdatePhotoGalleryFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<DeletePhotoGallery>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingPhotoGallery(
+            event.photoGalleryId,
+          ),
+        );
+        try {
+          final photoGalleryCollection = FirebaseFirestore.instance.collection(
+            'photo_gallery',
+          );
+          await photoGalleryCollection.doc(event.photoGalleryId).delete();
+          photoGalleries.removeWhere(
+            (element) => element.photoGalleryId == event.photoGalleryId,
+          );
+          emit(
+            DeletePhotoGallerySuccess(
+              event.photoGalleryId,
+            ),
+          );
+        } catch (e) {
+          if (e is FirebaseAuthException) {
+            emit(
+              DeletePhotoGalleryFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else if (e is FirebaseException) {
+            emit(
+              DeletePhotoGalleryFailed(
+                message: e.message ?? '',
+              ),
+            );
+          } else {
+            emit(
+              DeletePhotoGalleryFailed(
+                message: e.toString(),
+              ),
+            );
+          }
+        }
+      },
+    );
   }
+
+  Future<String?> generateAndUploadQRCode(String couponId) async {
+    try {
+      print("Generating QR Code for Web - Coupon ID: $couponId");
+
+      // Generate QR Code Image
+      final qrImage = await QrPainter(
+        data: couponId,
+        version: QrVersions.auto,
+        color: const Color(0xFF000000),
+      ).toImage(200);
+
+      final byteData = await qrImage.toByteData(format: ImageByteFormat.png);
+      if (byteData == null) {
+        throw Exception("QR code ByteData is null!");
+      }
+
+      final Uint8List uint8List = byteData.buffer.asUint8List();
+
+      // Upload to Firebase Storage
+      final ref = FirebaseStorage.instance.ref().child('qrcodes/$couponId.png');
+      final uploadTask =
+          ref.putData(uint8List, SettableMetadata(contentType: "image/png"));
+
+      // ✅ Wait for Upload Completion & Get Download URL
+      final TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      print("QR Code uploaded. Download URL: $downloadUrl");
+
+      // ✅ Save QR Code URL in Firestore
+      await FirebaseFirestore.instance.collection('coupon').doc(couponId).set({
+        'qrCodeUrl': downloadUrl,
+      }, SetOptions(merge: true));
+
+      print("QR Code URL saved in Firestore.");
+
+      return downloadUrl; // ✅ Return the URL
+    } catch (e) {
+      print("Error generating/uploading QR code: $e");
+      return null; // Return null if there's an error
+    }
+  }
+
   Future<RestrictedWordsModel?> fetchRestrictedWords() async {
     final doc = await FirebaseFirestore.instance
         .collection("restricted_words")

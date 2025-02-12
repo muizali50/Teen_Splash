@@ -503,3 +503,46 @@ final class UpdateRestrictedWords extends AdminEvent {
 }
 
 final class GetRestrictedWords extends AdminEvent {}
+
+final class AddPhotoGallery extends AdminEvent {
+  final PhotoGalleryModel photoGallery;
+  final XFile image;
+  const AddPhotoGallery(
+    this.photoGallery,
+    this.image,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGallery,
+        image,
+      ];
+}
+
+final class GetPhotoGallery extends AdminEvent {}
+
+final class UpdatePhotoGallery extends AdminEvent {
+  final PhotoGalleryModel photoGallery;
+  final XFile? image;
+  const UpdatePhotoGallery(
+    this.photoGallery,
+    this.image,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGallery,
+      ];
+}
+
+final class DeletePhotoGallery extends AdminEvent {
+  final String photoGalleryId;
+  const DeletePhotoGallery(
+    this.photoGalleryId,
+  );
+
+  @override
+  List<Object> get props => [
+        photoGalleryId,
+      ];
+}

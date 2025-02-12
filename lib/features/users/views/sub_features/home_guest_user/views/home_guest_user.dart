@@ -5,10 +5,12 @@ import 'package:teen_splash/features/authentication/views/sub_features/views/sig
 import 'package:teen_splash/features/users/views/events_photo_gallery.dart';
 import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
 import 'package:teen_splash/features/users/views/highlighted_sponsors_details_screen.dart';
+import 'package:teen_splash/features/users/views/photo_gallery_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/features/users/views/view_more_featured_offers.dart';
 import 'package:teen_splash/features/users/views/view_more_highlighted_sponsors.dart';
 import 'package:teen_splash/model/featured_offers_model.dart';
+import 'package:teen_splash/model/photo_gallery_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
@@ -25,6 +27,7 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
   late final AdminBloc adminBloc;
   List<FeaturedOffersModel> filteredFeaturedOfferData = [];
   List<SponsorsModel> filterSponsorData = [];
+  List<PhotoGalleryModel> filterPhotoGalleryData = [];
   String _searchText = '';
   @override
   void initState() {
@@ -45,6 +48,12 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
       );
     }
 
+    if (adminBloc.photoGalleries.isEmpty) {
+      adminBloc.add(
+        GetPhotoGallery(),
+      );
+    }
+
     searchController.addListener(
       _onSearchChanged,
     );
@@ -57,6 +66,7 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
         _searchText = searchController.text;
         _filterFeaturedOffers();
         _filterSponsors();
+        _filterPhotoGalleries();
       },
     );
   }
@@ -82,6 +92,20 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
       filterSponsorData = adminBloc.sponsors
           .where(
             (offer) => offer.businessName!.toLowerCase().contains(
+                  _searchText.toLowerCase(),
+                ),
+          )
+          .toList();
+    }
+  }
+
+  void _filterPhotoGalleries() {
+    if (_searchText.isEmpty) {
+      filterPhotoGalleryData = adminBloc.photoGalleries;
+    } else {
+      filterPhotoGalleryData = adminBloc.photoGalleries
+          .where(
+            (offer) => offer.name!.toLowerCase().contains(
                   _searchText.toLowerCase(),
                 ),
           )
@@ -533,48 +557,92 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
                     ),
                     SizedBox(
                       height: 110,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 4,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0,
-                                    horizontal: 6.0,
+                      child: BlocBuilder<AdminBloc, AdminState>(
+                        builder: (context, state) {
+                          final photoGallery = filterPhotoGalleryData.isNotEmpty
+                              ? filterPhotoGalleryData
+                              : adminBloc.photoGalleries;
+                          if (state is GettingPhotoGallery) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is GetPhotoGalleryFailed) {
+                            return Center(
+                              child: Text(state.message),
+                            );
+                          }
+                          return photoGallery.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'No Photo Gallery',
                                   ),
-                                  width: 131,
-                                  height: 89,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      8.0,
-                                    ),
-                                    image: const DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                        'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                )
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: photoGallery.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) =>
+                                                      PhotoGalleryDetailsScreen(
+                                                    photoGallery:
+                                                        photoGallery[index],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 6.0,
+                                              ),
+                                              width: 131,
+                                              height: 89,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  8.0,
+                                                ),
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    photoGallery[index].image ??
+                                                        '',
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Gaps.hGap05,
+                                          Text(
+                                            photoGallery[index].name ?? '',
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                Gaps.hGap05,
-                                Text(
-                                  'Little Caesars Pizza',
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                                    );
+                                  },
+                                );
                         },
                       ),
                     ),

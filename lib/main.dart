@@ -15,12 +15,14 @@ import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/firebase_options.dart';
 import 'package:teen_splash/services/notification_services.dart';
+import 'package:teen_splash/services/push_notification_service.dart';
 import 'package:teen_splash/services/splash_screen.dart';
 import 'package:teen_splash/user_provider.dart';
 
 late final SharedPreferences prefs;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final notificationsService = NotificationsService();
+final pushNotificationService = PushNotificationService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +42,8 @@ void main() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.requestNotificationsPermission();
 
+  await pushNotificationService.init(navigatorKey);
+
   runApp(const MyApp());
 }
 
@@ -51,7 +55,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AdminBloc(),
+          create: (context) => AdminBloc(pushNotificationService),
         ),
         BlocProvider(
           create: (context) => AuthenticationBloc(),

@@ -101,9 +101,6 @@ dependencies:
   permission_handler: ^11.3.1
   timezone: ^0.10.0
 
-  # Path Provider
-  path_provider: ^2.1.5
-
   # Http
   http: ^1.2.2
 
@@ -115,6 +112,21 @@ dependencies:
 
   # Google Mlkit Rext Recognition
   google_mlkit_text_recognition: ^0.14.0
+
+  # QR Flutter
+  qr_flutter: ^4.1.0
+
+  # Path Provider
+  path_provider: ^2.1.5
+
+  # # Html
+  # html: ^0.15.5
+
+  # Universal Html
+  universal_html: ^2.2.4
+
+  #Firebase Messaging
+  firebase_messaging: ^15.2.2
 
 dev_dependencies:
   flutter_test:

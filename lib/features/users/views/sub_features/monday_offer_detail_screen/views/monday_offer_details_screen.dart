@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/offer_redeemed.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/widgets/redeem_offer.dart';
 import 'package:teen_splash/model/monday_offers_model.dart';
@@ -20,6 +23,7 @@ class MondayOfferDetailsScreen extends StatefulWidget {
 class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -68,24 +72,41 @@ class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
                           ),
                         ),
                         const Spacer(),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF4F4F4),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(
-                                size: 27,
-                                Icons.favorite,
-                                color: Theme.of(context).colorScheme.secondary,
+                        BlocBuilder<AdminBloc, AdminState>(
+                          builder: (context, state) {
+                            bool isFavorite = widget.mondayOffer.isFavorite!
+                                .contains(userId);
+
+                            return GestureDetector(
+                              onTap: () {
+                                context.read<AdminBloc>().add(
+                                      AddFavouriteMondayOffer(
+                                        widget.mondayOffer.offerId.toString(),
+                                        userId,
+                                      ),
+                                    );
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF4F4F4),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(
+                                    size: 27,
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_outline,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ],
                     ),

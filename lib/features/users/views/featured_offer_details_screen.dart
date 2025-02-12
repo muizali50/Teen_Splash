@@ -25,7 +25,6 @@ class _FeaturedOfferDetailsScreenState
   @override
   Widget build(BuildContext context) {
     String userId = FirebaseAuth.instance.currentUser!.uid;
-    final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -74,34 +73,41 @@ class _FeaturedOfferDetailsScreenState
                           ),
                         ),
                         const Spacer(),
-                        GestureDetector(
-                          onTap: () {
-                            adminBloc.add(
-                              AddFavouriteFeaturedOffer(
-                                widget.featuredOffer.offerId.toString(),
-                                userId,
+                        BlocBuilder<AdminBloc, AdminState>(
+                          builder: (context, state) {
+                            bool isFavorite = widget.featuredOffer.isFavorite!
+                                .contains(userId);
+
+                            return GestureDetector(
+                              onTap: () {
+                                context.read<AdminBloc>().add(
+                                      AddFavouriteFeaturedOffer(
+                                        widget.featuredOffer.offerId.toString(),
+                                        userId,
+                                      ),
+                                    );
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF4F4F4),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(
+                                    size: 27,
+                                    isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_outline,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
                               ),
                             );
                           },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF4F4F4),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(
-                                size: 27,
-                                widget.featuredOffer.isFavorite!
-                                        .contains(userId)
-                                    ? Icons.favorite
-                                    : Icons.favorite_outline,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                          ),
                         ),
                       ],
                     ),

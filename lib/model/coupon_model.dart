@@ -6,6 +6,7 @@ class CouponModel {
   String? item;
   String? validDate;
   String? image;
+  String? qrCodeUrl;
   List<String>? userIds;
   List<String>? views;
   List<DateTime>? redemptionDates;
@@ -18,6 +19,7 @@ class CouponModel {
     this.item,
     this.validDate,
     this.image,
+    this.qrCodeUrl,
     this.userIds,
     this.views,
     this.redemptionDates,
@@ -32,6 +34,7 @@ class CouponModel {
       'item': item,
       'validDate': validDate,
       'image': image,
+      'qrCodeUrl': qrCodeUrl,
       'userIds': userIds ?? [],
       'views': views ?? [],
       'redemptionDates':
@@ -48,6 +51,7 @@ class CouponModel {
       item: map['item'],
       validDate: map['validDate'],
       image: map['image'],
+      qrCodeUrl: map['qrCodeUrl'],
       userIds: List<String>.from(map['userIds'] ?? []),
       views: List<String>.from(map['views'] ?? []),
       redemptionDates: (map['redemptionDates'] as List<dynamic>?)
