@@ -7,7 +7,11 @@ import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
 class ViewMoreFeaturedOffers extends StatefulWidget {
-  const ViewMoreFeaturedOffers({super.key});
+  final bool isGuest;
+  const ViewMoreFeaturedOffers({
+    required this.isGuest,
+    super.key,
+  });
 
   @override
   State<ViewMoreFeaturedOffers> createState() => _ViewMoreFeaturedOffersState();
@@ -28,7 +32,6 @@ class _ViewMoreFeaturedOffersState extends State<ViewMoreFeaturedOffers> {
 
   @override
   Widget build(BuildContext context) {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
     final adminBloc = context.read<AdminBloc>();
     return Scaffold(
       appBar: const PreferredSize(
@@ -106,6 +109,7 @@ class _ViewMoreFeaturedOffersState extends State<ViewMoreFeaturedOffers> {
                                                       FeaturedOfferDetailsScreen(
                                                     featuredOffer: adminBloc
                                                         .featuredOffers[index],
+                                                    isGuest: widget.isGuest,
                                                   ),
                                                 ),
                                               );
@@ -166,48 +170,64 @@ class _ViewMoreFeaturedOffersState extends State<ViewMoreFeaturedOffers> {
                                                     ),
                                                   ),
                                                   const Spacer(),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      adminBloc.add(
-                                                        AddFavouriteFeaturedOffer(
-                                                          adminBloc
-                                                              .featuredOffers[
-                                                                  index]
-                                                              .offerId
-                                                              .toString(),
-                                                          userId,
+                                                  widget.isGuest
+                                                      ? const SizedBox()
+                                                      : GestureDetector(
+                                                          onTap: () {
+                                                            String userId =
+                                                                FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser!
+                                                                    .uid;
+                                                            adminBloc.add(
+                                                              AddFavouriteFeaturedOffer(
+                                                                adminBloc
+                                                                    .featuredOffers[
+                                                                        index]
+                                                                    .offerId
+                                                                    .toString(),
+                                                                userId,
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(
+                                                              5.0,
+                                                            ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .surface
+                                                                  .withOpacity(
+                                                                      0.9),
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                            child: Icon(
+                                                              size: 10,
+                                                              adminBloc
+                                                                      .featuredOffers[
+                                                                          index]
+                                                                      .isFavorite!
+                                                                      .contains(FirebaseAuth
+                                                                          .instance
+                                                                          .currentUser!
+                                                                          .uid)
+                                                                  ? Icons
+                                                                      .favorite
+                                                                  : Icons
+                                                                      .favorite_outline,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                            ),
+                                                          ),
                                                         ),
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                        5.0,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .surface
-                                                            .withOpacity(0.9),
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Icon(
-                                                        size: 10,
-                                                        adminBloc
-                                                                .featuredOffers[
-                                                                    index]
-                                                                .isFavorite!
-                                                                .contains(
-                                                                    userId)
-                                                            ? Icons.favorite
-                                                            : Icons
-                                                                .favorite_outline,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                      ),
-                                                    ),
-                                                  ),
                                                 ],
                                               ),
                                             ),

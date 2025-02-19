@@ -23,7 +23,11 @@ class MondayOfferDetailsScreen extends StatefulWidget {
 class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
   @override
   Widget build(BuildContext context) {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
+    final adminBloc = context.read<AdminBloc>();
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Get user-specific offer code
+    String? offerCode;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -74,8 +78,8 @@ class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
                         const Spacer(),
                         BlocBuilder<AdminBloc, AdminState>(
                           builder: (context, state) {
-                            bool isFavorite = widget.mondayOffer.isFavorite!
-                                .contains(userId);
+                            bool isFavorite =
+                                widget.mondayOffer.isFavorite!.contains(userId);
 
                             return GestureDetector(
                               onTap: () {
@@ -235,21 +239,68 @@ class _MondayOfferDetailsScreenState extends State<MondayOfferDetailsScreen> {
                           showDialog(
                             context: context,
                             builder: (context) => Dialog(
-                              child: RedeemOfferPopup(
-                                redeemOnTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => Dialog(
-                                      child: OfferRedeemedDialog(
-                                        dismissOnTap: () {
-                                          Navigator.pop(context);
-                                        },
+                              child: BlocConsumer<AdminBloc, AdminState>(
+                                listener: (context, state) {
+                                  if (state is RedeemMondayOfferSuccess) {
+                                    setState(
+                                      () {
+                                        offerCode = widget.mondayOffer
+                                            .getUserOfferCode(userId);
+                                      },
+                                    );
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Redeemed Successfully',
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => Dialog(
+                                        child: OfferRedeemedDialog(
+                                          code: offerCode ?? 'Not Redeemed Yet',
+                                          dismissOnTap: () {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  } else if (state is RedeemMondayOfferFailed) {
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          state.message,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
-                                cancelOnTap: () {
-                                  Navigator.pop(context);
+                                builder: (context, state) {
+                                  if (state is ReedeemingMondayOffer) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return RedeemOfferPopup(
+                                    redeemOnTap: () {
+                                      adminBloc.add(
+                                        RedeemMondayOffer(
+                                          widget.mondayOffer.offerId.toString(),
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        ),
+                                      );
+                                    },
+                                    cancelOnTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
                                 },
                               ),
                             ),

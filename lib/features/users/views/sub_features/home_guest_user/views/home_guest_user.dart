@@ -229,7 +229,9 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
                                 builder: (
                                   context,
                                 ) =>
-                                    const ViewMoreFeaturedOffers(),
+                                    const ViewMoreFeaturedOffers(
+                                  isGuest: true,
+                                ),
                               ),
                             );
                           },
@@ -290,6 +292,7 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
                                                       FeaturedOfferDetailsScreen(
                                                     featuredOffer:
                                                         featuredOffers[index],
+                                                    isGuest: true,
                                                   ),
                                                 ),
                                               );
@@ -346,26 +349,26 @@ class _HomeGuestUserState extends State<HomeGuestUser> {
                                                     ),
                                                   ),
                                                   const Spacer(),
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                      5.0,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surface
-                                                          .withOpacity(0.9),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: Icon(
-                                                      size: 10,
-                                                      Icons.favorite,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary,
-                                                    ),
-                                                  ),
+                                                  // Container(
+                                                  //   padding:
+                                                  //       const EdgeInsets.all(
+                                                  //     5.0,
+                                                  //   ),
+                                                  //   decoration: BoxDecoration(
+                                                  //     color: Theme.of(context)
+                                                  //         .colorScheme
+                                                  //         .surface
+                                                  //         .withOpacity(0.9),
+                                                  //     shape: BoxShape.circle,
+                                                  //   ),
+                                                  //   child: Icon(
+                                                  //     size: 10,
+                                                  //     Icons.favorite,
+                                                  //     color: Theme.of(context)
+                                                  //         .colorScheme
+                                                  //         .secondary,
+                                                  //   ),
+                                                  // ),
                                                 ],
                                               ),
                                             ),

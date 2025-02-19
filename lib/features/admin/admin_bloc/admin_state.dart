@@ -1426,3 +1426,35 @@ final class DeletingPhotoGallery extends AdminState {
         photoGalleryId,
       ];
 }
+
+final class ReedeemingFeaturedOffer extends AdminState {}
+
+final class RedeemFeaturedOfferSuccess extends AdminState {}
+
+final class RedeemFeaturedOfferFailed extends AdminState {
+  final String message;
+  const RedeemFeaturedOfferFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}
+
+final class ReedeemingMondayOffer extends AdminState {}
+
+final class RedeemMondayOfferSuccess extends AdminState {}
+
+final class RedeemMondayOfferFailed extends AdminState {
+  final String message;
+  const RedeemMondayOfferFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

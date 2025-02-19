@@ -191,9 +191,9 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                                       content: user.gender.toString(),
                                     ),
                                     Gaps.hGap10,
-                                    const ProfileRow(
+                                    ProfileRow(
                                       title: 'Age',
-                                      content: '25 y/o',
+                                      content: '${user.age} y/o',
                                     ),
                                     Gaps.hGap10,
                                     ProfileRow(

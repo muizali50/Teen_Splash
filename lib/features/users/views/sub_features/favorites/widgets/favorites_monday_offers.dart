@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class FavoritesMondayOffers extends StatefulWidget {
@@ -74,15 +75,18 @@ class _FavoritesMondayOffersState extends State<FavoritesMondayOffers> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (
-                                  //       context,
-                                  //     ) =>
-                                  //         const OfferDetailsScreen(),
-                                  //   ),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (
+                                        context,
+                                      ) =>
+                                          MondayOfferDetailsScreen(
+                                        mondayOffer:
+                                            filteredMondayOffers[index],
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(

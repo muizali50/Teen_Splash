@@ -1,4 +1,5 @@
-import 'dart:developer';
+import 'dart:math';
+import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:bloc/bloc.dart';
@@ -100,7 +101,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -145,7 +146,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -201,7 +202,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -307,7 +308,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -352,7 +353,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -418,7 +419,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -524,7 +525,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -569,7 +570,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -635,7 +636,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -742,7 +743,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -787,7 +788,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -853,7 +854,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -951,7 +952,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -996,9 +997,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
+
           emit(
             GetWaterSponsorFailed(
               e.toString(),
@@ -1053,7 +1055,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1142,7 +1144,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1188,7 +1190,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1237,7 +1239,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1324,11 +1326,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
 
-          // ✅ Trigger local notification
-          await pushNotificationService.showInstantNotification(
-            title: event.pushNotification.title.toString(),
-            body: event.pushNotification.content.toString(),
-          );
+          // // ✅ Trigger local notification
+          // await pushNotificationService.showInstantNotification(
+          //   title: event.pushNotification.title.toString(),
+          //   body: event.pushNotification.content.toString(),
+          // );
         } on FirebaseException catch (e) {
           emit(
             AddPushNotificationFailed(
@@ -1336,7 +1338,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1382,7 +1384,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1431,7 +1433,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1522,7 +1524,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1567,7 +1569,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1613,7 +1615,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1648,9 +1650,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
+
           emit(
             SubmittingSurveyAnswerFailed(
               e.toString(),
@@ -1699,7 +1702,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1744,7 +1747,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1800,7 +1803,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1846,7 +1849,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -1983,7 +1986,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2042,7 +2045,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2087,7 +2090,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2153,7 +2156,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2255,7 +2258,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2310,7 +2313,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2353,7 +2356,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2387,7 +2390,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2445,9 +2448,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
+
           emit(
             AddPhotoGalleryFailed(
               e.toString(),
@@ -2490,7 +2494,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2547,7 +2551,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ),
           );
         } catch (e) {
-          log(
+          developer.log(
             e.toString(),
           );
           emit(
@@ -2601,6 +2605,174 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               ),
             );
           }
+        }
+      },
+    );
+    on<RedeemFeauturedOffer>(
+      (event, emit) async {
+        emit(
+          ReedeemingFeaturedOffer(),
+        );
+        try {
+          final offerCollection =
+              FirebaseFirestore.instance.collection('featured_offer');
+          final docRef = offerCollection.doc(event.offerId);
+
+          await FirebaseFirestore.instance.runTransaction(
+            (transaction) async {
+              final snapshot = await transaction.get(docRef);
+              final data = snapshot.data();
+
+              if (data != null) {
+                final List<String> userIds = List<String>.from(
+                  data['userIds'] ?? [],
+                );
+
+                final Map<String, String> userOfferCodes =
+                    Map<String, String>.from(
+                  data['userOfferCodes'] ?? {},
+                );
+
+                if (userIds.contains(event.userId)) {
+                  throw Exception("You have already redeemed this offer.");
+                }
+
+                // Generate a unique 4-digit code
+                String generateOfferCode() {
+                  final random = Random();
+                  return (1000 + random.nextInt(9000))
+                      .toString(); // Ensures 4 digits
+                }
+
+                String offerCode;
+                do {
+                  offerCode = generateOfferCode();
+                } while (userOfferCodes
+                    .containsValue(offerCode)); // Ensure uniqueness
+
+                // Add userId and offerCode
+                userIds.add(event.userId);
+                userOfferCodes[event.userId] = offerCode;
+
+                transaction.update(
+                  docRef,
+                  {
+                    'userIds': userIds,
+                    'userOfferCodes': userOfferCodes,
+                  },
+                );
+
+                // Update local list
+                final index = featuredOffers.indexWhere(
+                  (offer) => offer.offerId == event.offerId,
+                );
+                if (index != -1) {
+                  featuredOffers[index].userIds = userIds;
+                  featuredOffers[index].userOfferCodes = userOfferCodes;
+                }
+              }
+            },
+          );
+          emit(
+            RedeemFeaturedOfferSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            RedeemFeaturedOfferFailed(e.message ?? ''),
+          );
+        } catch (e) {
+          developer.log(
+            e.toString(),
+          );
+          emit(
+            RedeemFeaturedOfferFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<RedeemMondayOffer>(
+      (event, emit) async {
+        emit(
+          ReedeemingMondayOffer(),
+        );
+        try {
+          final offerCollection =
+              FirebaseFirestore.instance.collection('monday_offer');
+          final docRef = offerCollection.doc(event.offerId);
+
+          await FirebaseFirestore.instance.runTransaction(
+            (transaction) async {
+              final snapshot = await transaction.get(docRef);
+              final data = snapshot.data();
+
+              if (data != null) {
+                final List<String> userIds = List<String>.from(
+                  data['userIds'] ?? [],
+                );
+
+                final Map<String, String> userOfferCodes =
+                    Map<String, String>.from(
+                  data['userOfferCodes'] ?? {},
+                );
+
+                if (userIds.contains(event.userId)) {
+                  throw Exception("You have already redeemed this offer.");
+                }
+
+                // Generate a unique 4-digit code
+                String generateOfferCode() {
+                  final random = Random();
+                  return (1000 + random.nextInt(9000))
+                      .toString(); // Ensures 4 digits
+                }
+
+                String offerCode;
+                do {
+                  offerCode = generateOfferCode();
+                } while (userOfferCodes
+                    .containsValue(offerCode)); // Ensure uniqueness
+
+                // Add userId and offerCode
+                userIds.add(event.userId);
+                userOfferCodes[event.userId] = offerCode;
+
+                transaction.update(
+                  docRef,
+                  {
+                    'userIds': userIds,
+                    'userOfferCodes': userOfferCodes,
+                  },
+                );
+
+                // Update local list
+                final index = mondayOffers.indexWhere(
+                  (offer) => offer.offerId == event.offerId,
+                );
+                if (index != -1) {
+                  mondayOffers[index].userIds = userIds;
+                  mondayOffers[index].userOfferCodes = userOfferCodes;
+                }
+              }
+            },
+          );
+          emit(
+            RedeemMondayOfferSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            RedeemMondayOfferFailed(e.message ?? ''),
+          );
+        } catch (e) {
+          developer.log(
+            e.toString(),
+          );
+          emit(
+            RedeemMondayOfferFailed(
+              e.toString(),
+            ),
+          );
         }
       },
     );

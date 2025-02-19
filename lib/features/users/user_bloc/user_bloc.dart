@@ -1,14 +1,15 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:teen_splash/main.dart';
 import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/coupon_model.dart';
@@ -296,28 +297,63 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           DownloadingImage(),
         );
         try {
-          final uri = Uri.parse(event.imageUrl);
-          final fileName = uri.pathSegments.last;
-          final response = await Dio().get(
-            event.imageUrl,
-            options: Options(responseType: ResponseType.bytes),
-          );
+          // Request Storage Permission
+          if (await Permission.storage.request().isGranted) {
+            // Get Download Directory
+            Directory? directory = await getExternalStorageDirectory();
+            if (directory == null) {
+              print("Failed to get directory");
+              return;
+            }
 
-          final result = await ImageGallerySaver.saveImage(
-            Uint8List.fromList(response.data),
-            quality: 100,
-            name: fileName,
-          );
+            // Generate File Path
+            String fileName = event.imageUrl.split('/').last;
+            String savePath = "${directory.path}/$fileName";
 
-          if (result['isSuccess']) {
+            // Start Download
+            FileDownloader.downloadFile(
+              url: event.imageUrl,
+              name: fileName,
+              onProgress: (String? fileName, double progress) {
+                // 🔹 Now matches required type
+                print("Downloading $fileName: ${progress.toStringAsFixed(2)}%");
+              },
+              onDownloadCompleted: (String path) {
+                print("Download Completed: $path");
+              },
+              onDownloadError: (String error) {
+                print("Download Failed: $error");
+              },
+            );
             emit(
-              const DownloadImageSuccess("Image downloaded successfully!"),
+              DownloadImageSuccess(savePath),
             );
           } else {
-            emit(
-              const DownloadImageFailed("Failed to save the image."),
-            );
+            print("Storage permission denied");
           }
+
+          // final uri = Uri.parse(event.imageUrl);
+          // final fileName = uri.pathSegments.last;
+          // final response = await Dio().get(
+          //   event.imageUrl,
+          //   options: Options(responseType: ResponseType.bytes),
+          // );
+
+          // final result = await ImageGallerySaver.saveImage(
+          //   Uint8List.fromList(response.data),
+          //   quality: 100,
+          //   name: fileName,
+          // );
+
+          // if (result['isSuccess']) {
+          // emit(
+          //   const DownloadImageSuccess("Image downloaded successfully!"),
+          // );
+          // } else {
+          //   emit(
+          //     const DownloadImageFailed("Failed to save the image."),
+          //   );
+          // }
         } on FirebaseException catch (e) {
           emit(
             DownloadImageFailed(

@@ -108,7 +108,9 @@ dependencies:
   dio: ^5.7.0
 
   # image gallery saver
-  image_gallery_saver: ^2.0.3
+  # image_gallery_saver_v3: ^1.0.0
+  # image_gallery_saver: ^2.0.3
+  flutter_file_downloader: ^2.0.0
 
   # Google Mlkit Rext Recognition
   google_mlkit_text_recognition: ^0.14.0
@@ -125,8 +127,12 @@ dependencies:
   # Universal Html
   universal_html: ^2.2.4
 
-  #Firebase Messaging
+  # Firebase Messaging
   firebase_messaging: ^15.2.2
+
+  # Camera
+  # camera: ^0.11.1
+  camera: 0.10.5+5
 
 dev_dependencies:
   flutter_test:

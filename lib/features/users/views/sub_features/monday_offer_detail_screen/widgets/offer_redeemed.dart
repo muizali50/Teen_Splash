@@ -4,8 +4,10 @@ import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class OfferRedeemedDialog extends StatefulWidget {
   final VoidCallback dismissOnTap;
+  final String code;
   const OfferRedeemedDialog({
     required this.dismissOnTap,
+    required this.code,
     super.key,
   });
 
@@ -52,7 +54,7 @@ class _OfferRedeemedDialogState extends State<OfferRedeemedDialog> {
           ),
           Gaps.hGap10,
           Text(
-            '5747',
+            widget.code,
             style: TextStyle(
               fontFamily: 'Lexend',
               fontSize: 40,

@@ -10,6 +10,8 @@ class MondayOffersModel {
   String? offerName;
   String? businessLogo;
   List<String>? isFavorite;
+  List<String>? userIds;
+  Map<String, String>? userOfferCodes;
 
   MondayOffersModel({
     this.offerId,
@@ -23,6 +25,8 @@ class MondayOffersModel {
     this.offerName,
     this.businessLogo,
     this.isFavorite,
+    this.userIds,
+    this.userOfferCodes,
   });
 
   Map<String, dynamic> toMap() {
@@ -38,6 +42,8 @@ class MondayOffersModel {
       'offerName': offerName,
       'businessLogo': businessLogo,
       'isFavorite': isFavorite,
+      'userIds': userIds ?? [],
+      'userOfferCodes': userOfferCodes ?? {},
     };
   }
 
@@ -56,6 +62,11 @@ class MondayOffersModel {
       isFavorite: List<String>.from(
         map['isFavorite'] ?? [],
       ),
+      userIds: List<String>.from(map['userIds'] ?? []),
+      userOfferCodes: Map<String, String>.from(map['userOfferCodes'] ?? {}),
     );
+  }
+  String? getUserOfferCode(String userId) {
+    return userOfferCodes?[userId];
   }
 }

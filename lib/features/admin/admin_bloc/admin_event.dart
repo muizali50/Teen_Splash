@@ -546,3 +546,33 @@ final class DeletePhotoGallery extends AdminEvent {
         photoGalleryId,
       ];
 }
+
+final class RedeemFeauturedOffer extends AdminEvent {
+  final String offerId;
+  final String userId;
+  const RedeemFeauturedOffer(
+    this.offerId,
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+        userId,
+      ];
+}
+
+final class RedeemMondayOffer extends AdminEvent {
+  final String offerId;
+  final String userId;
+  const RedeemMondayOffer(
+    this.offerId,
+    this.userId,
+  );
+
+  @override
+  List<Object> get props => [
+        offerId,
+        userId,
+      ];
+}

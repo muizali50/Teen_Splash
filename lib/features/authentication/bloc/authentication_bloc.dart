@@ -30,15 +30,15 @@ class AuthenticationBloc
         );
         try {
           String membershipNumber = await generateMembershipNumber();
-          final ref = FirebaseStorage.instance.ref().child(
-                'idcard_images/${event.image!.path.split('/').last}',
-              );
+          // final ref = FirebaseStorage.instance.ref().child(
+          //       'idcard_images/${event.image!.path.split('/').last}',
+          //     );
 
-          await ref.putData(
-            await event.image!.readAsBytes(),
-          );
-          final imageUrl = await ref.getDownloadURL();
-          event.idCardPhoto = imageUrl;
+          // await ref.putData(
+          //   await event.image!.readAsBytes(),
+          // );
+          // final imageUrl = await ref.getDownloadURL();
+          // event.idCardPhoto = imageUrl;
           final userCreds =
               await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: event.email,
@@ -58,7 +58,7 @@ class AuthenticationBloc
               'gender': event.gender,
               'country': event.country,
               'countryFlag': event.countryFlag,
-              'idCardPicture': event.idCardPhoto,
+              // 'idCardPicture': event.idCardPhoto,
               'status': event.status,
               'age': event.age,
               'dateOfBirth': event.dateOfBirth,
@@ -74,7 +74,7 @@ class AuthenticationBloc
               gender: event.gender,
               country: event.country,
               countryFlag: event.countryFlag,
-              idCardPicture: event.idCardPhoto,
+              // idCardPicture: event.idCardPhoto,
               status: event.status,
               age: event.age,
               dateOfBirth: event.dateOfBirth,

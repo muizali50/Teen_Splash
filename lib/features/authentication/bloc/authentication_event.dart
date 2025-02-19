@@ -12,9 +12,9 @@ final class RegisterEvent extends AuthenticationEvent {
   final String countryFlag;
   final String password;
   final String confirmPassword;
-  String idCardPhoto;
+  // String idCardPhoto;
   final String status;
-  final XFile? image;
+  // final XFile? image;
   final String age;
   final String dateOfBirth;
   RegisterEvent({
@@ -25,9 +25,9 @@ final class RegisterEvent extends AuthenticationEvent {
     required this.countryFlag,
     required this.password,
     required this.confirmPassword,
-    required this.idCardPhoto,
+    // required this.idCardPhoto,
     required this.status,
-    this.image,
+    // this.image,
     required this.age,
     required this.dateOfBirth,
   });
@@ -41,9 +41,9 @@ final class RegisterEvent extends AuthenticationEvent {
         countryFlag,
         password,
         confirmPassword,
-        idCardPhoto,
+        // idCardPhoto,
         status,
-        image,
+        // image,
         age,
         dateOfBirth,
       ];

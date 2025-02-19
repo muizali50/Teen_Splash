@@ -9,6 +9,8 @@ class FeaturedOffersModel {
   String? offerName;
   String? businessLogo;
   List<String>? isFavorite;
+  List<String>? userIds;
+  Map<String, String>? userOfferCodes;
 
   FeaturedOffersModel({
     this.offerId,
@@ -21,6 +23,8 @@ class FeaturedOffersModel {
     this.offerName,
     this.businessLogo,
     this.isFavorite,
+    this.userIds,
+    this.userOfferCodes,
   });
 
   Map<String, dynamic> toMap() {
@@ -35,6 +39,8 @@ class FeaturedOffersModel {
       'offerName': offerName,
       'businessLogo': businessLogo,
       'isFavorite': isFavorite,
+      'userIds': userIds ?? [],
+      'userOfferCodes': userOfferCodes ?? {},
     };
   }
 
@@ -52,6 +58,12 @@ class FeaturedOffersModel {
       isFavorite: List<String>.from(
         map['isFavorite'] ?? [],
       ),
+      userIds: List<String>.from(map['userIds'] ?? []),
+      userOfferCodes: Map<String, String>.from(map['userOfferCodes'] ?? {}),
     );
+  }
+
+  String? getUserOfferCode(String userId) {
+    return userOfferCodes?[userId];
   }
 }

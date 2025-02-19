@@ -10,8 +10,10 @@ import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class FeaturedOfferDetailsScreen extends StatefulWidget {
   final FeaturedOffersModel featuredOffer;
+  final bool isGuest;
   const FeaturedOfferDetailsScreen({
     required this.featuredOffer,
+    required this.isGuest,
     super.key,
   });
 
@@ -24,7 +26,11 @@ class _FeaturedOfferDetailsScreenState
     extends State<FeaturedOfferDetailsScreen> {
   @override
   Widget build(BuildContext context) {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
+    final adminBloc = context.read<AdminBloc>();
+    final String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Get user-specific offer code
+    String? offerCode;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -73,42 +79,50 @@ class _FeaturedOfferDetailsScreenState
                           ),
                         ),
                         const Spacer(),
-                        BlocBuilder<AdminBloc, AdminState>(
-                          builder: (context, state) {
-                            bool isFavorite = widget.featuredOffer.isFavorite!
-                                .contains(userId);
+                        widget.isGuest
+                            ? const SizedBox()
+                            : BlocBuilder<AdminBloc, AdminState>(
+                                builder: (context, state) {
+                                  String userId =
+                                      FirebaseAuth.instance.currentUser!.uid;
+                                  bool isFavorite = widget
+                                      .featuredOffer.isFavorite!
+                                      .contains(userId);
 
-                            return GestureDetector(
-                              onTap: () {
-                                context.read<AdminBloc>().add(
-                                      AddFavouriteFeaturedOffer(
-                                        widget.featuredOffer.offerId.toString(),
-                                        userId,
+                                  return GestureDetector(
+                                    onTap: () {
+                                      context.read<AdminBloc>().add(
+                                            AddFavouriteFeaturedOffer(
+                                              widget.featuredOffer.offerId
+                                                  .toString(),
+                                              userId,
+                                            ),
+                                          );
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF4F4F4),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                       ),
-                                    );
-                              },
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF4F4F4),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(
-                                    size: 27,
-                                    isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_outline,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Icon(
+                                          size: 27,
+                                          isFavorite
+                                              ? Icons.favorite
+                                              : Icons.favorite_outline,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -236,21 +250,70 @@ class _FeaturedOfferDetailsScreenState
                           showDialog(
                             context: context,
                             builder: (context) => Dialog(
-                              child: RedeemOfferPopup(
-                                redeemOnTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => Dialog(
-                                      child: OfferRedeemedDialog(
-                                        dismissOnTap: () {
-                                          Navigator.pop(context);
-                                        },
+                              child: BlocConsumer<AdminBloc, AdminState>(
+                                listener: (context, state) {
+                                  if (state is RedeemFeaturedOfferSuccess) {
+                                    setState(
+                                      () {
+                                        offerCode = widget.featuredOffer
+                                            .getUserOfferCode(userId);
+                                      },
+                                    );
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Redeemed Successfully',
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => Dialog(
+                                        child: OfferRedeemedDialog(
+                                          code: offerCode ?? 'Not Redeemed Yet',
+                                          dismissOnTap: () {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  } else if (state
+                                      is RedeemFeaturedOfferFailed) {
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          state.message,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
-                                cancelOnTap: () {
-                                  Navigator.pop(context);
+                                builder: (context, state) {
+                                  if (state is ReedeemingFeaturedOffer) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return RedeemOfferPopup(
+                                    redeemOnTap: () {
+                                      adminBloc.add(
+                                        RedeemFeauturedOffer(
+                                          widget.featuredOffer.offerId
+                                              .toString(),
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        ),
+                                      );
+                                    },
+                                    cancelOnTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
                                 },
                               ),
                             ),

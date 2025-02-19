@@ -197,29 +197,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // bottom: 670, // Adjust the position as necessary
                   // left: 0,
                   // right: 0,
-                  top: 0, // Reduced value from 30 to 15 to pull the card up.
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    height: 105,
-                    width: 105,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(
-                          0xFFFFD700,
+                  // top: 0, // Reduced value from 30 to 15 to pull the card up.
+                  // left: 0,
+                  // right: 0,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      height: 105,
+                      width: 105,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(
+                            0xFFFFD700,
+                          ),
                         ),
-                      ),
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: userProvider.user?.picture == null ||
-                                userProvider.user!.picture!.isEmpty
-                            ? const AssetImage(
-                                'assets/images/user.png',
-                              )
-                            : NetworkImage(
-                                userProvider.user!.picture!,
-                              ) as ImageProvider,
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: userProvider.user?.picture == null ||
+                                  userProvider.user!.picture!.isEmpty
+                              ? const AssetImage(
+                                  'assets/images/user.png',
+                                )
+                              : NetworkImage(
+                                  userProvider.user!.picture!,
+                                ) as ImageProvider,
+                        ),
                       ),
                     ),
                   ),

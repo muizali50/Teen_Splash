@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class FavoritesFeauturedOffers extends StatefulWidget {
@@ -76,15 +77,19 @@ class _FavoritesFeauturedOffersState extends State<FavoritesFeauturedOffers> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (
-                                  //       context,
-                                  //     ) =>
-                                  //         const OfferDetailsScreen(),
-                                  //   ),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (
+                                        context,
+                                      ) =>
+                                          FeaturedOfferDetailsScreen(
+                                        featuredOffer:
+                                            filteredFeaturedOffers[index],
+                                        isGuest: false,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(

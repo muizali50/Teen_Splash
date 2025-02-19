@@ -301,9 +301,11 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                                                         mondayOffer:
                                                             filteredMondayOffers[
                                                                 index],
+                                                                
                                                       ),
                                                     ),
                                                   );
+
                                                 },
                                                 child: Container(
                                                   padding: const EdgeInsets
@@ -456,7 +458,9 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                                     builder: (
                                       context,
                                     ) =>
-                                        const ViewMoreFeaturedOffers(),
+                                        const ViewMoreFeaturedOffers(
+                                      isGuest: false,
+                                    ),
                                   ),
                                 );
                               },
@@ -519,6 +523,7 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
                                                         featuredOffer:
                                                             featuredOffers[
                                                                 index],
+                                                        isGuest: false,
                                                       ),
                                                     ),
                                                   );
