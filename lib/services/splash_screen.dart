@@ -9,6 +9,7 @@ import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/onboarding_screen.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 import 'package:teen_splash/user_provider.dart';
+import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,28 +22,38 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AuthenticationBloc authenticationBloc;
   late final UserProvider userProvider;
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
+  late VideoPlayerController _controller;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
     super.initState();
     authenticationBloc = context.read<AuthenticationBloc>();
     userProvider = context.read<UserProvider>();
+
     if (FirebaseAuth.instance.currentUser != null &&
         userProvider.firebaseUser == null) {
       authenticationBloc.add(
         const GetUser(),
       );
     }
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..forward();
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _controller = VideoPlayerController.asset("assets/splash.mp4")
+      ..initialize().then(
+        (_) {
+          setState(() {});
+          _controller.play();
+        },
+      );
 
-    Timer(const Duration(seconds: 3), checkLoginStatus);
+    _controller.addListener(
+      () {
+        if (_controller.value.position == _controller.value.duration) {
+          _navigationTimer =
+              Timer(const Duration(seconds: 1), checkLoginStatus);
+        }
+      },
+    );
   }
 
   void checkLoginStatus() {
@@ -85,22 +96,42 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Image.asset(
-            'assets/images/logo.png',
-            width: 150,
-            height: 150,
-          ),
-        ),
+      backgroundColor: const Color(0xFFC45856),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (_controller.value.isInitialized)
+            SizedBox.expand(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller.value.size.width,
+                  height: _controller.value.size.height,
+                  child: VideoPlayer(_controller),
+                ),
+              ),
+            )
+          else
+            SizedBox.expand(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller.value.size.width,
+                  height: _controller.value.size.height,
+                  child: Container(
+                    color: const Color(0xFFC45856),
+                  ),
+                ),
+              ),
+            )
+        ],
       ),
     );
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }

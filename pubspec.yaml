@@ -134,6 +134,12 @@ dependencies:
   # camera: ^0.11.1
   camera: 0.10.5+5
 
+  # Flutter Native Splash
+  flutter_native_splash: ^2.4.5
+
+  # Video Player
+  video_player: ^2.9.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -160,6 +166,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
