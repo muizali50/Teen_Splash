@@ -2628,31 +2628,36 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
                   data['userIds'] ?? [],
                 );
 
-                final Map<String, String> userOfferCodes =
-                    Map<String, String>.from(
-                  data['userOfferCodes'] ?? {},
-                );
-
-                if (userIds.contains(event.userId)) {
-                  throw Exception("You have already redeemed this offer.");
-                }
+                final Map<String, List<String>> userOfferCodes =
+                    (data['userOfferCodes'] != null)
+                        ? (data['userOfferCodes'] as Map<String, dynamic>).map(
+                            (key, value) => MapEntry(
+                              key,
+                              (value as List<dynamic>)
+                                  .map((e) => e.toString())
+                                  .toList(),
+                            ),
+                          )
+                        : {};
 
                 // Generate a unique 4-digit code
                 String generateOfferCode() {
                   final random = Random();
-                  return (1000 + random.nextInt(9000))
-                      .toString(); // Ensures 4 digits
+                  return (1000 + random.nextInt(9000)).toString();
                 }
 
                 String offerCode;
                 do {
                   offerCode = generateOfferCode();
-                } while (userOfferCodes
-                    .containsValue(offerCode)); // Ensure uniqueness
+                } while (userOfferCodes.values.any(
+                  (codes) => codes.contains(offerCode),
+                ));
 
-                // Add userId and offerCode
+                // Add userId and offerCode (allows multiple codes for the same user)
                 userIds.add(event.userId);
-                userOfferCodes[event.userId] = offerCode;
+                userOfferCodes
+                    .putIfAbsent(event.userId, () => [])
+                    .add(offerCode);
 
                 transaction.update(
                   docRef,

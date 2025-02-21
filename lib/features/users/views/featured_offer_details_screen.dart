@@ -255,8 +255,17 @@ class _FeaturedOfferDetailsScreenState
                                   if (state is RedeemFeaturedOfferSuccess) {
                                     setState(
                                       () {
-                                        offerCode = widget.featuredOffer
-                                            .getUserOfferCode(userId);
+                                        setState(
+                                          () {
+                                            List<String>? offerCodes = widget
+                                                .featuredOffer
+                                                .getUserOfferCodes(userId);
+                                            offerCode = (offerCodes != null &&
+                                                    offerCodes.isNotEmpty)
+                                                ? offerCodes.last
+                                                : null;
+                                          },
+                                        );
                                       },
                                     );
                                     ScaffoldMessenger.of(

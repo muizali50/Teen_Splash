@@ -10,7 +10,7 @@ class FeaturedOffersModel {
   String? businessLogo;
   List<String>? isFavorite;
   List<String>? userIds;
-  Map<String, String>? userOfferCodes;
+  Map<String, List<String>>? userOfferCodes;
 
   FeaturedOffersModel({
     this.offerId,
@@ -40,7 +40,10 @@ class FeaturedOffersModel {
       'businessLogo': businessLogo,
       'isFavorite': isFavorite,
       'userIds': userIds ?? [],
-      'userOfferCodes': userOfferCodes ?? {},
+      'userOfferCodes': userOfferCodes?.map(
+            (key, value) => MapEntry(key, value),
+          ) ??
+          {},
     };
   }
 
@@ -59,11 +62,18 @@ class FeaturedOffersModel {
         map['isFavorite'] ?? [],
       ),
       userIds: List<String>.from(map['userIds'] ?? []),
-      userOfferCodes: Map<String, String>.from(map['userOfferCodes'] ?? {}),
+      userOfferCodes: (map['userOfferCodes'] != null)
+          ? (map['userOfferCodes'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                (value as List<dynamic>).map((e) => e.toString()).toList(),
+              ),
+            )
+          : {},
     );
   }
 
-  String? getUserOfferCode(String userId) {
+  List<String>? getUserOfferCodes(String userId) {
     return userOfferCodes?[userId];
   }
 }
