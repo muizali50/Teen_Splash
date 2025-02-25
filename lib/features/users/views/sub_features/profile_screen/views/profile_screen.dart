@@ -47,7 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       drawer: const Drawer(
-        child: DrawerWidget(),
+        child: DrawerWidget(
+          isGuest: false,
+        ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(

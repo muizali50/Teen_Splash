@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
 import 'package:teen_splash/utils/gaps.dart';
 
 class MondayOffersHistoryScreen extends StatefulWidget {
@@ -79,114 +80,131 @@ class _MondayOffersHistoryScreenState extends State<MondayOffersHistoryScreen> {
                           padding: const EdgeInsets.only(
                             bottom: 10.0,
                           ),
-                          child: Container(
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(
-                                12.0,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  offset: const Offset(0, 0),
-                                  blurRadius: 5,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (
+                                    context,
+                                  ) =>
+                                      MondayOfferDetailsScreen(
+                                    mondayOffer: filteredMondayOffers[index],
+                                  ),
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.only(
-                                    top: 8.0,
-                                    left: 8.0,
-                                    right: 60,
-                                    bottom: 60,
+                              );
+                            },
+                            child: Container(
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(
+                                  12.0,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    offset: const Offset(0, 0),
+                                    blurRadius: 5,
                                   ),
-                                  height: 100,
-                                  width: 103,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      12.0,
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.only(
+                                      top: 8.0,
+                                      left: 8.0,
+                                      right: 60,
+                                      bottom: 60,
                                     ),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                        filteredMondayOffers[index].image ?? '',
-                                      ),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    height: 29,
-                                    width: 29,
+                                    height: 100,
+                                    width: 103,
                                     decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color(
-                                          0xFFFFD700,
-                                        ),
+                                      borderRadius: BorderRadius.circular(
+                                        12.0,
                                       ),
-                                      shape: BoxShape.circle,
                                       image: DecorationImage(
                                         fit: BoxFit.cover,
                                         image: NetworkImage(
-                                          filteredMondayOffers[index]
-                                                  .businessLogo ??
+                                          filteredMondayOffers[index].image ??
                                               '',
                                         ),
                                       ),
                                     ),
+                                    child: Container(
+                                      height: 29,
+                                      width: 29,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFFFFD700,
+                                          ),
+                                        ),
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            filteredMondayOffers[index]
+                                                    .businessLogo ??
+                                                '',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      filteredMondayOffers[index].offerName ??
-                                          '',
-                                      style: TextStyle(
-                                        fontFamily: 'Lexend',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        filteredMondayOffers[index].offerName ??
+                                            '',
+                                        style: TextStyle(
+                                          fontFamily: 'Lexend',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Text(
-                                      filteredMondayOffers[index]
-                                              .businessName ??
-                                          '',
-                                      style: TextStyle(
-                                        fontFamily: 'OpenSans',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF999999),
+                                      const SizedBox(
+                                        height: 2,
                                       ),
-                                    ),
-                                    Gaps.hGap10,
-                                    Text(
-                                      filteredMondayOffers[index]
-                                                  .discountType ==
-                                              'Cash Discount'
-                                          ? '\$${filteredMondayOffers[index].discount ?? ''} off'
-                                          : '${filteredMondayOffers[index].discount ?? ''}% off',
-                                      style: TextStyle(
-                                        fontFamily: 'OpenSans',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF999999),
+                                      Text(
+                                        filteredMondayOffers[index]
+                                                .businessName ??
+                                            '',
+                                        style: TextStyle(
+                                          fontFamily: 'OpenSans',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xFF999999),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      Gaps.hGap10,
+                                      Text(
+                                        filteredMondayOffers[index]
+                                                    .discountType ==
+                                                'Cash Discount'
+                                            ? '\$${filteredMondayOffers[index].discount ?? ''} off'
+                                            : '${filteredMondayOffers[index].discount ?? ''}% off',
+                                        style: TextStyle(
+                                          fontFamily: 'OpenSans',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xFF999999),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

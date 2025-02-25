@@ -216,3 +216,19 @@ final class EditProfileFailed extends UserState {
         message,
       ];
 }
+
+final class DeletingAccount extends UserState {}
+
+final class DeleteAccountSuccess extends UserState {}
+
+final class DeleteAccountFailed extends UserState {
+  final String message;
+  const DeleteAccountFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

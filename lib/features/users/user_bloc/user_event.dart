@@ -115,3 +115,8 @@ final class EditProfile extends UserEvent {
         countryFlag,
       ];
 }
+
+final class DeleteAccount extends UserEvent {
+  @override
+  List<Object> get props => [];
+}

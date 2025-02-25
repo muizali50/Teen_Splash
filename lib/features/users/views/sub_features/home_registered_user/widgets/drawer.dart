@@ -294,7 +294,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                           Theme.of(context).colorScheme.surface,
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Logout?',
@@ -411,6 +412,160 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 ),
                                 Text(
                                   'Logout',
+                                  style: TextStyle(
+                                    fontFamily: 'Lexend',
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFE50000),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox(),
+                Gaps.hGap10,
+                widget.isGuest == true
+                    ? const SizedBox()
+                    : widget.isGuest == false
+                        ? InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 20,
+                                    ),
+                                    height: 200,
+                                    width: 386,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        10.0,
+                                      ),
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Delete Account',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        Gaps.hGap10,
+                                        const Text(
+                                          textAlign: TextAlign.center,
+                                          'Do you really want to delete your profile?',
+                                          style: TextStyle(
+                                            fontFamily: 'OpenSans',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xFF999999),
+                                          ),
+                                        ),
+                                        Gaps.hGap15,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 50,
+                                              width: 106,
+                                              child: AppPrimaryButton(
+                                                hintTextColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                isBorderColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiary,
+                                                isBorder: true,
+                                                text: 'Cancel',
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            BlocConsumer<UserBloc, UserState>(
+                                              listener: (context, state) {
+                                                if (state
+                                                    is DeleteAccountSuccess) {
+                                                  Navigator.of(context)
+                                                      .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) =>
+                                                          const LoginScreen(),
+                                                    ),
+                                                    (route) => false,
+                                                  );
+                                                } else if (state
+                                                    is DeleteAccountFailed) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        state.message,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              builder: (context, state) {
+                                                if (state is DeletingAccount) {
+                                                  return const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                }
+                                                return SizedBox(
+                                                  height: 50,
+                                                  width: 106,
+                                                  child: AppPrimaryButton(
+                                                    isPrimaryColor: true,
+                                                    text: 'Delete',
+                                                    onTap: () {
+                                                      userBloc.add(
+                                                        DeleteAccount(),
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Row(
+                              children: [
+                                ImageIcon(
+                                  color: Color(0xFFE50000),
+                                  AssetImage(
+                                    'assets/icons/del_account.png',
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Text(
+                                  'Delete Account',
                                   style: TextStyle(
                                     fontFamily: 'Lexend',
                                     fontSize: 19,

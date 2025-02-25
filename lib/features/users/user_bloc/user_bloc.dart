@@ -537,6 +537,47 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       },
     );
+    on<DeleteAccount>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          DeletingAccount(),
+        );
+        try {
+          String uid = FirebaseAuth.instance.currentUser!.uid;
+
+          // Delete user from Firebase Auth
+          await FirebaseAuth.instance.currentUser!.delete();
+
+          await FirebaseFirestore.instance.collection('users').doc(uid).update(
+            {
+              'isDeactivate': true,
+            },
+          );
+
+          emit(
+            DeleteAccountSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            DeleteAccountFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            DeleteAccountFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
 }
 

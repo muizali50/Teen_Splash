@@ -16,6 +16,7 @@ class AppUser {
   String? dateOfBirth;
   String? membershipNumber;
   bool? isPrivacyPolicyAccepted;
+  bool? isDeactivate;
 
   AppUser({
     required this.uid,
@@ -33,6 +34,7 @@ class AppUser {
     this.dateOfBirth,
     this.membershipNumber,
     this.isPrivacyPolicyAccepted,
+    this.isDeactivate,
   });
 
   AppUser copyWith({
@@ -50,6 +52,7 @@ class AppUser {
     String? dateOfBirth,
     String? membershipNumber,
     bool? isPrivacyPolicyAccepted,
+    bool? isDeactivate,
   }) {
     return AppUser(
       uid: uid ?? uid,
@@ -68,6 +71,7 @@ class AppUser {
       membershipNumber: membershipNumber ?? this.membershipNumber,
       isPrivacyPolicyAccepted:
           isPrivacyPolicyAccepted ?? this.isPrivacyPolicyAccepted,
+      isDeactivate: isDeactivate ?? this.isDeactivate,
     );
   }
 
@@ -92,6 +96,7 @@ class AppUser {
       dateOfBirth: map['dateOfBirth'] ?? 0,
       membershipNumber: map['membershipNumber'] ?? 0,
       isPrivacyPolicyAccepted: map['isPrivacyPolicyAccepted'] ?? '',
+      isDeactivate: map['isDeactivate'] ?? false,
     );
   }
   Map<String, dynamic> toMap() {
@@ -111,6 +116,7 @@ class AppUser {
       'dateOfBirth': dateOfBirth,
       'membershipNumber': membershipNumber,
       'isPrivacyPolicyAccepted': isPrivacyPolicyAccepted,
+      'isDeactivate': isDeactivate,
     };
   }
 }
