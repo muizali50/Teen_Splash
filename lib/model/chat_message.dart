@@ -13,6 +13,7 @@ class ChatMessage {
   final String messageType;
   final DateTime timestamp;
   final bool? read;
+  final bool? isReported;
 
   ChatMessage({
     required this.id,
@@ -27,6 +28,8 @@ class ChatMessage {
     required this.messageType,
     required this.timestamp,
     this.read,
+    this.isReported,
+
   });
 
   Map<String, dynamic> toMap() {
@@ -42,6 +45,7 @@ class ChatMessage {
       'messageType': messageType,
       'timestamp': timestamp,
       'read': read,
+      'isReported': isReported,
     };
   }
 
@@ -59,6 +63,7 @@ class ChatMessage {
       messageType: map['messageType'] ?? 'text',
       timestamp: (map['timestamp'] as Timestamp).toDate(),
       read: map['read'] ?? false,
+      isReported: map['isReported'] ?? false,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -63,6 +65,7 @@ class AuthenticationBloc
               'age': event.age,
               'dateOfBirth': event.dateOfBirth,
               'membershipNumber': membershipNumber,
+              'isPrivacyPolicyAccepted': event.isPrivacyPolicyAccepted,
             },
           );
           userProvider.setUser(
@@ -79,6 +82,7 @@ class AuthenticationBloc
               age: event.age,
               dateOfBirth: event.dateOfBirth,
               membershipNumber: membershipNumber,
+              isPrivacyPolicyAccepted: event.isPrivacyPolicyAccepted,
             ),
           );
           emit(

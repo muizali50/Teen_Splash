@@ -59,10 +59,10 @@ dependencies:
   equatable: ^2.0.5
 
   # Bloc
-  bloc: ^8.1.4
+  bloc: ^9.0.0
 
   # Flutter Bloc
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.0.0
 
   # Firebase Auth
   firebase_auth: ^5.3.1
@@ -77,10 +77,10 @@ dependencies:
   image_picker: ^1.1.2
 
   # File Picker
-  file_picker: ^8.1.2
+  file_picker: ^9.0.1
 
   # Intl
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # Dotted Bborder
   dotted_border: ^2.1.0
@@ -95,7 +95,7 @@ dependencies:
   # flutter_native_timezone: ^2.0.0
 
   # Timezone
-  flutter_timezone: ^3.0.1
+  flutter_timezone: ^4.1.0
 
   # Permission Handler
   permission_handler: ^11.3.1
@@ -132,7 +132,7 @@ dependencies:
 
   # Camera
   # camera: ^0.11.1
-  camera: 0.10.5+5
+  camera: ^0.11.1
 
   # Flutter Native Splash
   flutter_native_splash: ^2.4.5
@@ -149,7 +149,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

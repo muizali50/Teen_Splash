@@ -59,27 +59,37 @@ class UserProvider extends ChangeNotifier {
               .map(
                 (doc) => ChatMessage.fromMap(doc.data(), doc.id),
               )
+              .where((message) =>
+                  message.isReported == null || message.isReported == false)
               .toList(),
         );
   }
 
-  // Send a text message
   Future<void> sendTextMessage(String senderId, String senderName,
       String profileUrl, String countryFlagUrl, String message) async {
-    final chatMessage = ChatMessage(
-      id: '', // Firestore will auto-generate the ID
-      senderId: senderId,
-      senderName: senderName,
-      profileUrl: profileUrl,
-      countryFlagUrl: countryFlagUrl,
-      message: message,
-      messageType: 'text',
-      timestamp: DateTime.now(),
-    );
+    try {
+      // Create a reference to Firestore collection
+      DocumentReference docRef = _firestore.collection('chatroom').doc();
 
-    await _firestore.collection('chatroom').add(
-          chatMessage.toMap(),
-        );
+      // Create chat message object with Firestore document ID
+      final chatMessage = ChatMessage(
+        id: docRef.id, // Use Firestore-generated ID
+        senderId: senderId,
+        senderName: senderName,
+        profileUrl: profileUrl,
+        countryFlagUrl: countryFlagUrl,
+        message: message,
+        messageType: 'text',
+        timestamp: DateTime.now(),
+      );
+
+      // Add the message to Firestore
+      await docRef.set(
+        chatMessage.toMap(),
+      );
+    } catch (error) {
+      debugPrint("Error sending message: $error");
+    }
   }
 
   // Send an image message
@@ -124,7 +134,7 @@ class UserProvider extends ChangeNotifier {
     if (user == null || message.trim().isEmpty) return;
 
     final newMessage = ChatMessage(
-      id: '', // Firestore will auto-generate the ID
+      id: chatId, // Firestore will auto-generate the ID
       senderId: senderId,
       senderName: senderName,
       profileUrl: profileUrl,
@@ -181,7 +191,7 @@ class UserProvider extends ChangeNotifier {
     final imageUrl = await fileRef.getDownloadURL();
 
     final newMessage = ChatMessage(
-      id: '',
+      id: chatId,
       senderId: senderId,
       senderName: senderName,
       profileUrl: profileUrl,
@@ -219,5 +229,17 @@ class UserProvider extends ChangeNotifier {
     return userId.compareTo(otherUserId) < 0
         ? '${userId}_$otherUserId'
         : '${otherUserId}_$userId';
+  }
+
+  Future<void> reportMessage(String messageId) async {
+    try {
+      await _firestore.collection('chatroom').doc(messageId).update(
+        {'isReported': true},
+      );
+
+      notifyListeners();
+    } catch (error) {
+      debugPrint("Error reporting message: $error");
+    }
   }
 }

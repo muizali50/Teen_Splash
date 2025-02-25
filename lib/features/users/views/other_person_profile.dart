@@ -25,6 +25,21 @@ class OtherPersonProfile extends StatefulWidget {
 
 class _OtherPersonProfileState extends State<OtherPersonProfile> {
   late final UserBloc userBloc;
+  final GlobalKey _menuKey = GlobalKey();
+
+  void _openMenu() {
+    final dynamic state = _menuKey.currentState;
+    state?.showButtonMenu();
+  }
+
+  void _handleMenuSelection(String value) {
+    if (value == 'bloc') {
+      print(value);
+    } else if (value == 'report') {
+      print(value);
+    }
+  }
+
   @override
   void initState() {
     userBloc = context.read<UserBloc>();
@@ -73,6 +88,45 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
               ),
             ),
           ),
+          // actions: [
+          //   Padding(
+          //     padding: const EdgeInsets.only(
+          //       right: 16.0,
+          //     ),
+          //     child: Align(
+          //       alignment: Alignment.center,
+          //       child: InkWell(
+          //         onTap: _openMenu,
+          //         child: Container(
+          //           height: 40,
+          //           width: 40,
+          //           decoration: BoxDecoration(
+          //             color: const Color(0xFFF4F4F4),
+          //             borderRadius: BorderRadius.circular(10.0),
+          //           ),
+          //           child: PopupMenuButton<String>(
+          //             iconColor: Theme.of(context).colorScheme.secondary,
+          //             menuPadding: const EdgeInsets.all(6.0),
+          //             key: _menuKey,
+          //             onSelected: _handleMenuSelection,
+          //             itemBuilder: (BuildContext context) {
+          //               return [
+          //                 const PopupMenuItem(
+          //                   value: 'bloc',
+          //                   child: Text('Bloc'),
+          //                 ),
+          //                 const PopupMenuItem(
+          //                   value: 'report',
+          //                   child: Text('Report'),
+          //                 ),
+          //               ];
+          //             },
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ],
           title: Text(
             'Profile',
             style: TextStyle(

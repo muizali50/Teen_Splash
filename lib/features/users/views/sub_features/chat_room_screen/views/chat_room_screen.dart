@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,6 +66,71 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       }
     }
     return false;
+  }
+
+  void _showReportMenu(
+      BuildContext context, LongPressStartDetails details, String messageId) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        details.globalPosition & const Size(40, 40), // Position of the menu
+        Offset.zero & overlay.size, // Full screen size
+      ),
+      items: [
+        const PopupMenuItem(
+          height: 25,
+          value: 'report',
+          child: Text(
+            'Report',
+            style: TextStyle(
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ],
+    ).then(
+      (value) {
+        if (value == 'report') {
+          _showReportDialog(context, messageId);
+        }
+      },
+    );
+  }
+
+  void _showReportDialog(BuildContext context, String messageId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Report Content',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to report this content?',
+          style: TextStyle(
+            color: Color(0xFF999999),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              _reportContent(messageId);
+              Navigator.pop(context);
+            },
+            child: const Text('Report'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -273,10 +339,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       );
                     } else if (item is ChatMessage) {
                       // Render chat bubble
-                      return ChatBubble(
-                        chatMessage: item,
-                        isGuest:
-                            widget.isGuest != null && widget.isGuest == true,
+                      return GestureDetector(
+                        onLongPressStart: (details) =>
+                            _showReportMenu(context, details, item.id),
+                        child: ChatBubble(
+                          chatMessage: item,
+                          isGuest:
+                              widget.isGuest != null && widget.isGuest == true,
+                        ),
                       );
                     }
                     return const SizedBox.shrink();
@@ -464,5 +534,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         },
       );
     }
+  }
+
+  Future<void> _reportContent(String messageId) async {
+    await userProvider.reportMessage(messageId);
   }
 }

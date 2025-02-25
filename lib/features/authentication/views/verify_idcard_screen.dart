@@ -20,6 +20,7 @@ class VerifyIdcardScreen extends StatefulWidget {
   final String countryFlag;
   final String password;
   final String confirmPassword;
+  final bool isPrivacyPolicyAccepted;
   const VerifyIdcardScreen({
     required this.name,
     required this.email,
@@ -28,6 +29,7 @@ class VerifyIdcardScreen extends StatefulWidget {
     required this.countryFlag,
     required this.password,
     required this.confirmPassword,
+    required this.isPrivacyPolicyAccepted,
     super.key,
   });
 
@@ -404,6 +406,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   // image: XFile(''),
                                   age: _ageController.text,
                                   dateOfBirth: formattedDOB,
+                                  isPrivacyPolicyAccepted:
+                                      widget.isPrivacyPolicyAccepted,
                                 ),
                               );
                             },

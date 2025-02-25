@@ -6,6 +6,7 @@ import 'package:teen_splash/features/authentication/views/verify_idcard_screen.d
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 import 'package:teen_splash/widgets/app_text_field.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -25,6 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String? selectedCountry;
   String? selectedCountryFlag;
   String selectedGender = '';
+  bool agreeToTerms = false;
   void updateGender(
     String gender,
   ) {
@@ -33,6 +35,25 @@ class _SignupScreenState extends State<SignupScreen> {
         selectedGender = gender;
       },
     );
+  }
+
+  Future<void> _launchWebsite(String? url, BuildContext context) async {
+    if (url != null && await launchUrlString(url)) {
+      await launchUrlString(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not launch the link.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -296,6 +317,63 @@ class _SignupScreenState extends State<SignupScreen> {
                         iconImageAddress: 'assets/icons/lock.png',
                         hintText: 'Confirm Password',
                       ),
+                      Gaps.hGap15,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(
+                                () {
+                                  agreeToTerms = !agreeToTerms;
+                                },
+                              );
+                            },
+                            child: agreeToTerms
+                                ? ImageIcon(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    const AssetImage(
+                                      'assets/icons/check.png',
+                                    ),
+                                  )
+                                : const ImageIcon(
+                                    color: Color(
+                                      0xFFE8ECF4,
+                                    ),
+                                    AssetImage(
+                                      'assets/icons/uncheck.png',
+                                    ),
+                                  ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'By using this app, you agree to our ',
+                            style: TextStyle(
+                              fontFamily: 'OpenSans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _launchWebsite(
+                              'https://teensplashevents.com/privacy_app.php',
+                              context,
+                            ),
+                            child: Text(
+                              'Privacy policy',
+                              style: TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       Gaps.hGap40,
                       AppPrimaryButton(
                         text: 'Next',
@@ -361,6 +439,16 @@ class _SignupScreenState extends State<SignupScreen> {
                             );
                             return;
                           }
+                          if (agreeToTerms == false) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please agree to our privacy policy',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -376,6 +464,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 password: _passwordController.text,
                                 confirmPassword:
                                     _confirmPasswordController.text,
+                                isPrivacyPolicyAccepted: agreeToTerms,
                               ),
                             ),
                           );

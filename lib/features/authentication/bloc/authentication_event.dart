@@ -17,6 +17,7 @@ final class RegisterEvent extends AuthenticationEvent {
   // final XFile? image;
   final String age;
   final String dateOfBirth;
+  final bool isPrivacyPolicyAccepted;
   RegisterEvent({
     required this.name,
     required this.email,
@@ -30,6 +31,7 @@ final class RegisterEvent extends AuthenticationEvent {
     // this.image,
     required this.age,
     required this.dateOfBirth,
+    required this.isPrivacyPolicyAccepted,
   });
 
   @override
@@ -46,6 +48,7 @@ final class RegisterEvent extends AuthenticationEvent {
         // image,
         age,
         dateOfBirth,
+        isPrivacyPolicyAccepted,
       ];
 }
 
