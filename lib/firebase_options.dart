@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDk6i0xCXzDlsQrox41RonoulkeNZqM1YY',
-    appId: '1:860854562070:android:16ae49ab40159cc1937437',
+    appId: '1:860854562070:android:9611ffb49097473b937437',
     messagingSenderId: '860854562070',
     projectId: 'teen-splah',
     storageBucket: 'teen-splah.appspot.com',
@@ -66,10 +66,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB-_CXUAaBBq51TBQa4wKai8y2MEtRdEt4',
-    appId: '1:860854562070:ios:f79b062a0932e514937437',
+    appId: '1:860854562070:ios:80d751d45f2e1493937437',
     messagingSenderId: '860854562070',
     projectId: 'teen-splah',
     storageBucket: 'teen-splah.appspot.com',
-    iosBundleId: 'com.example.teenSplash',
+    iosBundleId: 'com.majorminorsentertainment.teensplash',
   );
+
 }
