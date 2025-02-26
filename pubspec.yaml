@@ -135,7 +135,7 @@ dependencies:
   camera: ^0.11.1
 
   # Flutter Native Splash
-  flutter_native_splash: ^2.4.5
+  flutter_native_splash: ^2.4.4
 
   # Video Player
   video_player: ^2.9.2

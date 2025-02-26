@@ -1,4 +1,4 @@
-package com.example.teen_splash
+package com.majorminorsentertainment.teensplash
 
 import io.flutter.embedding.android.FlutterActivity
 
