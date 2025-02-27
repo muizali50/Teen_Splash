@@ -153,7 +153,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         builder: (
                           context,
                         ) =>
-                            const FavoritesScreen(),
+                            FavoritesScreen(
+                          isGuest: widget.isGuest!,
+                        ),
                       ),
                     );
                   },
@@ -173,7 +175,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         builder: (
                           context,
                         ) =>
-                            const OffersHistoryScreen(),
+                            OffersHistoryScreen(
+                          isGuest: widget.isGuest!,
+                        ),
                       ),
                     );
                   },
@@ -193,7 +197,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         builder: (
                           context,
                         ) =>
-                            const SettingsScreen(),
+                            SettingsScreen(
+                          isGuest: widget.isGuest!,
+                        ),
                       ),
                     );
                   },

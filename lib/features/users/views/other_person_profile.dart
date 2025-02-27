@@ -25,20 +25,6 @@ class OtherPersonProfile extends StatefulWidget {
 
 class _OtherPersonProfileState extends State<OtherPersonProfile> {
   late final UserBloc userBloc;
-  final GlobalKey _menuKey = GlobalKey();
-
-  void _openMenu() {
-    final dynamic state = _menuKey.currentState;
-    state?.showButtonMenu();
-  }
-
-  void _handleMenuSelection(String value) {
-    if (value == 'bloc') {
-      print(value);
-    } else if (value == 'report') {
-      print(value);
-    }
-  }
 
   @override
   void initState() {
@@ -310,22 +296,26 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                   // bottom: 670, // Adjust the position as necessary
                   // left: 0,
                   // right: 0,
-                  top: 0, // Reduced value from 30 to 15 to pull the card up.
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    height: 105,
-                    width: 105,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(
-                          0xFFFFD700,
+                  // top: 0, // Reduced value from 30 to 15 to pull the card up.
+                  // left: 0,
+                  // right: 0,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      height: 105,
+                      width: 105,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(
+                            0xFFFFD700,
+                          ),
                         ),
-                      ),
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: _getProfileImage(),
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: _getProfileImage(),
+                        ),
                       ),
                     ),
                   ),

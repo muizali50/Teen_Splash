@@ -27,8 +27,6 @@ class _FeaturedOfferDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final adminBloc = context.read<AdminBloc>();
-    final String userId = FirebaseAuth.instance.currentUser!.uid;
-
     // Get user-specific offer code
     String? offerCode;
     return Scaffold(
@@ -247,86 +245,100 @@ class _FeaturedOfferDetailsScreenState
                       AppPrimaryButton(
                         text: 'Redeem Now',
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => Dialog(
-                              child: BlocConsumer<AdminBloc, AdminState>(
-                                listener: (context, state) {
-                                  if (state is RedeemFeaturedOfferSuccess) {
-                                    setState(
-                                      () {
-                                        setState(
-                                          () {
-                                            List<String>? offerCodes = widget
-                                                .featuredOffer
-                                                .getUserOfferCodes(userId);
-                                            offerCode = (offerCodes != null &&
-                                                    offerCodes.isNotEmpty)
-                                                ? offerCodes.last
-                                                : null;
+                          widget.isGuest
+                              ? ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'This feature is restricted for guests',
+                                    ),
+                                  ),
+                                )
+                              : showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                    child: BlocConsumer<AdminBloc, AdminState>(
+                                      listener: (context, state) {
+                                        final String userId = FirebaseAuth
+                                            .instance.currentUser!.uid;
+                                        if (state
+                                            is RedeemFeaturedOfferSuccess) {
+                                          setState(
+                                            () {
+                                              setState(
+                                                () {
+                                                  List<String>? offerCodes =
+                                                      widget.featuredOffer
+                                                          .getUserOfferCodes(
+                                                              userId);
+                                                  offerCode = (offerCodes !=
+                                                              null &&
+                                                          offerCodes.isNotEmpty)
+                                                      ? offerCodes.last
+                                                      : null;
+                                                },
+                                              );
+                                            },
+                                          );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Redeemed Successfully',
+                                              ),
+                                            ),
+                                          );
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => Dialog(
+                                              child: OfferRedeemedDialog(
+                                                code: offerCode ??
+                                                    'Not Redeemed Yet',
+                                                dismissOnTap: () {
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        } else if (state
+                                            is RedeemFeaturedOfferFailed) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                state.message,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        if (state is ReedeemingFeaturedOffer) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        }
+                                        return RedeemOfferPopup(
+                                          redeemOnTap: () {
+                                            adminBloc.add(
+                                              RedeemFeauturedOffer(
+                                                widget.featuredOffer.offerId
+                                                    .toString(),
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                              ),
+                                            );
+                                          },
+                                          cancelOnTap: () {
+                                            Navigator.pop(context);
                                           },
                                         );
                                       },
-                                    );
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Redeemed Successfully',
-                                        ),
-                                      ),
-                                    );
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => Dialog(
-                                        child: OfferRedeemedDialog(
-                                          code: offerCode ?? 'Not Redeemed Yet',
-                                          dismissOnTap: () {
-                                            Navigator.pop(context);
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  } else if (state
-                                      is RedeemFeaturedOfferFailed) {
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          state.message,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                                builder: (context, state) {
-                                  if (state is ReedeemingFeaturedOffer) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return RedeemOfferPopup(
-                                    redeemOnTap: () {
-                                      adminBloc.add(
-                                        RedeemFeauturedOffer(
-                                          widget.featuredOffer.offerId
-                                              .toString(),
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid,
-                                        ),
-                                      );
-                                    },
-                                    cancelOnTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          );
+                                    ),
+                                  ),
+                                );
                         },
                       ),
                     ],

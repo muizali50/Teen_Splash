@@ -29,15 +29,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
     if (widget.isGuest ?? false) {
       _screens = [
         const HomeGuestUser(),
-        const EventScreen(),
-        const NotificationsScreen(),
+        const EventScreen(
+          isGuest: true,
+        ),
+        const NotificationsScreen(
+          isGuest: true,
+        ),
       ];
     } else {
       _screens = [
         const HomeRegisteredUserScreen(),
         const CouponsScreen(),
-        const EventScreen(),
-        const NotificationsScreen(),
+        const EventScreen(
+          isGuest: false,
+        ),
+        const NotificationsScreen(
+          isGuest: false,
+        ),
         const ProfileScreen(),
       ];
     }

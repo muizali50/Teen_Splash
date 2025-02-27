@@ -6,7 +6,11 @@ import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
 class EventScreen extends StatefulWidget {
-  const EventScreen({super.key});
+  final bool isGuest;
+  const EventScreen({
+    required this.isGuest,
+    super.key,
+  });
 
   @override
   State<EventScreen> createState() => _EventScreenState();
@@ -38,10 +42,13 @@ class _EventScreenState extends State<EventScreen>
           isChatIcon: true,
           isTittle: true,
           title: 'Events',
+          isGuest: true,
         ),
       ),
-      drawer: const Drawer(
-        child: DrawerWidget(),
+      drawer: Drawer(
+        child: DrawerWidget(
+          isGuest: widget.isGuest,
+        ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(

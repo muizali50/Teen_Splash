@@ -5,7 +5,11 @@ import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
 class OffersHistoryScreen extends StatefulWidget {
-  const OffersHistoryScreen({super.key});
+  final bool isGuest;
+  const OffersHistoryScreen({
+    required this.isGuest,
+    super.key,
+  });
 
   @override
   State<OffersHistoryScreen> createState() => _OffersHistoryScreenState();
@@ -61,65 +65,69 @@ class _OffersHistoryScreenState extends State<OffersHistoryScreen>
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 50,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 5,
-                      ),
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(
-                            38,
-                          ),
-                        ),
-                      ),
-                      child: TabBar(
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        indicator: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(
-                              30,
+                child: widget.isGuest
+                    ? Center(
+                        child: Text('This screen is restricted for guests'),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 5,
+                            ),
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  38,
+                                ),
+                              ),
+                            ),
+                            child: TabBar(
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              dividerColor: Colors.transparent,
+                              indicator: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(
+                                    30,
+                                  ),
+                                ),
+                              ),
+                              labelColor: Theme.of(context).colorScheme.surface,
+                              unselectedLabelColor: const Color(0xFF999999),
+                              unselectedLabelStyle: const TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              labelStyle: const TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              controller: _tabController,
+                              tabs: const [
+                                Tab(text: "Monday Offers"),
+                                Tab(text: "Featured Offers"),
+                              ],
                             ),
                           ),
-                        ),
-                        labelColor: Theme.of(context).colorScheme.surface,
-                        unselectedLabelColor: const Color(0xFF999999),
-                        unselectedLabelStyle: const TextStyle(
-                          fontFamily: 'OpenSans',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        labelStyle: const TextStyle(
-                          fontFamily: 'OpenSans',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(text: "Monday Offers"),
-                          Tab(text: "Featured Offers"),
+                          Gaps.hGap10,
+                          Expanded(
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: const [
+                                MondayOffersHistoryScreen(),
+                                FeauturedOffersHistoryScreen(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    Gaps.hGap10,
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: const [
-                          MondayOffersHistoryScreen(),
-                          FeauturedOffersHistoryScreen(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],

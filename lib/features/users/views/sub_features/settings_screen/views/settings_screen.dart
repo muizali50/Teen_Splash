@@ -6,7 +6,11 @@ import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final bool isGuest;
+  const SettingsScreen({
+    required this.isGuest,
+    super.key,
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -94,7 +98,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               builder: (
                                 context,
                               ) =>
-                                  const UpdateProfileScreen(),
+                                  UpdateProfileScreen(
+                                isGuest: widget.isGuest,
+                              ),
                             ),
                           );
                         },
@@ -114,7 +120,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               builder: (
                                 context,
                               ) =>
-                                  const UpdatePasswordScreen(),
+                                  UpdatePasswordScreen(
+                                isGuest: widget.isGuest,
+                              ),
                             ),
                           );
                         },

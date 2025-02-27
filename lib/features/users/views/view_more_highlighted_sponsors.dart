@@ -134,29 +134,7 @@ class _ViewMoreHighlightedSponsorsState
                                               child: Row(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
-                                                children: [
-                                                  const Spacer(),
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                      5.0,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surface
-                                                          .withOpacity(0.9),
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: Icon(
-                                                      size: 10,
-                                                      Icons.favorite,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary,
-                                                    ),
-                                                  ),
-                                                ],
+                                                children: [],
                                               ),
                                             ),
                                           ),
