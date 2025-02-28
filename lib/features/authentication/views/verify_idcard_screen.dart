@@ -53,23 +53,37 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     _initializeCamera();
   }
 
-  /// Initializes Camera
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    if (cameras.isNotEmpty) {
-      _cameraController = CameraController(
-        cameras[0],
-        ResolutionPreset.high,
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-      await _cameraController!.initialize();
-      if (mounted) {
-        setState(() {});
-        _startTextScanning();
+Future<void> _initializeCamera() async {
+  final cameras = await availableCameras();
+  if (cameras.isNotEmpty) {
+    _cameraController = CameraController(
+      cameras[0],
+      ResolutionPreset.high,
+      enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.yuv420,
+    );
+
+    await _cameraController!.initialize();
+    
+    // Check the camera orientation and adjust accordingly
+    if (mounted) {
+      if (_cameraController!.description.lensDirection == CameraLensDirection.front) {
+        // For front camera, flip preview horizontally
+        setState(() {
+          _cameraController = CameraController(
+            cameras[0],
+            ResolutionPreset.high,
+            enableAudio: false,
+            imageFormatGroup: ImageFormatGroup.yuv420,
+          );
+        });
       }
+      setState(() {});
+      _startTextScanning();
     }
   }
+}
+
 
   /// Start scanning the ID text in real-time
   void _startTextScanning() {
@@ -279,8 +293,14 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   child: AspectRatio(
                                     aspectRatio:
                                         _cameraController!.value.aspectRatio,
-                                    child: CameraPreview(_cameraController!),
-                                  ))
+                                    child: Transform.rotate(
+                                        angle: -270 *
+                                            3.1415927 /
+                                            180, // Rotate 90 degrees counterclockwise
+                                        child:
+                                            CameraPreview(_cameraController!),),
+                                  ),
+                                )
                               : null,
                         ),
                       ),
@@ -371,16 +391,6 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                               final ageText = _ageController.text;
                               final age = int.tryParse(ageText);
 
-                              // if (idCardPhoto!.isEmpty) {
-                              //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     const SnackBar(
-                              //       content: Text(
-                              //         'Please select the id card photo',
-                              //       ),
-                              //     ),
-                              //   );
-                              //   return;
-                              // }
                               if (age == null || age < 13 || age > 19) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

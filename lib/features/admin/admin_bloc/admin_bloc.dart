@@ -23,12 +23,10 @@ import 'package:teen_splash/model/teen_business_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
-import 'package:teen_splash/services/push_notification_service.dart';
 part 'admin_event.dart';
 part 'admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
-  final PushNotificationService pushNotificationService;
   List<CouponModel> coupons = [];
   List<MondayOffersModel> mondayOffers = [];
   List<FeaturedOffersModel> featuredOffers = [];
@@ -43,7 +41,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   RestrictedWordsModel? restricedWords;
   List<PhotoGalleryModel> photoGalleries = [];
 
-  AdminBloc(this.pushNotificationService) : super(AdminInitial()) {
+  AdminBloc() : super(AdminInitial()) {
     on<AddCoupon>(
       (
         event,
@@ -1325,12 +1323,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               event.pushNotification,
             ),
           );
-
-          // // ✅ Trigger local notification
-          // await pushNotificationService.showInstantNotification(
-          //   title: event.pushNotification.title.toString(),
-          //   body: event.pushNotification.content.toString(),
-          // );
         } on FirebaseException catch (e) {
           emit(
             AddPushNotificationFailed(

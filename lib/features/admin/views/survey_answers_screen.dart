@@ -69,7 +69,7 @@ class _SurveyAnswersScreenState extends State<SurveyAnswersScreen> {
             ),
           ),
           child: BlocProvider(
-            create: (_) => AdminBloc(pushNotificationService)
+            create: (_) => AdminBloc()
               ..add(
                 GetSurveyAnswers(
                   widget.surveyId,

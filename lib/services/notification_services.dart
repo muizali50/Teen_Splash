@@ -7,18 +7,29 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-@pragma('vm:entry-point') // Required for background callbacks
+@pragma('vm:entry-point')
 void onBackgroundNotificationHandler(NotificationResponse response) async {
-  showDialog(
-    context: navigatorKey.currentContext!,
-    builder: (context) => const Center(
-      child: HydratedPopup(),
+  debugPrint("Background notification tapped: ${response.payload}");
+
+  navigatorKey.currentState?.push(
+    MaterialPageRoute(
+      builder: (context) => const HydratedPopup(),
     ),
   );
 }
 
-void _handleNotificationTap(
-    NotificationResponse response, BuildContext context) {
+void _handleNotificationTap(NotificationResponse response) {
+  debugPrint("Notification tapped with payload: ${response.payload}");
+
+  // navigatorKey.currentState?.push(
+  //   MaterialPageRoute(
+  //     builder: (context) => const HydratedPopup(),
+  //   ),
+  // );
+  _showPopup(navigatorKey.currentState!.context);
+}
+
+void _showPopup(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => const Center(
@@ -48,20 +59,26 @@ class NotificationsService {
     );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (response) {
-      _handleNotificationTap(response, navigatorKey.currentContext!);
+        onDidReceiveNotificationResponse: (
+      NotificationResponse response,
+    ) {
+      debugPrint("handleMessage called with payload: ${response.payload}");
+      _handleNotificationTap(response);
     },
         onDidReceiveBackgroundNotificationResponse:
             onBackgroundNotificationHandler);
-  }
 
-  void _showPopup(BuildContext? context, String message) {
-    showDialog(
-      context: context!,
-      builder: (context) => const Center(
-        child: HydratedPopup(),
-      ),
-    );
+    // Handle notification tap when app is killed
+    final details =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (details?.didNotificationLaunchApp ?? false) {
+      final response = details!.notificationResponse;
+      if (response != null) {
+        Future.delayed(Duration.zero, () {
+          _handleNotificationTap(response);
+        });
+      }
+    }
   }
 
   Future<void> scheduleDailyNotifications() async {
@@ -87,7 +104,7 @@ class NotificationsService {
           hours[i],
         );
 
-        // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
+        scheduledDate = DateTime.now().add(const Duration(minutes: 1));
 
         // Ensure the scheduled time is in the future
         final scheduledTime = tz.TZDateTime.from(scheduledDate, location);

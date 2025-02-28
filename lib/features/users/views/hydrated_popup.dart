@@ -55,7 +55,7 @@ class _HydratedPopupState extends State<HydratedPopup> {
                   orElse: () =>
                       WaterSponsorModel(), // Returns null if no active sponsor is found
                 );
-      
+
                 if (state is GettingWaterSponsor) {
                   return const Center(
                     child: CircularProgressIndicator(),
@@ -65,7 +65,7 @@ class _HydratedPopupState extends State<HydratedPopup> {
                     child: Text(state.message),
                   );
                 }
-      
+
                 // Check if no valid sponsor data
                 if ((latestWaterSponsor.title ?? '').isEmpty &&
                     (latestWaterSponsor.description ?? '').isEmpty) {
@@ -73,48 +73,50 @@ class _HydratedPopupState extends State<HydratedPopup> {
                     child: Text('No active water sponsor available'),
                   );
                 }
-      
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if ((latestWaterSponsor.image ?? '').isNotEmpty)
-                      Container(
-                        height: 80,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(
-                              latestWaterSponsor.image ?? '',
+
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if ((latestWaterSponsor.image ?? '').isNotEmpty)
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                latestWaterSponsor.image ?? '',
+                              ),
                             ),
                           ),
+                        )
+                      else
+                        const SizedBox(
+                            height: 80), // Placeholder height if no image
+                      Gaps.hGap10,
+                      Text(
+                        latestWaterSponsor.title ?? 'No title',
+                        style: TextStyle(
+                          fontFamily: 'Lexend',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                      )
-                    else
-                      const SizedBox(
-                          height: 80), // Placeholder height if no image
-                    Gaps.hGap10,
-                    Text(
-                      latestWaterSponsor.title ?? 'No title',
-                      style: TextStyle(
-                        fontFamily: 'Lexend',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
                       ),
-                    ),
-                    Gaps.hGap10,
-                    Text(
-                      latestWaterSponsor.description ?? 'No description',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF999999),
+                      Gaps.hGap10,
+                      Text(
+                        latestWaterSponsor.description ?? 'No description',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'OpenSans',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF999999),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
             ),
@@ -123,7 +125,7 @@ class _HydratedPopupState extends State<HydratedPopup> {
             right: -10,
             top: -10,
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
