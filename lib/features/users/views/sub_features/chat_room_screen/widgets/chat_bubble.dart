@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:teen_splash/features/users/views/full_screen_image.dart';
 import 'package:teen_splash/features/users/views/other_person_profile.dart';
 import 'package:teen_splash/model/chat_message.dart';
 import 'package:teen_splash/utils/gaps.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatBubble extends StatefulWidget {
   final ChatMessage chatMessage;
@@ -77,8 +80,17 @@ class _ChatBubbleState extends State<ChatBubble> {
                           constraints: const BoxConstraints(
                             maxWidth: 200,
                           ), // Max width for message
-                          child: Text(
-                            widget.chatMessage.message,
+                          child: SelectableLinkify(
+                            enableInteractiveSelection: false,
+                            onOpen: _onOpen,
+                            text: widget.chatMessage.message,
+                            linkStyle: const TextStyle(
+                              fontFamily: 'OpenSans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
                             style: TextStyle(
                               fontFamily: 'OpenSans',
                               fontSize: 12,
@@ -197,8 +209,17 @@ class _ChatBubbleState extends State<ChatBubble> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 200,
                                 ), // Max width for message
-                                child: Text(
-                                  widget.chatMessage.message,
+                                child: SelectableLinkify(
+                                  enableInteractiveSelection: false,
+                                  onOpen: _onOpen,
+                                  text: widget.chatMessage.message,
+                                  linkStyle: const TextStyle(
+                                    fontFamily: 'OpenSans',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
                                   style: TextStyle(
                                     fontFamily: 'OpenSans',
                                     fontSize: 12,
@@ -242,6 +263,16 @@ class _ChatBubbleState extends State<ChatBubble> {
       return const AssetImage('assets/images/user.png');
     } else {
       return NetworkImage(profileUrl);
+    }
+  }
+
+  Future<void> _onOpen(LinkableElement link) async {
+    if (!await launchUrl(
+      Uri.parse(link.url),
+    )) {
+      throw Exception(
+        'Could not launch ${link.url}',
+      );
     }
   }
 }

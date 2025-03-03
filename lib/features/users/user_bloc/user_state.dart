@@ -232,3 +232,25 @@ final class DeleteAccountFailed extends UserState {
         message,
       ];
 }
+
+final class TooglePushNotificationLoading extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TooglePushNotificationSuccess extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TooglePushNotificationFailed extends UserState {
+  final String message;
+  const TooglePushNotificationFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

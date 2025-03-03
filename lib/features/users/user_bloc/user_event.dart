@@ -120,3 +120,15 @@ final class DeleteAccount extends UserEvent {
   @override
   List<Object> get props => [];
 }
+
+final class TooglePushNotification extends UserEvent {
+  final bool isPushNotification;
+
+  const TooglePushNotification(
+    this.isPushNotification,
+  );
+  @override
+  List<Object> get props => [
+        isPushNotification,
+      ];
+}

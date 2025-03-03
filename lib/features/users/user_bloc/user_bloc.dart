@@ -578,6 +578,52 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       },
     );
+    on<TooglePushNotification>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          TooglePushNotificationLoading(),
+        );
+        try {
+          String userId = FirebaseAuth.instance.currentUser!.uid;
+          UserProvider userProvider =
+              navigatorKey.currentContext!.read<UserProvider>();
+          await FirebaseFirestore.instance
+              .collection(
+                'users',
+              )
+              .doc(
+                userId,
+              )
+              .update(
+            {
+              'isPushNotification': event.isPushNotification,
+            },
+          );
+          userProvider.user!.isPushNotification = event.isPushNotification;
+          emit(
+            TooglePushNotificationSuccess(),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            TooglePushNotificationFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            TooglePushNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
   }
 }
 

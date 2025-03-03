@@ -140,6 +140,12 @@ dependencies:
   # Video Player
   video_player: ^2.9.2
 
+  # Flutter Linkify
+  flutter_linkify: ^6.0.0
+
+  # Linkify
+  linkify: ^5.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

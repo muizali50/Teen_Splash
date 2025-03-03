@@ -300,7 +300,7 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                   child: AspectRatio(
                                     aspectRatio:
-                                        _cameraController!.value.aspectRatio,
+                                        1.5,
                                     child: Transform.rotate(
                                       angle: -270 *
                                           3.1415927 /
