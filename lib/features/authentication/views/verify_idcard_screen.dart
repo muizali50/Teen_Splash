@@ -43,7 +43,8 @@ class VerifyIdcardScreen extends StatefulWidget {
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
   CameraController? _cameraController;
   bool _isProcessing = false;
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(script: TextRecognitionScript.latin);
   final TextEditingController _ageController = TextEditingController();
   String status = 'Approved';
   String? idCardPhoto;
@@ -55,15 +56,6 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     _initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    if (cameras.isNotEmpty) {
-      _cameraController = CameraController(
-        cameras[0],
-        ResolutionPreset.high,
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     if (cameras.isNotEmpty) {
@@ -98,7 +90,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
 
   /// Start scanning the ID text in real-time
   void _startTextScanning() {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
+      return;
     try {
       _cameraController!.startImageStream((CameraImage image) async {
         if (_isProcessing) return;
@@ -142,7 +135,9 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: InputImageRotation.rotation0deg,
-        format: Platform.isAndroid ? InputImageFormat.nv21 : InputImageFormat.yuv420,
+        format: Platform.isAndroid
+            ? InputImageFormat.nv21
+            : InputImageFormat.yuv420,
         bytesPerRow: image.planes[0].bytesPerRow,
       ),
     );
@@ -152,7 +147,13 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
 
   /// Extracts Date of Birth from text
   String? extractDOBFromText(String text) {
-    List<String> dobIndicators = ['Date of Birth', 'DOB', 'Born on', 'Birthdate', 'DATE OF BIRTH'];
+    List<String> dobIndicators = [
+      'Date of Birth',
+      'DOB',
+      'Born on',
+      'Birthdate',
+      'DATE OF BIRTH'
+    ];
 
     for (String indicator in dobIndicators) {
       final int index = text.indexOf(indicator);
@@ -192,7 +193,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     DateTime now = DateTime.now();
     int age = now.year - dob.year;
 
-    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
       age--;
     }
 
@@ -284,9 +286,7 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                           _initializeCamera();
                         },
                         child: Container(
-                     
                           decoration: BoxDecoration(
-                            
                             borderRadius: BorderRadius.circular(
                               12,
                             ),
@@ -294,19 +294,18 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                               0.7,
                             ),
                           ),
-                          child: _cameraController != null && _cameraController!.value.isInitialized
+                          child: _cameraController != null &&
+                                  _cameraController!.value.isInitialized
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  child: SizedBox(
-                                    child: AspectRatio(
-                                      aspectRatio:
-                                          1.5,
-                                      child: Transform.rotate(
-                                        angle: -270 *
-                                            3.1415927 /
-                                            180, // Rotate 90 degrees counterclockwise
-                                        child: CameraPreview(_cameraController!),
-                                      ),
+                                  child: AspectRatio(
+                                    aspectRatio:
+                                        _cameraController!.value.aspectRatio,
+                                    child: Transform.rotate(
+                                      angle: -270 *
+                                          3.1415927 /
+                                          180, // Rotate 90 degrees counterclockwise
+                                      child: CameraPreview(_cameraController!),
                                     ),
                                   ),
                                 )
@@ -380,7 +379,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
 
                                 for (var format in formats) {
                                   try {
-                                    parsedDate = DateFormat(format).parse(dateOfBirth);
+                                    parsedDate =
+                                        DateFormat(format).parse(dateOfBirth);
                                     break;
                                   } catch (e) {
                                     continue;
@@ -388,10 +388,12 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                 }
 
                                 if (parsedDate == null) {
-                                  throw const FormatException("Invalid Date of Birth format");
+                                  throw const FormatException(
+                                      "Invalid Date of Birth format");
                                 }
 
-                                return DateFormat("dd/MM/yyyy").format(parsedDate);
+                                return DateFormat("dd/MM/yyyy")
+                                    .format(parsedDate);
                               }
 
                               final ageText = _ageController.text;
@@ -422,7 +424,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   // image: XFile(''),
                                   age: _ageController.text,
                                   dateOfBirth: formattedDOB,
-                                  isPrivacyPolicyAccepted: widget.isPrivacyPolicyAccepted,
+                                  isPrivacyPolicyAccepted:
+                                      widget.isPrivacyPolicyAccepted,
                                 ),
                               );
                             },
