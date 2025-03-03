@@ -53,37 +53,37 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     _initializeCamera();
   }
 
-Future<void> _initializeCamera() async {
-  final cameras = await availableCameras();
-  if (cameras.isNotEmpty) {
-    _cameraController = CameraController(
-      cameras[0],
-      ResolutionPreset.high,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.yuv420,
-    );
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    if (cameras.isNotEmpty) {
+      _cameraController = CameraController(
+        cameras[0],
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
 
-    await _cameraController!.initialize();
-    
-    // Check the camera orientation and adjust accordingly
-    if (mounted) {
-      if (_cameraController!.description.lensDirection == CameraLensDirection.front) {
-        // For front camera, flip preview horizontally
-        setState(() {
-          _cameraController = CameraController(
-            cameras[0],
-            ResolutionPreset.high,
-            enableAudio: false,
-            imageFormatGroup: ImageFormatGroup.yuv420,
-          );
-        });
+      await _cameraController!.initialize();
+
+      // Check the camera orientation and adjust accordingly
+      if (mounted) {
+        if (_cameraController!.description.lensDirection ==
+            CameraLensDirection.front) {
+          // For front camera, flip preview horizontally
+          setState(() {
+            _cameraController = CameraController(
+              cameras[0],
+              ResolutionPreset.high,
+              enableAudio: false,
+              imageFormatGroup: ImageFormatGroup.yuv420,
+            );
+          });
+        }
+        setState(() {});
+        _startTextScanning();
       }
-      setState(() {});
-      _startTextScanning();
     }
   }
-}
-
 
   /// Start scanning the ID text in real-time
   void _startTextScanning() {
@@ -276,9 +276,9 @@ Future<void> _initializeCamera() async {
                           _initializeCamera();
                         },
                         child: Container(
-                          height: 300,
-                          width: double.infinity,
+                     
                           decoration: BoxDecoration(
+                            
                             borderRadius: BorderRadius.circular(
                               12,
                             ),
@@ -290,15 +290,17 @@ Future<void> _initializeCamera() async {
                                   _cameraController!.value.isInitialized
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  child: AspectRatio(
-                                    aspectRatio:
-                                        _cameraController!.value.aspectRatio,
-                                    child: Transform.rotate(
+                                  child: SizedBox(
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          1.5,
+                                      child: Transform.rotate(
                                         angle: -270 *
                                             3.1415927 /
                                             180, // Rotate 90 degrees counterclockwise
-                                        child:
-                                            CameraPreview(_cameraController!),),
+                                        child: CameraPreview(_cameraController!),
+                                      ),
+                                    ),
                                   ),
                                 )
                               : null,

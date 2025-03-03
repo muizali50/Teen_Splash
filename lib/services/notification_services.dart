@@ -74,9 +74,12 @@ class NotificationsService {
     if (details?.didNotificationLaunchApp ?? false) {
       final response = details!.notificationResponse;
       if (response != null) {
-        Future.delayed(Duration.zero, () {
-          _handleNotificationTap(response);
-        });
+        Future.delayed(
+          Duration.zero,
+          () {
+            _handleNotificationTap(response);
+          },
+        );
       }
     }
   }
@@ -104,7 +107,7 @@ class NotificationsService {
           hours[i],
         );
 
-        scheduledDate = DateTime.now().add(const Duration(minutes: 1));
+        // scheduledDate = DateTime.now().add(const Duration(minutes: 1));
 
         // Ensure the scheduled time is in the future
         final scheduledTime = tz.TZDateTime.from(scheduledDate, location);
