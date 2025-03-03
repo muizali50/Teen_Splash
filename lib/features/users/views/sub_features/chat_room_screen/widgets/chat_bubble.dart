@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:linkify/linkify.dart';
 import 'package:teen_splash/features/users/views/full_screen_image.dart';
 import 'package:teen_splash/features/users/views/other_person_profile.dart';
 import 'package:teen_splash/model/chat_message.dart';
@@ -11,8 +11,10 @@ import 'package:url_launcher/url_launcher.dart';
 class ChatBubble extends StatefulWidget {
   final ChatMessage chatMessage;
   final bool? isGuest;
+  final FocusNode? focusNode;
   const ChatBubble({
     required this.chatMessage,
+    required this.focusNode,
     this.isGuest,
     super.key,
   });
@@ -24,6 +26,10 @@ class ChatBubble extends StatefulWidget {
 class _ChatBubbleState extends State<ChatBubble> {
   @override
   Widget build(BuildContext context) {
+    final List<LinkifyElement> elements = linkify(
+      widget.chatMessage.message, // Correct function to parse text and links
+      options: const LinkifyOptions(humanize: true),
+    );
     bool isSentByCurrentUser = widget.chatMessage.senderId ==
         (FirebaseAuth.instance.currentUser?.uid ?? '');
     // bool isSentByCurrentUser =
@@ -80,22 +86,40 @@ class _ChatBubbleState extends State<ChatBubble> {
                           constraints: const BoxConstraints(
                             maxWidth: 200,
                           ), // Max width for message
-                          child: SelectableLinkify(
-                            enableInteractiveSelection: false,
-                            onOpen: _onOpen,
-                            text: widget.chatMessage.message,
-                            linkStyle: const TextStyle(
-                              fontFamily: 'OpenSans',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'OpenSans',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Theme.of(context).colorScheme.surface,
+                          child: SelectableText.rich(
+                            focusNode: widget.focusNode,
+                            TextSpan(
+                              children: elements.map(
+                                (element) {
+                                  if (element is TextElement) {
+                                    return TextSpan(
+                                      text: element.text,
+                                      style: TextStyle(
+                                        fontFamily: 'OpenSans',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                      ),
+                                    );
+                                  } else if (element is LinkableElement) {
+                                    return TextSpan(
+                                      text: element.url,
+                                      style: const TextStyle(
+                                        fontFamily: 'OpenSans',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => _onOpen(element),
+                                    );
+                                  }
+                                  return const TextSpan();
+                                },
+                              ).toList(),
                             ),
                           ),
                         ),
@@ -209,23 +233,42 @@ class _ChatBubbleState extends State<ChatBubble> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 200,
                                 ), // Max width for message
-                                child: SelectableLinkify(
-                                  enableInteractiveSelection: false,
-                                  onOpen: _onOpen,
-                                  text: widget.chatMessage.message,
-                                  linkStyle: const TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.blue,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  style: TextStyle(
-                                    fontFamily: 'OpenSans',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                child: SelectableText.rich(
+                                  focusNode: widget.focusNode,
+                                  TextSpan(
+                                    children: elements.map(
+                                      (element) {
+                                        if (element is TextElement) {
+                                          return TextSpan(
+                                            text: element.text,
+                                            style: TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary, // Regular text color
+                                            ),
+                                          );
+                                        } else if (element is LinkableElement) {
+                                          return TextSpan(
+                                            text: element.url,
+                                            style: const TextStyle(
+                                              fontFamily: 'OpenSans',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color.fromARGB(255, 7, 109,
+                                                  192), // Blue color for links
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () => _onOpen(element),
+                                          );
+                                        }
+                                        return const TextSpan();
+                                      },
+                                    ).toList(),
                                   ),
                                 ),
                               ),

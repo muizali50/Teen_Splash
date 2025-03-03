@@ -133,240 +133,255 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     );
   }
 
+  final FocusNode _focusNode = FocusNode(); // Create a FocusNode
+
+  @override
+  void dispose() {
+    _focusNode.dispose(); // Dispose of the FocusNode when widget is removed
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserProvider userProvider = context.read<UserProvider>();
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F4F4),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: ImageIcon(
-                      color: Theme.of(context).colorScheme.secondary,
-                      const AssetImage(
-                        'assets/icons/back.png',
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque, // Detect taps anywhere
+      onTap: () {
+        _focusNode.unfocus(); // Unfocus when tapping outside
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(100),
+          child: AppBar(
+            toolbarHeight: 100,
+            leading: Padding(
+              padding: const EdgeInsets.only(
+                left: 16.0,
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4F4F4),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: ImageIcon(
+                        color: Theme.of(context).colorScheme.secondary,
+                        const AssetImage(
+                          'assets/icons/back.png',
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          actions: [
-            if (widget.isGuest == null)
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 16.0,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (
-                            context,
-                          ) =>
-                              const ChatsScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF4F4F4),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: ImageIcon(
-                          color: Theme.of(context).colorScheme.secondary,
-                          const AssetImage(
-                            'assets/icons/chat.png',
+            actions: [
+              if (widget.isGuest == null)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: 16.0,
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (
+                              context,
+                            ) =>
+                                const ChatsScreen(),
                           ),
+                        );
+                      },
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF4F4F4),
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-          ],
-          title: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (
-                    context,
-                  ) =>
-                      const ChatroomMedia(),
-                ),
-              );
-            },
-            child: Text(
-              'Chatroom',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        children: [
-          Container(
-            height: 18,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(
-                  12.0,
-                ),
-                bottomRight: Radius.circular(
-                  12.0,
-                ),
-              ),
-            ),
-            child: BlocBuilder<AdminBloc, AdminState>(
-              builder: (context, state) {
-                final latestPushNotification =
-                    adminBloc.tickerNotifications.lastWhere(
-                  (noti) => noti.status == 'Active',
-                  orElse: () =>
-                      TickerNotificationModel(), // Returns null if no active sponsor is found
-                );
-                if (state is GettingTickerNotification) {
-                  return const Center(
-                    child: SizedBox(
-                      width: 10,
-                      height: 10,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.0,
-                      ),
-                    ),
-                  );
-                } else if (state is GetTickerNotificationFailed) {
-                  return Center(
-                    child: Text(state.message),
-                  );
-                }
-
-                // Check if no valid sponsor data
-                if ((latestPushNotification.title ?? '').isEmpty &&
-                    (latestPushNotification.status ?? '').isEmpty) {
-                  return const Center(
-                    child: Text('No active push notification available'),
-                  );
-                }
-                return SizedBox(
-                  height: 20,
-                  child: HorizontalScrollingText(
-                    text: latestPushNotification.title ??
-                        'No active notifications available',
-                  ),
-                );
-              },
-            ),
-          ),
-          Gaps.hGap20,
-          Expanded(
-            child: StreamBuilder<List<ChatMessage>>(
-              stream: userProvider.getChatMessages(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No messages yet'),
-                  );
-                }
-                final messages = snapshot.data!;
-                final groupedMessages = _groupMessagesByDate(messages);
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  reverse: true,
-                  itemCount: groupedMessages.length,
-                  itemBuilder: (context, index) {
-                    final item = groupedMessages[index];
-                    if (item is String) {
-                      // Render date header
-                      return Center(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                          padding: const EdgeInsets.all(6.0),
+                          child: ImageIcon(
+                            color: Theme.of(context).colorScheme.secondary,
+                            const AssetImage(
+                              'assets/icons/chat.png',
                             ),
                           ),
                         ),
-                      );
-                    } else if (item is ChatMessage) {
-                      // Render chat bubble
-                      return GestureDetector(
-                        onLongPressStart: (details) =>
-                            _showReportMenu(context, details, item.id),
-                        child: ChatBubble(
-                          chatMessage: item,
-                          isGuest:
-                              widget.isGuest != null && widget.isGuest == true,
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
+                      ),
+                    ),
+                  ),
+                )
+            ],
+            title: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (
+                      context,
+                    ) =>
+                        const ChatroomMedia(),
+                  ),
                 );
               },
-            ),
-          ),
-          widget.isGuest != null && widget.isGuest! == true
-              ? const SizedBox()
-              : ChatInput(
-                  onSendText: () =>
-                      _sendTextMessage(userProvider, _messageController.text),
-                  onSendCameraImage: () =>
-                      _pickAndPreviewImage(ImageSource.camera),
-                  onSendGalleryImage: () =>
-                      _pickAndPreviewImage(ImageSource.gallery),
-                  messageController: _messageController,
+              child: Text(
+                'Chatroom',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
-        ],
+              ),
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
+            scrolledUnderElevation: 0.0,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Column(
+          children: [
+            Container(
+              height: 18,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(
+                    12.0,
+                  ),
+                  bottomRight: Radius.circular(
+                    12.0,
+                  ),
+                ),
+              ),
+              child: BlocBuilder<AdminBloc, AdminState>(
+                builder: (context, state) {
+                  final latestPushNotification =
+                      adminBloc.tickerNotifications.lastWhere(
+                    (noti) => noti.status == 'Active',
+                    orElse: () =>
+                        TickerNotificationModel(), // Returns null if no active sponsor is found
+                  );
+                  if (state is GettingTickerNotification) {
+                    return const Center(
+                      child: SizedBox(
+                        width: 10,
+                        height: 10,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.0,
+                        ),
+                      ),
+                    );
+                  } else if (state is GetTickerNotificationFailed) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  }
+
+                  // Check if no valid sponsor data
+                  if ((latestPushNotification.title ?? '').isEmpty &&
+                      (latestPushNotification.status ?? '').isEmpty) {
+                    return const Center(
+                      child: Text('No active push notification available'),
+                    );
+                  }
+                  return SizedBox(
+                    height: 20,
+                    child: HorizontalScrollingText(
+                      text: latestPushNotification.title ??
+                          'No active notifications available',
+                    ),
+                  );
+                },
+              ),
+            ),
+            Gaps.hGap20,
+            Expanded(
+              child: StreamBuilder<List<ChatMessage>>(
+                stream: userProvider.getChatMessages(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('No messages yet'),
+                    );
+                  }
+                  final messages = snapshot.data!;
+                  final groupedMessages = _groupMessagesByDate(messages);
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    reverse: true,
+                    itemCount: groupedMessages.length,
+                    itemBuilder: (context, index) {
+                      final item = groupedMessages[index];
+                      if (item is String) {
+                        // Render date header
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (item is ChatMessage) {
+                        // Render chat bubble
+                        return GestureDetector(
+                          onLongPressStart: (details) =>
+                              _showReportMenu(context, details, item.id),
+                          child: ChatBubble(
+                            chatMessage: item,
+                            focusNode: _focusNode,
+                            isGuest: widget.isGuest != null &&
+                                widget.isGuest == true,
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  );
+                },
+              ),
+            ),
+            widget.isGuest != null && widget.isGuest! == true
+                ? const SizedBox()
+                : ChatInput(
+                    onSendText: () =>
+                        _sendTextMessage(userProvider, _messageController.text),
+                    onSendCameraImage: () =>
+                        _pickAndPreviewImage(ImageSource.camera),
+                    onSendGalleryImage: () =>
+                        _pickAndPreviewImage(ImageSource.gallery),
+                    messageController: _messageController,
+                  ),
+          ],
+        ),
       ),
     );
   }

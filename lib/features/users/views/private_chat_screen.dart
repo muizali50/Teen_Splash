@@ -60,6 +60,14 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     super.initState();
   }
 
+  final FocusNode _focusNode = FocusNode(); // Create a FocusNode
+
+  @override
+  void dispose() {
+    _focusNode.dispose(); // Dispose of the FocusNode when widget is removed
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     AppUser? currentUser = Provider.of<UserProvider>(context).user;
@@ -70,217 +78,224 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
       widget.chatUserId,
     );
     updateUnreadCount(chatId, currentUserId);
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          toolbarHeight: 100,
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF4F4F4),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: ImageIcon(
-                      color: Theme.of(context).colorScheme.secondary,
-                      const AssetImage(
-                        'assets/icons/back.png',
-                      ),
-                    ),
-                  ),
-                ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque, // Detect taps anywhere
+      onTap: () {
+        _focusNode.unfocus(); // Unfocus when tapping outside
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(100),
+          child: AppBar(
+            toolbarHeight: 100,
+            leading: Padding(
+              padding: const EdgeInsets.only(
+                left: 16.0,
               ),
-            ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: _getProfileImage(),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                '@${widget.chatUserName}',
-                style: TextStyle(
-                  fontFamily: 'Lexend',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ],
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          scrolledUnderElevation: 0.0,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        children: [
-          Container(
-            height: 18,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(
-                  12.0,
-                ),
-                bottomRight: Radius.circular(
-                  12.0,
-                ),
-              ),
-            ),
-            child: BlocBuilder<AdminBloc, AdminState>(
-              builder: (context, state) {
-                final latestPushNotification =
-                    adminBloc.tickerNotifications.lastWhere(
-                  (noti) => noti.status == 'Active',
-                  orElse: () =>
-                      TickerNotificationModel(), // Returns null if no active sponsor is found
-                );
-                if (state is GettingTickerNotification) {
-                  return const Center(
-                    child: SizedBox(
-                      width: 10,
-                      height: 10,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.0,
-                      ),
-                    ),
-                  );
-                } else if (state is GetTickerNotificationFailed) {
-                  return Center(
-                    child: Text(state.message),
-                  );
-                }
-
-                // Check if no valid sponsor data
-                if ((latestPushNotification.title ?? '').isEmpty &&
-                    (latestPushNotification.status ?? '').isEmpty) {
-                  return const Center(
-                    child: Text('No active push notification available'),
-                  );
-                }
-                return SizedBox(
-                  height: 20,
-                  child: HorizontalScrollingText(
-                    text: 
-                    latestPushNotification.title ??
-                        'No active notifications available',
-                  ),
-                );
-              },
-            ),
-          ),
-          Gaps.hGap20,
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('chats')
-                  .doc(
-                    userProvider.getChatId(
-                      currentUser.uid!,
-                      widget.chatUserId,
-                    ),
-                  )
-                  .collection('messages')
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: Text('No messages yet'),
-                  );
-                }
-                // Convert QuerySnapshot to List<ChatMessage>
-                final messages = snapshot.data!.docs.map(
-                  (doc) {
-                    return ChatMessage(
-                      id: doc.id,
-                      senderId: doc['senderId'],
-                      senderName: doc['senderName'],
-                      profileUrl: doc['profileUrl'],
-                      countryFlagUrl: doc['countryFlagUrl'],
-                      message: doc['message'],
-                      messageType: doc['messageType'],
-                      timestamp: (doc['timestamp'] as Timestamp).toDate(),
-                    );
+              child: Align(
+                alignment: Alignment.center,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
                   },
-                ).toList();
-                final groupedMessages = _groupMessagesByDate(messages);
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  reverse: true,
-                  itemCount: groupedMessages.length,
-                  itemBuilder: (context, index) {
-                    final item = groupedMessages[index];
-                    if (item is String) {
-                      // Render date header
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4F4F4),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: ImageIcon(
+                        color: Theme.of(context).colorScheme.secondary,
+                        const AssetImage(
+                          'assets/icons/back.png',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: _getProfileImage(),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  '@${widget.chatUserName}',
+                  style: TextStyle(
+                    fontFamily: 'Lexend',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                ),
+              ],
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            elevation: 0.0,
+            scrolledUnderElevation: 0.0,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Column(
+          children: [
+            Container(
+              height: 18,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(
+                    12.0,
+                  ),
+                  bottomRight: Radius.circular(
+                    12.0,
+                  ),
+                ),
+              ),
+              child: BlocBuilder<AdminBloc, AdminState>(
+                builder: (context, state) {
+                  final latestPushNotification =
+                      adminBloc.tickerNotifications.lastWhere(
+                    (noti) => noti.status == 'Active',
+                    orElse: () =>
+                        TickerNotificationModel(), // Returns null if no active sponsor is found
+                  );
+                  if (state is GettingTickerNotification) {
+                    return const Center(
+                      child: SizedBox(
+                        width: 10,
+                        height: 10,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.0,
+                        ),
+                      ),
+                    );
+                  } else if (state is GetTickerNotificationFailed) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  }
+
+                  // Check if no valid sponsor data
+                  if ((latestPushNotification.title ?? '').isEmpty &&
+                      (latestPushNotification.status ?? '').isEmpty) {
+                    return const Center(
+                      child: Text('No active push notification available'),
+                    );
+                  }
+                  return SizedBox(
+                    height: 20,
+                    child: HorizontalScrollingText(
+                      text: latestPushNotification.title ??
+                          'No active notifications available',
+                    ),
+                  );
+                },
+              ),
+            ),
+            Gaps.hGap20,
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chats')
+                    .doc(
+                      userProvider.getChatId(
+                        currentUser.uid!,
+                        widget.chatUserId,
+                      ),
+                    )
+                    .collection('messages')
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: Text('No messages yet'),
+                    );
+                  }
+                  // Convert QuerySnapshot to List<ChatMessage>
+                  final messages = snapshot.data!.docs.map(
+                    (doc) {
+                      return ChatMessage(
+                        id: doc.id,
+                        senderId: doc['senderId'],
+                        senderName: doc['senderName'],
+                        profileUrl: doc['profileUrl'],
+                        countryFlagUrl: doc['countryFlagUrl'],
+                        message: doc['message'],
+                        messageType: doc['messageType'],
+                        timestamp: (doc['timestamp'] as Timestamp).toDate(),
+                      );
+                    },
+                  ).toList();
+                  final groupedMessages = _groupMessagesByDate(messages);
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    reverse: true,
+                    itemCount: groupedMessages.length,
+                    itemBuilder: (context, index) {
+                      final item = groupedMessages[index];
+                      if (item is String) {
+                        // Render date header
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    } else if (item is ChatMessage) {
-                      // Render chat bubble
-                      return ChatBubble(
-                        chatMessage: item,
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                );
-              },
+                        );
+                      } else if (item is ChatMessage) {
+                        // Render chat bubble
+                        return ChatBubble(
+                          focusNode: _focusNode,
+                          chatMessage: item,
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          ChatInput(
-            onSendText: () =>
-                _sendTextMessage(userProvider, _messageController.text),
-            onSendCameraImage: () => _pickAndPreviewImage(ImageSource.camera),
-            onSendGalleryImage: () => _pickAndPreviewImage(ImageSource.gallery),
-            messageController: _messageController,
-          ),
-        ],
+            ChatInput(
+              onSendText: () =>
+                  _sendTextMessage(userProvider, _messageController.text),
+              onSendCameraImage: () => _pickAndPreviewImage(ImageSource.camera),
+              onSendGalleryImage: () =>
+                  _pickAndPreviewImage(ImageSource.gallery),
+              messageController: _messageController,
+            ),
+          ],
+        ),
       ),
     );
   }
