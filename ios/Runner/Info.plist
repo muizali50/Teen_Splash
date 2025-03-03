@@ -5,7 +5,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>App needs notification permision to send you hydration reminder.</string>
+	<string>App needs notification permission to send you hydration reminder.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to allow you to select and upload images from your gallery for your profile or other features</string>
 	<key>NSCameraUsageDescription</key>
