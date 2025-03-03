@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -16,6 +17,18 @@ class OfferRedeemedDialog extends StatefulWidget {
 }
 
 class _OfferRedeemedDialogState extends State<OfferRedeemedDialog> {
+  void _copyCode() {
+    Clipboard.setData(ClipboardData(text: widget.code)).then(
+      (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Code copied to clipboard!'),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,10 +91,13 @@ class _OfferRedeemedDialogState extends State<OfferRedeemedDialog> {
               const SizedBox(
                 width: 8.0,
               ),
-              Image.asset(
-                'assets/icons/copy.png',
-                width: 16,
-                height: 16,
+              GestureDetector(
+                onTap: _copyCode,
+                child: Image.asset(
+                  'assets/icons/copy.png',
+                  width: 16,
+                  height: 16,
+                ),
               ),
             ],
           ),
