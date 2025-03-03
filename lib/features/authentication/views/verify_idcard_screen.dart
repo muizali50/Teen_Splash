@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:intl/intl.dart';
@@ -40,8 +43,7 @@ class VerifyIdcardScreen extends StatefulWidget {
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
   CameraController? _cameraController;
   bool _isProcessing = false;
-  final TextRecognizer _textRecognizer =
-      TextRecognizer(script: TextRecognitionScript.latin);
+  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
   final TextEditingController _ageController = TextEditingController();
   String status = 'Approved';
   String? idCardPhoto;
@@ -53,65 +55,68 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     _initializeCamera();
   }
 
-Future<void> _initializeCamera() async {
-  final cameras = await availableCameras();
-  if (cameras.isNotEmpty) {
-    _cameraController = CameraController(
-      cameras[0],
-      ResolutionPreset.high,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.yuv420,
-    );
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    if (cameras.isNotEmpty) {
+      _cameraController = CameraController(
+        cameras[0],
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
 
-    await _cameraController!.initialize();
-    
-    // Check the camera orientation and adjust accordingly
-    if (mounted) {
-      if (_cameraController!.description.lensDirection == CameraLensDirection.front) {
-        // For front camera, flip preview horizontally
-        setState(() {
-          _cameraController = CameraController(
-            cameras[0],
-            ResolutionPreset.high,
-            enableAudio: false,
-            imageFormatGroup: ImageFormatGroup.yuv420,
-          );
-        });
+      await _cameraController!.initialize();
+
+      // Check the camera orientation and adjust accordingly
+      if (mounted) {
+        if (_cameraController!.description.lensDirection == CameraLensDirection.front) {
+          // For front camera, flip preview horizontally
+          setState(() {
+            _cameraController = CameraController(
+              cameras[0],
+              ResolutionPreset.high,
+              enableAudio: false,
+              imageFormatGroup: ImageFormatGroup.yuv420,
+            );
+          });
+        }
+        setState(() {});
+        _startTextScanning();
       }
-      setState(() {});
-      _startTextScanning();
     }
   }
-}
-
 
   /// Start scanning the ID text in real-time
   void _startTextScanning() {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
-      return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    try {
+      _cameraController!.startImageStream((CameraImage image) async {
+        if (_isProcessing) return;
 
-    _cameraController!.startImageStream((CameraImage image) async {
-      if (_isProcessing) return;
+        _isProcessing = true;
 
-      _isProcessing = true;
+        try {
+          final RecognizedText recognizedText = await _processImage(image);
+          final String? extractedDOB = extractDOBFromText(recognizedText.text);
 
-      try {
-        final RecognizedText recognizedText = await _processImage(image);
-        final String? extractedDOB = extractDOBFromText(recognizedText.text);
-
-        if (extractedDOB != null) {
-          int age = calculateAge(extractedDOB);
-          setState(() {
-            dateOfBirth = extractedDOB;
-            _ageController.text = age.toString();
-          });
+          if (extractedDOB != null) {
+            int age = calculateAge(extractedDOB);
+            setState(() {
+              dateOfBirth = extractedDOB;
+              _ageController.text = age.toString();
+            });
+          }
+        } catch (e) {
+          debugPrint("Error processing image: $e");
         }
-      } catch (e) {
-        debugPrint("Error processing image: $e");
-      }
 
-      _isProcessing = false;
-    });
+        _isProcessing = false;
+      });
+    } on PlatformException catch (e) {
+      debugPrint("Error processing image: $e");
+    } catch (e) {
+      debugPrint("Error processing image: $e");
+    }
   }
 
   /// Converts CameraImage to ML Kit InputImage
@@ -127,7 +132,7 @@ Future<void> _initializeCamera() async {
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: InputImageRotation.rotation0deg,
-        format: InputImageFormat.nv21,
+        format: Platform.isAndroid ? InputImageFormat.nv21 : InputImageFormat.yuv420,
         bytesPerRow: image.planes[0].bytesPerRow,
       ),
     );
@@ -137,13 +142,7 @@ Future<void> _initializeCamera() async {
 
   /// Extracts Date of Birth from text
   String? extractDOBFromText(String text) {
-    List<String> dobIndicators = [
-      'Date of Birth',
-      'DOB',
-      'Born on',
-      'Birthdate',
-      'DATE OF BIRTH'
-    ];
+    List<String> dobIndicators = ['Date of Birth', 'DOB', 'Born on', 'Birthdate', 'DATE OF BIRTH'];
 
     for (String indicator in dobIndicators) {
       final int index = text.indexOf(indicator);
@@ -183,8 +182,7 @@ Future<void> _initializeCamera() async {
     DateTime now = DateTime.now();
     int age = now.year - dob.year;
 
-    if (now.month < dob.month ||
-        (now.month == dob.month && now.day < dob.day)) {
+    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
       age--;
     }
 
@@ -286,19 +284,15 @@ Future<void> _initializeCamera() async {
                               0.7,
                             ),
                           ),
-                          child: _cameraController != null &&
-                                  _cameraController!.value.isInitialized
+                          child: _cameraController != null && _cameraController!.value.isInitialized
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: AspectRatio(
-                                    aspectRatio:
-                                        _cameraController!.value.aspectRatio,
+                                    aspectRatio: _cameraController!.value.aspectRatio,
                                     child: Transform.rotate(
-                                        angle: -270 *
-                                            3.1415927 /
-                                            180, // Rotate 90 degrees counterclockwise
-                                        child:
-                                            CameraPreview(_cameraController!),),
+                                      angle: -270 * 3.1415927 / 180, // Rotate 90 degrees counterclockwise
+                                      child: CameraPreview(_cameraController!),
+                                    ),
                                   ),
                                 )
                               : null,
@@ -371,8 +365,7 @@ Future<void> _initializeCamera() async {
 
                                 for (var format in formats) {
                                   try {
-                                    parsedDate =
-                                        DateFormat(format).parse(dateOfBirth);
+                                    parsedDate = DateFormat(format).parse(dateOfBirth);
                                     break;
                                   } catch (e) {
                                     continue;
@@ -380,12 +373,10 @@ Future<void> _initializeCamera() async {
                                 }
 
                                 if (parsedDate == null) {
-                                  throw const FormatException(
-                                      "Invalid Date of Birth format");
+                                  throw const FormatException("Invalid Date of Birth format");
                                 }
 
-                                return DateFormat("dd/MM/yyyy")
-                                    .format(parsedDate);
+                                return DateFormat("dd/MM/yyyy").format(parsedDate);
                               }
 
                               final ageText = _ageController.text;
@@ -416,8 +407,7 @@ Future<void> _initializeCamera() async {
                                   // image: XFile(''),
                                   age: _ageController.text,
                                   dateOfBirth: formattedDOB,
-                                  isPrivacyPolicyAccepted:
-                                      widget.isPrivacyPolicyAccepted,
+                                  isPrivacyPolicyAccepted: widget.isPrivacyPolicyAccepted,
                                 ),
                               );
                             },
