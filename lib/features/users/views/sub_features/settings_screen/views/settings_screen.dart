@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/sub_features/settings_screen/widgets/setting_row.dart';
 import 'package:teen_splash/features/users/views/update_password_screen.dart';
 import 'package:teen_splash/features/users/views/update_profile_screen.dart';
+import 'package:teen_splash/user_provider.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_bar.dart';
 
@@ -17,9 +21,32 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late final AuthenticationBloc authenticationBloc;
+  late final UserProvider userProvider;
   bool isSwitched = false;
+
+  @override
+  void initState() {
+    authenticationBloc = context.read<AuthenticationBloc>();
+    userProvider = context.read<UserProvider>();
+    if (!widget.isGuest) {
+      if (userProvider.user == null) {
+        authenticationBloc.add(
+          const GetUser(),
+        );
+      }
+
+      if (userProvider.user!.isPushNotification != null) {
+        isSwitched = userProvider.user!.isPushNotification ?? false;
+      }
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userBloc = context.read<UserBloc>();
+    final UserProvider userProvider = context.watch<UserProvider>();
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
@@ -55,40 +82,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Push Notifications',
-                            style: TextStyle(
-                              fontFamily: 'Lexend',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.primary,
+                      if (!widget.isGuest)
+                        Row(
+                          children: [
+                            Text(
+                              'Push Notifications',
+                              style: TextStyle(
+                                fontFamily: 'Lexend',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
-                          ),
-                          const Spacer(),
-                          Switch(
-                            value: isSwitched,
-                            onChanged: (value) {
-                              setState(
-                                () {
-                                  isSwitched = value;
-                                },
-                              );
-                            },
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
-                            activeTrackColor:
-                                Theme.of(context).colorScheme.primary,
-                            inactiveThumbColor: Colors.grey,
-                            inactiveTrackColor: Colors.grey[300],
-                          ),
-                        ],
-                      ),
-                      Gaps.hGap15,
-                      Divider(
-                        color: const Color(0xFF000000).withOpacity(0.1),
-                      ),
+                            const Spacer(),
+                            Switch(
+                              value:
+                                  userProvider.user?.isPushNotification == null
+                                      ? false
+                                      : userProvider.user?.isPushNotification ??
+                                          false,
+                              onChanged: (value) {
+                                userBloc.add(
+                                  TooglePushNotification(
+                                    value,
+                                  ),
+                                );
+                                setState(
+                                  () {
+                                    userProvider.user?.isPushNotification =
+                                        value;
+                                  },
+                                );
+                              },
+                              activeColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              activeTrackColor:
+                                  Theme.of(context).colorScheme.primary,
+                              inactiveThumbColor: Colors.grey,
+                              inactiveTrackColor: Colors.grey[300],
+                            ),
+                          ],
+                        ),
+                      if (!widget.isGuest) Gaps.hGap15,
+                      if (!widget.isGuest)
+                        Divider(
+                          color: const Color(0xFF000000).withOpacity(0.1),
+                        ),
                       Gaps.hGap15,
                       SettingRow(
                         onTap: () {
