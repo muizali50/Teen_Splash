@@ -77,16 +77,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           children: [
                             BlocBuilder<AdminBloc, AdminState>(
                               builder: (context, state) {
+                                // final filteredNotification =
+                                //     adminBloc.pushNotifications.where(
+                                //   (noti) {
+                                //     final isUserNotification = noti.userIds!
+                                //         .contains(FirebaseAuth
+                                //             .instance.currentUser!.uid);
+
+                                //     return isUserNotification;
+                                //   },
+                                // ).toList();
+
                                 final filteredNotification =
                                     adminBloc.pushNotifications.where(
                                   (noti) {
-                                    final isUserNotification = noti.userIds!
-                                        .contains(FirebaseAuth
-                                            .instance.currentUser!.uid);
-
-                                    return isUserNotification;
+                                    return noti.userIds!.contains(
+                                        FirebaseAuth.instance.currentUser!.uid);
                                   },
-                                ).toList();
+                                ).toList()
+                                      ..sort(
+                                        (a, b) =>
+                                            DateTime.parse(b.date!).compareTo(
+                                          DateTime.parse(a.date!),
+                                        ),
+                                      ); // Sort in descending order
+
                                 if (state is GettingPushNotification) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
