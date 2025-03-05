@@ -30,6 +30,12 @@ class _CouponsScreenState extends State<CouponsScreen> {
     super.initState();
   }
 
+  Future<void> _refresh() async {
+    userBloc.add(
+      GetUserCoupons(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,209 +79,216 @@ class _CouponsScreenState extends State<CouponsScreen> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'My Coupons',
-                        style: TextStyle(
-                          fontFamily: 'Lexend',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'My Coupons',
+                      style: TextStyle(
+                        fontFamily: 'Lexend',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      Gaps.hGap20,
-                      BlocBuilder<UserBloc, UserState>(
-                        builder: (context, state) {
-                          final currentDate = DateTime.now();
-                          final dateFormat = DateFormat('yyyy-MM-dd');
+                    ),
+                    Gaps.hGap20,
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            final currentDate = DateTime.now();
+                            final dateFormat = DateFormat('yyyy-MM-dd');
 
-                          final filteredCoupon = userBloc.coupons.where(
-                            (coupon) {
-                              final isUserNotRedeemed = !coupon.userIds!
-                                  .contains(
-                                      FirebaseAuth.instance.currentUser!.uid);
+                            final filteredCoupon = userBloc.coupons.where(
+                              (coupon) {
+                                final isUserNotRedeemed = !coupon.userIds!
+                                    .contains(
+                                        FirebaseAuth.instance.currentUser!.uid);
 
-                              final isDateValid = coupon.validDate != null &&
-                                  dateFormat
-                                      .parse(coupon.validDate!)
-                                      .isAfter(currentDate);
+                                final isDateValid = coupon.validDate != null &&
+                                    dateFormat
+                                        .parse(coupon.validDate!)
+                                        .isAfter(currentDate);
 
-                              return isUserNotRedeemed && isDateValid;
-                            },
-                          ).toList();
-                          if (state is GettingUserCoupon) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (state is GetUserCouponFailed) {
-                            return Center(
-                              child: Text(state.message),
-                            );
-                          }
-                          return filteredCoupon.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'No coupons',
-                                  ),
-                                )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: filteredCoupon.length,
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) =>
-                                                CouponsDetailsScreen(
-                                              coupon: filteredCoupon[index],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10.0),
-                                        child: TicketWidget(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                          width: double.infinity,
-                                          height: 124,
-                                          isCornerRounded: true,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(
-                                              1.0,
-                                            ),
-                                            child: TicketWidget(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface,
-                                              width: double.infinity,
-                                              height: 124,
-                                              isCornerRounded: true,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 30,
+                                return isUserNotRedeemed && isDateValid;
+                              },
+                            ).toList();
+                            if (state is GettingUserCoupon) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state is GetUserCouponFailed) {
+                              return Center(
+                                child: Text(state.message),
+                              );
+                            }
+                            return filteredCoupon.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      'No coupons',
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: filteredCoupon.length,
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) =>
+                                                  CouponsDetailsScreen(
+                                                coupon: filteredCoupon[index],
                                               ),
-                                              child: Row(
-                                                children: [
-                                                  Image.network(
-                                                    scale: 8,
-                                                    filteredCoupon[index]
-                                                            .image ??
-                                                        '',
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 25,
-                                                  ),
-                                                  Center(
-                                                    child: Align(
-                                                      child: VerticalDashedLine(
-                                                        height: 100,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurface,
-                                                        dashHeight: 10,
-                                                        dashWidth: 0.5,
-                                                        dashSpace: 4,
+                                            ),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 10.0),
+                                          child: TicketWidget(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                            width: double.infinity,
+                                            height: 124,
+                                            isCornerRounded: true,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(
+                                                1.0,
+                                              ),
+                                              child: TicketWidget(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surface,
+                                                width: double.infinity,
+                                                height: 124,
+                                                isCornerRounded: true,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 30,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Image.network(
+                                                      scale: 8,
+                                                      filteredCoupon[index]
+                                                              .image ??
+                                                          '',
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 25,
+                                                    ),
+                                                    Center(
+                                                      child: Align(
+                                                        child:
+                                                            VerticalDashedLine(
+                                                          height: 100,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                          dashHeight: 10,
+                                                          dashWidth: 0.5,
+                                                          dashSpace: 4,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 30,
-                                                  ),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        filteredCoupon[index]
-                                                                .businessName ??
-                                                            '',
-                                                        style: TextStyle(
-                                                          fontFamily: 'Lexend',
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
+                                                    const SizedBox(
+                                                      width: 30,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          filteredCoupon[index]
+                                                                  .businessName ??
+                                                              '',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Lexend',
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primary,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Gaps.hGap05,
-                                                      Text(
-                                                        filteredCoupon[index]
-                                                                    .discountType ==
-                                                                'Cash Discount'
-                                                            ? '\$${filteredCoupon[index].discount ?? ''} off'
-                                                            : '${filteredCoupon[index].discount ?? ''}% off',
-                                                        style: TextStyle(
-                                                          fontFamily: 'Lexend',
-                                                          fontSize: 20,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .tertiary,
+                                                        Gaps.hGap05,
+                                                        Text(
+                                                          filteredCoupon[index]
+                                                                      .discountType ==
+                                                                  'Cash Discount'
+                                                              ? '\$${filteredCoupon[index].discount ?? ''} off'
+                                                              : '${filteredCoupon[index].discount ?? ''}% off',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Lexend',
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .tertiary,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Gaps.hGap05,
-                                                      Text(
-                                                        '${filteredCoupon[index].item ?? ''} Coupon',
-                                                        style: TextStyle(
-                                                          fontFamily: 'Lexend',
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface,
+                                                        Gaps.hGap05,
+                                                        Text(
+                                                          '${filteredCoupon[index].item ?? ''} Coupon',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Lexend',
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onSurface,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Gaps.hGap10,
-                                                      Text(
-                                                        'Valid until: ${filteredCoupon[index].validDate ?? ''}',
-                                                        style: TextStyle(
-                                                          fontFamily: 'Lexend',
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface,
+                                                        Gaps.hGap10,
+                                                        Text(
+                                                          'Valid until: ${filteredCoupon[index].validDate ?? ''}',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Lexend',
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onSurface,
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                );
-                        },
+                                      );
+                                    },
+                                  );
+                          },
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

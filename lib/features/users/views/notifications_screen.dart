@@ -30,6 +30,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     super.initState();
   }
 
+  Future<void> _refreshNotifications() async {
+    adminBloc.add(
+      GetPushNotification(),
+    ); // Fetch latest notifications
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,137 +78,114 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ? Center(
                         child: Text('This screen is restricted for guests'),
                       )
-                    : SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            BlocBuilder<AdminBloc, AdminState>(
-                              builder: (context, state) {
-                                // final filteredNotification =
-                                //     adminBloc.pushNotifications.where(
-                                //   (noti) {
-                                //     final isUserNotification = noti.userIds!
-                                //         .contains(FirebaseAuth
-                                //             .instance.currentUser!.uid);
-
-                                //     return isUserNotification;
-                                //   },
-                                // ).toList();
-
-                                final filteredNotification =
-                                    adminBloc.pushNotifications.where(
-                                  (noti) {
-                                    return noti.userIds!.contains(
-                                        FirebaseAuth.instance.currentUser!.uid);
-                                  },
-                                ).toList()
-                                      ..sort(
-                                        (a, b) =>
-                                            DateTime.parse(b.date!).compareTo(
-                                          DateTime.parse(a.date!),
-                                        ),
-                                      ); // Sort in descending order
-
-                                if (state is GettingPushNotification) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                } else if (state is GetPushNotificationFailed) {
-                                  return Center(
-                                    child: Text(state.message),
-                                  );
-                                }
-                                return filteredNotification.isEmpty
-                                    ? const Center(
-                                        child: Text(
-                                          'No Notifications',
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: filteredNotification.length,
-                                        itemBuilder: (context, index) {
-                                          String isoDate =
-                                              filteredNotification[index]
-                                                  .date
-                                                  .toString();
-                                          DateTime parsedDate =
-                                              DateTime.parse(isoDate);
-                                          String formattedDate =
-                                              DateFormat('d MMMM yyyy')
-                                                  .format(parsedDate);
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 16.0,
-                                            ),
-                                            child: Container(
-                                              padding: const EdgeInsets.all(
-                                                12.0,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(
-                                                  0xFFF8F8F8,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  8.0,
-                                                ),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    filteredNotification[index]
-                                                            .title ??
-                                                        '',
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Lexend',
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Color(0xFF000000),
-                                                    ),
-                                                  ),
-                                                  Gaps.hGap05,
-                                                  Text(
-                                                    filteredNotification[index]
-                                                            .content ??
-                                                        '',
-                                                    style: const TextStyle(
-                                                      fontFamily: 'OpenSans',
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Color(0xFF767676),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 2.0),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: Text(
-                                                      'On $formattedDate',
-                                                      style: const TextStyle(
-                                                        fontFamily: 'Lexend',
-                                                        fontSize: 8,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color:
-                                                            Color(0xFF767676),
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
+                    : RefreshIndicator(
+                        onRefresh: _refreshNotifications,
+                        child: BlocBuilder<AdminBloc, AdminState>(
+                          builder: (context, state) {
+                            final filteredNotification =
+                                adminBloc.pushNotifications.where(
+                              (noti) {
+                                return noti.userIds!.contains(
+                                    FirebaseAuth.instance.currentUser!.uid);
                               },
-                            ),
-                          ],
+                            ).toList()
+                                  ..sort(
+                                    (a, b) => DateTime.parse(b.date!).compareTo(
+                                      DateTime.parse(a.date!),
+                                    ),
+                                  );
+
+                            if (state is GettingPushNotification) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state is GetPushNotificationFailed) {
+                              return Center(
+                                child: Text(state.message),
+                              );
+                            }
+                            return filteredNotification.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      'No Notifications',
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: filteredNotification.length,
+                                    itemBuilder: (context, index) {
+                                      String isoDate =
+                                          filteredNotification[index]
+                                              .date
+                                              .toString();
+                                      DateTime parsedDate =
+                                          DateTime.parse(isoDate);
+                                      String formattedDate =
+                                          DateFormat('d MMMM yyyy')
+                                              .format(parsedDate);
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 16.0,
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(
+                                            12.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(
+                                              0xFFF8F8F8,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8.0,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                filteredNotification[index]
+                                                        .title ??
+                                                    '',
+                                                style: const TextStyle(
+                                                  fontFamily: 'Lexend',
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color(0xFF000000),
+                                                ),
+                                              ),
+                                              Gaps.hGap05,
+                                              Text(
+                                                filteredNotification[index]
+                                                        .content ??
+                                                    '',
+                                                style: const TextStyle(
+                                                  fontFamily: 'OpenSans',
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2.0),
+                                              Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(
+                                                  'On $formattedDate',
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Lexend',
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Color(0xFF767676),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                          },
                         ),
                       ),
               ),

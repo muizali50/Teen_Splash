@@ -37,6 +37,12 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
     super.initState();
   }
 
+  Future<void> _refresh() async {
+    userBloc.add(
+      GetAllUsers(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,105 +192,116 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                             topRight: Radius.circular(30),
                           ),
                         ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: RefreshIndicator(
+                          onRefresh: _refresh,
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              Gaps.hGap30,
-                              Center(
-                                child: Text(
-                                  '@${user.name}',
-                                  style: TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                              Gaps.hGap40,
-                              Container(
-                                padding: const EdgeInsets.all(
-                                  16.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFFFFD700,
-                                    ),
-                                  ),
-                                  color: const Color(
-                                    0xFFF8F8F8,
-                                  ),
-                                ),
+                              SingleChildScrollView(
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    ProfileRow(
-                                      title: 'Name',
-                                      content: user.name,
+                                    Gaps.hGap30,
+                                    Center(
+                                      child: Text(
+                                        '@${user.name}',
+                                        style: TextStyle(
+                                          fontFamily: 'Lexend',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
                                     ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Gender',
-                                      content: user.gender.toString(),
+                                    Gaps.hGap40,
+                                    Container(
+                                      padding: const EdgeInsets.all(
+                                        16.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFFFFD700,
+                                          ),
+                                        ),
+                                        color: const Color(
+                                          0xFFF8F8F8,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          ProfileRow(
+                                            title: 'Name',
+                                            content: user.name,
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Gender',
+                                            content: user.gender.toString(),
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Age',
+                                            content: '${user.age} y/o',
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Country',
+                                            content:
+                                                '${user.country} ${user.countryFlag} ',
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Age',
-                                      content: '${user.age} y/o',
-                                    ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Country',
-                                      content:
-                                          '${user.country} ${user.countryFlag} ',
-                                    ),
+                                    if (widget.isGuest == false) Gaps.hGap20,
+                                    if (widget.isGuest == false)
+                                      Center(
+                                        child: Text(
+                                          'Want to know @${user.name}?',
+                                          style: TextStyle(
+                                            fontFamily: 'Lexend',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                      ),
+                                    if (widget.isGuest == false) Gaps.hGap15,
+                                    if (widget.isGuest == false)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 40.0,
+                                        ),
+                                        child: AppPrimaryButton(
+                                          text: 'Initiate Chat',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) =>
+                                                    PrivateChatScreen(
+                                                  chatUserId: widget.chatUserId,
+                                                  chatUserName:
+                                                      widget.chatUserName,
+                                                  chatUserProfileUrl:
+                                                      widget.chatUserProfileUrl,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),
-                              if (widget.isGuest == false) Gaps.hGap20,
-                              if (widget.isGuest == false)
-                                Center(
-                                  child: Text(
-                                    'Want to know @${user.name}?',
-                                    style: TextStyle(
-                                      fontFamily: 'Lexend',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                  ),
-                                ),
-                              if (widget.isGuest == false) Gaps.hGap15,
-                              if (widget.isGuest == false)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 40.0,
-                                  ),
-                                  child: AppPrimaryButton(
-                                    text: 'Initiate Chat',
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) =>
-                                              PrivateChatScreen(
-                                            chatUserId: widget.chatUserId,
-                                            chatUserName: widget.chatUserName,
-                                            chatUserProfileUrl:
-                                                widget.chatUserProfileUrl,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
                             ],
                           ),
                         ),

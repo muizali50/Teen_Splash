@@ -34,6 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
+  Future<void> _refresh() async {
+    authenticationBloc.add(
+      const GetUser(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,107 +89,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         topRight: Radius.circular(30),
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          Gaps.hGap30,
-                          Consumer<UserProvider>(
-                            builder: (context, userProvider, child) {
-                              return Center(
-                                child: Text(
-                                  '@${userProvider.user?.name ?? ''}',
-                                  style: TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Gaps.hGap30,
+                                Consumer<UserProvider>(
+                                  builder: (context, userProvider, child) {
+                                    return Center(
+                                      child: Text(
+                                        '@${userProvider.user?.name ?? ''}',
+                                        style: TextStyle(
+                                          fontFamily: 'Lexend',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Gaps.hGap40,
+                                Container(
+                                  padding: const EdgeInsets.all(
+                                    16.0,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    border: Border.all(
+                                      color: const Color(
+                                        0xFFFFD700,
+                                      ),
+                                    ),
+                                    color: const Color(
+                                      0xFFF8F8F8,
+                                    ),
+                                  ),
+                                  child: Consumer<UserProvider>(
+                                    builder: (context, userProvider, child) {
+                                      return Column(
+                                        children: [
+                                          ProfileRow(
+                                            title: 'Name',
+                                            content:
+                                                userProvider.user?.name ?? '',
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Gender',
+                                            content:
+                                                userProvider.user?.gender ?? '',
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Age',
+                                            content:
+                                                '${userProvider.user?.age ?? ''} y/o',
+                                          ),
+                                          Gaps.hGap10,
+                                          ProfileRow(
+                                            title: 'Country',
+                                            content:
+                                                '${userProvider.user?.country ?? ''} ${userProvider.user?.countryFlag ?? ''}',
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                          Gaps.hGap40,
-                          Container(
-                            padding: const EdgeInsets.all(
-                              16.0,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              border: Border.all(
-                                color: const Color(
-                                  0xFFFFD700,
-                                ),
-                              ),
-                              color: const Color(
-                                0xFFF8F8F8,
-                              ),
-                            ),
-                            child: Consumer<UserProvider>(
-                              builder: (context, userProvider, child) {
-                                return Column(
-                                  children: [
-                                    ProfileRow(
-                                      title: 'Name',
-                                      content: userProvider.user?.name ?? '',
+                                Gaps.hGap20,
+                                Center(
+                                  child: Text(
+                                    'Membership Card',
+                                    style: TextStyle(
+                                      fontFamily: 'Lexend',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Gender',
-                                      content: userProvider.user?.gender ?? '',
-                                    ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Age',
-                                      content:
-                                          '${userProvider.user?.age ?? ''} y/o',
-                                    ),
-                                    Gaps.hGap10,
-                                    ProfileRow(
-                                      title: 'Country',
-                                      content:
-                                          '${userProvider.user?.country ?? ''} ${userProvider.user?.countryFlag ?? ''}',
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                          Gaps.hGap20,
-                          Center(
-                            child: Text(
-                              'Membership Card',
-                              style: TextStyle(
-                                fontFamily: 'Lexend',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                          Gaps.hGap15,
-                          const Center(
-                            child: MembershipCard(),
-                          ),
-                          Gaps.hGap10,
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const SurveysScreen(),
                                   ),
-                                );
-                              },
-                              child: const Text(
-                                'Surveys',
-                                style: TextStyle(
-                                  decoration: TextDecoration.underline,
                                 ),
-                              ),
+                                Gaps.hGap15,
+                                const Center(
+                                  child: MembershipCard(),
+                                ),
+                                Gaps.hGap10,
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SurveysScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      'Surveys',
+                                      style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

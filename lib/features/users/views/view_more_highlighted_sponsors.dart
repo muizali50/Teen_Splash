@@ -27,6 +27,12 @@ class _ViewMoreHighlightedSponsorsState
     super.initState();
   }
 
+  Future<void> _refresh() async {
+    adminBloc.add(
+      GetSponsors(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,106 +67,99 @@ class _ViewMoreHighlightedSponsorsState
                     ),
                   ],
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BlocBuilder<AdminBloc, AdminState>(
-                        builder: (context, state) {
-                          if (state is GettingSponsor) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (state is GetSponsorFailed) {
-                            return Center(
-                              child: Text(state.message),
-                            );
-                          }
-                          return adminBloc.sponsors.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'No sponsors',
-                                  ),
-                                )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: adminBloc.sponsors.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.push(
+                child: BlocBuilder<AdminBloc, AdminState>(
+                  builder: (context, state) {
+                    if (state is GettingSponsor) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is GetSponsorFailed) {
+                      return Center(
+                        child: Text(state.message),
+                      );
+                    }
+                    return adminBloc.sponsors.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No sponsors',
+                            ),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _refresh,
+                            child: ListView.builder(
+                              itemCount: adminBloc.sponsors.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 10.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
                                                 context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) =>
-                                                      HighlightedSponsorDetailsScreen(
-                                                    sponsor: adminBloc
-                                                        .sponsors[index],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: 12.0,
-                                                horizontal: 12.0,
+                                              ) =>
+                                                  HighlightedSponsorDetailsScreen(
+                                                sponsor:
+                                                    adminBloc.sponsors[index],
                                               ),
-                                              width: double.infinity,
-                                              height: 140,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  8.0,
-                                                ),
-                                                image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: NetworkImage(
-                                                    adminBloc.sponsors[index]
-                                                            .image ??
-                                                        '',
-                                                  ),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [],
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12.0,
+                                            horizontal: 12.0,
+                                          ),
+                                          width: double.infinity,
+                                          height: 140,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                              8.0,
+                                            ),
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                adminBloc.sponsors[index]
+                                                        .image ??
+                                                    '',
                                               ),
                                             ),
                                           ),
-                                          Gaps.hGap05,
-                                          Text(
-                                            adminBloc.sponsors[index]
-                                                    .businessName ??
-                                                '',
-                                            style: TextStyle(
-                                              fontFamily: 'OpenSans',
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    );
-                                  },
+                                      Gaps.hGap05,
+                                      Text(
+                                        adminBloc.sponsors[index]
+                                                .businessName ??
+                                            '',
+                                        style: TextStyle(
+                                          fontFamily: 'OpenSans',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 );
-                        },
-                      ),
-                    ],
-                  ),
+                              },
+                            ),
+                          );
+                  },
                 ),
               ),
             ),
