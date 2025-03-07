@@ -18,6 +18,7 @@ class AppUser {
   bool? isPrivacyPolicyAccepted;
   bool? isDeactivate;
   bool? isPushNotification;
+  String? fcmToken;
 
   AppUser({
     required this.uid,
@@ -37,6 +38,7 @@ class AppUser {
     this.isPrivacyPolicyAccepted,
     this.isDeactivate,
     this.isPushNotification,
+    this.fcmToken,
   });
 
   AppUser copyWith({
@@ -56,6 +58,7 @@ class AppUser {
     bool? isPrivacyPolicyAccepted,
     bool? isDeactivate,
     bool? isPushNotification,
+    String? fcmToken,
   }) {
     return AppUser(
       uid: uid ?? uid,
@@ -76,6 +79,7 @@ class AppUser {
           isPrivacyPolicyAccepted ?? this.isPrivacyPolicyAccepted,
       isDeactivate: isDeactivate ?? this.isDeactivate,
       isPushNotification: isPushNotification ?? this.isPushNotification,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 
@@ -102,6 +106,7 @@ class AppUser {
       isPrivacyPolicyAccepted: map['isPrivacyPolicyAccepted'] ?? '',
       isDeactivate: map['isDeactivate'] ?? false,
       isPushNotification: map['isPushNotification'] ?? false,
+      fcmToken: map['fcmToken'] ?? '',
     );
   }
   Map<String, dynamic> toMap() {
@@ -123,6 +128,7 @@ class AppUser {
       'isPrivacyPolicyAccepted': isPrivacyPolicyAccepted,
       'isDeactivate': isDeactivate,
       'isPushNotification': isPushNotification,
+      'fcmToken': fcmToken,
     };
   }
 }

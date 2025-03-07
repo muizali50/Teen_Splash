@@ -4,6 +4,8 @@ class PushNotificationModel {
   String? content;
   String? date;
   List<String?>? userIds;
+  bool? isForAllUsers;
+  List<String>? userTokens;
 
   PushNotificationModel({
     this.pushNotificationId,
@@ -11,6 +13,8 @@ class PushNotificationModel {
     this.content,
     this.date,
     this.userIds,
+    this.isForAllUsers,
+    this.userTokens,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +24,8 @@ class PushNotificationModel {
       'content': content,
       'date': date,
       'userIds': userIds,
+      'isForAllUsers': isForAllUsers,
+      'userTokens': userTokens,
     };
   }
 
@@ -34,6 +40,9 @@ class PushNotificationModel {
               map['userIds'],
             )
           : [],
+      isForAllUsers: map['isForAllUsers'],
+      userTokens:
+          map['userTokens'] != null ? List<String>.from(map['userTokens']) : [],
     );
   }
 }

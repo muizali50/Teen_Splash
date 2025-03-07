@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:developer' as developer;
 import 'dart:typed_data';
@@ -23,6 +24,8 @@ import 'package:teen_splash/model/teen_business_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/model/sponsors_model.dart';
 import 'package:teen_splash/model/water_sponsor_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:teen_splash/utils/serverkey.dart';
 part 'admin_event.dart';
 part 'admin_state.dart';
 
@@ -86,6 +89,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           event.coupon.qrCodeUrl = qrCodeUrl;
           coupons.add(
             event.coupon,
+          );
+
+          // Send FCM notification
+          await _sendFCMNotification(
+            PushNotificationModel(
+              title: event.coupon.businessName,
+              content: 'A new coupon is added',
+              isForAllUsers: true,
+            ),
           );
           emit(
             AddCouponSuccess(
@@ -511,6 +523,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           featuredOffers.add(
             event.featuredOffer,
           );
+
+          await _sendFCMNotification(
+            PushNotificationModel(
+              title: event.featuredOffer.businessName,
+              content: 'A new featured offer is added',
+              isForAllUsers: true,
+            ),
+          );
+
           emit(
             AddFeaturedOffersSuccess(
               event.featuredOffer,
@@ -1318,6 +1339,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           pushNotifications.add(
             event.pushNotification,
           );
+
+          // Send FCM notification
+          await _sendFCMNotification(event.pushNotification);
           emit(
             AddPushNotificationSuccess(
               event.pushNotification,
@@ -2846,5 +2870,68 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           ),
         )
         .toList();
+  }
+
+  Future<void> _sendFCMNotification(PushNotificationModel notification) async {
+    final String url =
+        'https://fcm.googleapis.com/v1/projects/teen-splah/messages:send';
+    final get = get_server_key();
+    String serverToken = await get.server_token();
+
+    Map<String, dynamic> payload;
+
+    if (notification.isForAllUsers == true) {
+      // Send to topic
+      payload = {
+        "message": {
+          "topic": "all_users",
+          "notification": {
+            "title": notification.title,
+            "body": notification.content,
+            // "icon": 'app_icon',
+          }
+        }
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $serverToken"
+        },
+        body: jsonEncode(payload),
+      );
+
+      print('FCM Topic Response: ${response.statusCode}');
+      print('FCM Topic Body: ${response.body}');
+    } else {
+      // Send to specific users using tokens
+      List<String> userTokens = notification.userTokens ?? [];
+
+      for (String token in userTokens) {
+        payload = {
+          "message": {
+            "token": token,
+            "notification": {
+              "title": notification.title,
+              "body": notification.content,
+              // "icon": 'app_icon',
+            }
+          }
+        };
+
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $serverToken"
+          },
+          body: jsonEncode(payload),
+        );
+
+        print('FCM Token Response for $token: ${response.statusCode}');
+        print('FCM Token Body: ${response.body}');
+      }
+    }
   }
 }

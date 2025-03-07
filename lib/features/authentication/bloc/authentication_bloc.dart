@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +20,7 @@ part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   AuthenticationBloc() : super(AuthenticationInitial()) {
     final UserProvider userProvider =
         navigatorKey.currentContext!.read<UserProvider>();
@@ -191,6 +193,22 @@ class AuthenticationBloc
                 'loginFrequency': FieldValue.increment(1),
               },
             );
+
+            String? token = await _messaging.getToken();
+
+            if (token != null) {
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user.uid)
+                  .update(
+                {
+                  'fcmToken': token,
+                },
+              );
+            }
+
+            // Subscribe user to 'all_users' topic for global notifications
+            await _messaging.subscribeToTopic('all_users');
 
             // Set user data in UserProvider (if not on web)
             userProvider.setUser(user);

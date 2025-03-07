@@ -26,6 +26,8 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   List<String> _userIds = [];
+  List<String> _userTokens = [];
+  bool isForAllUsers = false;
 
   @override
   void initState() {
@@ -40,6 +42,8 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
       _titleController.text = widget.pushNotification!.title ?? '';
       _contentController.text = widget.pushNotification!.content ?? '';
       _userIds = List.from(widget.pushNotification!.userIds!);
+      _userTokens = List.from(widget.pushNotification!.userTokens!);
+      isForAllUsers = widget.pushNotification!.isForAllUsers!;
     }
     super.initState();
   }
@@ -247,9 +251,13 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                                                             .toString(),
                                                                       ),
                                                                     );
+                                                                    isForAllUsers =
+                                                                        true;
                                                                   } else {
                                                                     _userIds
                                                                         .clear();
+                                                                    isForAllUsers =
+                                                                        false;
                                                                   }
                                                                 },
                                                               );
@@ -302,10 +310,18 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                                                               .add(
                                                                             user.uid.toString(),
                                                                           );
+                                                                          _userTokens
+                                                                              .add(
+                                                                            user.fcmToken.toString(),
+                                                                          );
                                                                         } else {
                                                                           _userIds
                                                                               .remove(
                                                                             user.uid.toString(),
+                                                                          );
+                                                                          _userTokens
+                                                                              .remove(
+                                                                            user.fcmToken.toString(),
                                                                           );
                                                                         }
                                                                       },
@@ -449,6 +465,8 @@ class _AddPushNotificationScreenState extends State<AddPushNotificationScreen> {
                                   title: _titleController.text,
                                   content: _contentController.text,
                                   userIds: _userIds,
+                                  isForAllUsers: isForAllUsers,
+                                  userTokens: _userTokens,
                                 ),
                               ),
                             );
