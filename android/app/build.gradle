@@ -43,7 +43,7 @@ android {
         applicationId = "com.majorminorsentertainment.teensplash"
         minSdk = 23
         targetSdk = 35
-        versionCode = flutterVersionCode.toInteger()
+        versionCode = 2
         versionName = flutterVersionName
         multiDexEnabled true
     }
