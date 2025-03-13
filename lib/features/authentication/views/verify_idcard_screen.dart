@@ -43,11 +43,13 @@ class VerifyIdcardScreen extends StatefulWidget {
 class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
   CameraController? _cameraController;
   bool _isProcessing = false;
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(script: TextRecognitionScript.latin);
   final TextEditingController _ageController = TextEditingController();
   String status = 'Approved';
   String? idCardPhoto;
-  String dateOfBirth = '';
+  // String dateOfBirth = '';
+  DateTime? dateOfBirth;
 
   @override
   void initState() {
@@ -69,7 +71,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
 
       // Check the camera orientation and adjust accordingly
       if (mounted) {
-        if (_cameraController!.description.lensDirection == CameraLensDirection.front) {
+        if (_cameraController!.description.lensDirection ==
+            CameraLensDirection.front) {
           // For front camera, flip preview horizontally
           setState(() {
             _cameraController = CameraController(
@@ -86,32 +89,112 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
     }
   }
 
+  /// Maps month names (short and uppercase) to numeric format.
+  final Map<String, String> monthMap = {
+    "JAN": "01",
+    "FEB": "02",
+    "MAR": "03",
+    "APR": "04",
+    "MAY": "05",
+    "JUN": "06",
+    "JUL": "07",
+    "AUG": "08",
+    "SEP": "09",
+    "OCT": "10",
+    "NOV": "11",
+    "DEC": "12"
+  };
+
+  /// Converts different date formats into `yyyy-MM-dd`.
+  String normalizeDateFormat(String dateStr) {
+    dateStr = dateStr.toUpperCase().trim();
+    List<String> parts = dateStr.split(RegExp(r'[ ,.-]+'));
+
+    if (parts.length == 3) {
+      String first = parts[0], second = parts[1], third = parts[2];
+
+      // Case 1: "OCT 17 1987" → "1987-10-17"
+      if (monthMap.containsKey(first)) {
+        return "$third-${monthMap[first]}-${second.padLeft(2, '0')}";
+      }
+
+      // Case 2: "17 OCT 1987" → "1987-10-17"
+      if (monthMap.containsKey(second)) {
+        return "$third-${monthMap[second]}-${first.padLeft(2, '0')}";
+      }
+    }
+
+    return dateStr; // Return original if no change
+  }
+
+  /// Tries to parse multiple date formats.
+  DateTime? parseDate(String dateStr) {
+    String formattedDate = normalizeDateFormat(dateStr);
+
+    List<String> formats = [
+      "yyyy-MM-dd",
+      "MM.dd.yyyy",
+      "dd-MM-yyyy",
+      "MM/dd/yyyy",
+    ];
+
+    for (String format in formats) {
+      try {
+        return DateFormat(format).parseStrict(formattedDate);
+      } catch (_) {
+        continue;
+      }
+    }
+    return null; // Parsing failed
+  }
+
+  /// Calculates age based on the parsed DOB.
+  int calculateAge(DateTime birthDate) {
+    DateTime today = DateTime.now();
+    int age = today.year - birthDate.year;
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      age--;
+    }
+    return age;
+  }
+
   /// Start scanning the ID text in real-time
   void _startTextScanning() {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
+      return;
     try {
-      _cameraController!.startImageStream((CameraImage image) async {
-        if (_isProcessing) return;
+      _cameraController!.startImageStream(
+        (CameraImage image) async {
+          if (_isProcessing) return;
 
-        _isProcessing = true;
+          _isProcessing = true;
 
-        try {
-          final RecognizedText recognizedText = await _processImage(image);
-          final String? extractedDOB = extractDOBFromText(recognizedText.text);
-
-          if (extractedDOB != null) {
-            int age = calculateAge(extractedDOB);
-            setState(() {
-              dateOfBirth = extractedDOB;
-              _ageController.text = age.toString();
-            });
+          try {
+            final RecognizedText recognizedText = await _processImage(image);
+            final String? extractedDOB =
+                extractDOBFromText(recognizedText.text);
+            if (extractedDOB != null) {
+              DateTime? parsedDate = parseDate(extractedDOB);
+              setState(() {
+                dateOfBirth = parsedDate;
+              });
+              if (parsedDate != null) {
+                int age = calculateAge(parsedDate);
+                setState(
+                  () {
+                    _ageController.text = age.toString();
+                  },
+                );
+              }
+            }
+          } catch (e) {
+            debugPrint("Error processing image: $e");
           }
-        } catch (e) {
-          debugPrint("Error processing image: $e");
-        }
 
-        _isProcessing = false;
-      });
+          _isProcessing = false;
+        },
+      );
     } on PlatformException catch (e) {
       debugPrint("Error processing image: $e");
     } catch (e) {
@@ -132,7 +215,9 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: InputImageRotation.rotation0deg,
-        format: Platform.isAndroid ? InputImageFormat.nv21 : InputImageFormat.yuv420,
+        format: Platform.isAndroid
+            ? InputImageFormat.nv21
+            : InputImageFormat.yuv420,
         bytesPerRow: image.planes[0].bytesPerRow,
       ),
     );
@@ -142,15 +227,24 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
 
   /// Extracts Date of Birth from text
   String? extractDOBFromText(String text) {
-    List<String> dobIndicators = ['Date of Birth', 'DOB', 'Born on', 'Birthdate', 'DATE OF BIRTH'];
+    List<String> dobIndicators = [
+      'Date of Birth',
+      'DOB',
+      'Born on',
+      'Birthdate',
+      'DATE OF BIRTH'
+    ];
 
     for (String indicator in dobIndicators) {
       final int index = text.indexOf(indicator);
       if (index != -1) {
-        // Regex for MM.dd.yyyy (e.g., 10.17.2009) and MMM dd yyyy (e.g., Oct 17 2009)
+        // Updated regex to match multiple date formats
         final RegExp dateRegex = RegExp(
-          r'\b(\d{2}\.\d{2}\.\d{4})\b|\b([A-Za-z]{3} \d{1,2} \d{4})\b',
-        );
+            r'\b(\d{2} [A-Za-z]{3} \d{4})\b|' // Matches '09 FEB 2009', '7 OCT 1987', '17 OCT 1987'
+            r'\b([A-Za-z]{3} \d{1,2} \d{4})\b|' // Matches 'OCT 17 1987'
+            r'\b(\d{2}\.\d{2}\.\d{4})\b|' // Matches '10.17.2009'
+            r'\b(\d{4}-\d{2}-\d{2})\b' // Matches '2009-02-09'
+            );
         final match = dateRegex.firstMatch(text.substring(index));
         if (match != null) {
           return match.group(0);
@@ -158,35 +252,6 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
       }
     }
     return null;
-  }
-
-  /// Calculates age from Date of Birth
-  int calculateAge(String dobString) {
-    List<String> formats = [
-      "MM.dd.yyyy", // 10.17.2009
-      "MMM dd yyyy", // Oct 17 2009
-    ];
-    DateTime? dob;
-
-    for (var format in formats) {
-      try {
-        dob = DateFormat(format).parse(dobString);
-        break;
-      } catch (e) {
-        continue;
-      }
-    }
-
-    if (dob == null) return 0;
-
-    DateTime now = DateTime.now();
-    int age = now.year - dob.year;
-
-    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
-      age--;
-    }
-
-    return age;
   }
 
   @override
@@ -282,17 +347,24 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                               0.7,
                             ),
                           ),
-                          child: _cameraController != null && _cameraController!.value.isInitialized
+                          child: _cameraController != null &&
+                                  _cameraController!.value.isInitialized
                               ? SizedBox(
                                   height: 200,
                                   width: double.infinity,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: AspectRatio(
-                                      aspectRatio: _cameraController!.value.aspectRatio,
+                                      aspectRatio:
+                                          _cameraController!.value.aspectRatio,
                                       child: Transform.rotate(
-                                        angle: Platform.isIOS ? 0 : -270 * 3.1415927 / 180, // Rotate 90 degrees counterclockwise
-                                        child: CameraPreview(_cameraController!),
+                                        angle: Platform.isIOS
+                                            ? 0
+                                            : -270 *
+                                                3.1415927 /
+                                                180, // Rotate 90 degrees counterclockwise
+                                        child:
+                                            CameraPreview(_cameraController!),
                                       ),
                                     ),
                                   ),
@@ -357,28 +429,9 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                             text: 'Sign Up',
                             onTap: () {
                               /// Formats DOB into "dd/MM/yyyy"
-                              String formatDOB(String dateOfBirth) {
-                                List<String> formats = [
-                                  "MM.dd.yyyy", // 10.17.2009
-                                  "MMM dd yyyy", // Oct 17 2009
-                                ];
 
-                                DateTime? parsedDate;
-
-                                for (var format in formats) {
-                                  try {
-                                    parsedDate = DateFormat(format).parse(dateOfBirth);
-                                    break;
-                                  } catch (e) {
-                                    continue;
-                                  }
-                                }
-
-                                if (parsedDate == null) {
-                                  throw const FormatException("Invalid Date of Birth format");
-                                }
-
-                                return DateFormat("dd/MM/yyyy").format(parsedDate);
+                              String formatDateToMMDDYYYY(DateTime date) {
+                                return DateFormat("dd/MM/yyyy").format(date);
                               }
 
                               final ageText = _ageController.text;
@@ -394,7 +447,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                 );
                                 return;
                               }
-                              String formattedDOB = formatDOB(dateOfBirth);
+                              String formattedDOB =
+                                  formatDateToMMDDYYYY(dateOfBirth!);
                               authenticationBloc.add(
                                 RegisterEvent(
                                   name: widget.name,
@@ -409,7 +463,8 @@ class _VerifyIdcardScreenState extends State<VerifyIdcardScreen> {
                                   // image: XFile(''),
                                   age: _ageController.text,
                                   dateOfBirth: formattedDOB,
-                                  isPrivacyPolicyAccepted: widget.isPrivacyPolicyAccepted,
+                                  isPrivacyPolicyAccepted:
+                                      widget.isPrivacyPolicyAccepted,
                                 ),
                               );
                             },
