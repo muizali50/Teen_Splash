@@ -23,7 +23,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late final AuthenticationBloc authenticationBloc;
   late final UserProvider userProvider;
-  bool isSwitched = false;
+  late bool isSwitched;
 
   @override
   void initState() {
@@ -97,9 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const Spacer(),
                             Switch(
                               value:
-                                  userProvider.user?.isPushNotification == null
-                                      ? false
-                                      : userProvider.user?.isPushNotification ??
+                                  userProvider.user?.isPushNotification ??
                                           false,
                               onChanged: (value) {
                                 userBloc.add(

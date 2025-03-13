@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,6 +19,7 @@ part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   List<CouponModel> coupons = [];
   List<AppUser> users = [];
   UserBloc() : super(UserInitial()) {
@@ -590,18 +592,37 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           String userId = FirebaseAuth.instance.currentUser!.uid;
           UserProvider userProvider =
               navigatorKey.currentContext!.read<UserProvider>();
-          await FirebaseFirestore.instance
-              .collection(
-                'users',
-              )
-              .doc(
-                userId,
-              )
-              .update(
-            {
-              'isPushNotification': event.isPushNotification,
-            },
-          );
+          if (event.isPushNotification == false) {
+            // Disable notifications: Remove token & unsubscribe
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .update(
+              {
+                'isPushNotification': false,
+                'fcmToken': "", // Set token to empty
+              },
+            );
+
+            await _messaging.unsubscribeFromTopic('all_users');
+          } else {
+            // Enable notifications: Store token & subscribe
+            String? token = await _messaging.getToken();
+
+            if (token != null) {
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .update(
+                {
+                  'isPushNotification': true,
+                  'fcmToken': token,
+                },
+              );
+              await _messaging.subscribeToTopic('all_users');
+            }
+          }
+          // Update the userProvider locally
           userProvider.user!.isPushNotification = event.isPushNotification;
           emit(
             TooglePushNotificationSuccess(),

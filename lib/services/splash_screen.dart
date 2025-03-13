@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,13 @@ import 'package:teen_splash/user_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final String? payload;
+  final RemoteMessage? initialMessage;
+  const SplashScreen({
+    super.key,
+    this.payload,
+    this.initialMessage,
+  });
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -64,8 +71,11 @@ class _SplashScreenState extends State<SplashScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              kIsWeb ? const LoginScreen() : const OnboardingScreen(),
+          builder: (context) => kIsWeb
+              ? const LoginScreen()
+              : OnboardingScreen(
+                  payload: widget.payload,
+                ),
         ),
       );
     } else if (kIsWeb) {
@@ -87,7 +97,10 @@ class _SplashScreenState extends State<SplashScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const BottomNavBar(),
+          builder: (context) => BottomNavBar(
+            payload: widget.payload,
+            initialMessage: widget.initialMessage,
+          ),
         ),
       );
     }

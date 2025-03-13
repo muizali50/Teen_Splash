@@ -43,15 +43,37 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Get the initial notification when the app is terminated
+  RemoteMessage? initialMessage = await messaging.getInitialMessage();
+
   // Initialize push notification service
   final pushNotificationService = PushNotificationService(navigatorKey);
   await pushNotificationService.init();
 
-  runApp(const MyApp());
+  final NotificationAppLaunchDetails? launchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+  String? payload;
+  if (launchDetails?.didNotificationLaunchApp ?? false) {
+    payload = launchDetails!.notificationResponse?.payload;
+  }
+
+  runApp(MyApp(
+    payload: payload,
+    initialMessage: initialMessage,
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final RemoteMessage? initialMessage;
+  final String? payload;
+  const MyApp({
+    super.key,
+    this.payload,
+    this.initialMessage,
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -62,17 +84,17 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    FirebaseMessaging.onMessage.listen(
-      (RemoteMessage message) {
-        print("Foreground Notification: ${message.notification?.title}");
-      },
-    );
+    // FirebaseMessaging.onMessage.listen(
+    //   (RemoteMessage message) {
+    //     print("Foreground Notification: ${message.notification?.title}");
+    //   },
+    // );
 
-    FirebaseMessaging.onMessageOpenedApp.listen(
-      (RemoteMessage message) {
-        print("Notification Clicked!");
-      },
-    );
+    // FirebaseMessaging.onMessageOpenedApp.listen(
+    //   (RemoteMessage message) {
+    //     print("Notification Clicked!");
+    //   },
+    // );
   }
 
   @override
@@ -112,7 +134,10 @@ class _MyAppState extends State<MyApp> {
                 tertiary: Color(0xFFFF69B4),
               ),
             ),
-            home: const SplashScreen(),
+            home: SplashScreen(
+              payload: widget.payload,
+              initialMessage: widget.initialMessage,
+            ),
             // Consumer<UserProvider>(
             //   builder: (context, userProvider, child) {
             //     final firebaseUser = userProvider.firebaseUser;

@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_notification/in_app_notification.dart';
+import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -29,41 +30,52 @@ class PushNotificationService {
     if (navigatorKey.currentContext != null) {
       InAppNotification.show(
         context: navigatorKey.currentContext!,
-        child: Container(
-          margin: EdgeInsets.only(
-            top: MediaQuery.of(navigatorKey.currentContext!).padding.top + 10,
-            left: 16,
-            right: 16,
-          ),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF323232),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                message.notification!.title ?? '',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        child: GestureDetector(
+          onTap: () {
+            navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => BottomNavBar(
+                  isNotification: true,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                message.notification!.body ?? '',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.only(
+              top: MediaQuery.of(navigatorKey.currentContext!).padding.top + 10,
+              left: 16,
+              right: 16,
+            ),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF323232),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message.notification!.title ?? '',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message.notification!.body ?? '',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
         duration: const Duration(seconds: 3),
@@ -72,7 +84,12 @@ class PushNotificationService {
   }
 
   void _handleNotificationTap(RemoteMessage message) {
-    // Navigate to a specific screen (Modify as per your app)
-    // navigatorKey.currentState?.pushNamed('/notificationScreen');
+    navigatorKey.currentState?.pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => BottomNavBar(
+          isNotification: true,
+        ),
+      ),
+    );
   }
 }

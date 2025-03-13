@@ -1,4 +1,5 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:teen_splash/features/users/views/sub_features/events_screen/views/events_screen.dart';
 import 'package:teen_splash/features/users/views/notifications_screen.dart';
@@ -9,9 +10,15 @@ import 'package:teen_splash/features/users/views/sub_features/profile_screen/vie
 
 class BottomNavBar extends StatefulWidget {
   final bool? isGuest;
+  final String? payload;
+  final bool? isNotification;
+  final RemoteMessage? initialMessage;
   const BottomNavBar({
     this.isGuest,
     super.key,
+    this.payload,
+    this.isNotification,
+    this.initialMessage,
   });
 
   @override
@@ -26,6 +33,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     super.initState();
+    if (widget.isNotification == true || widget.initialMessage != null) {
+      _selectedIndex = 3;
+    }
     if (widget.isGuest ?? false) {
       _screens = [
         const HomeGuestUser(),
@@ -38,7 +48,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       ];
     } else {
       _screens = [
-        const HomeRegisteredUserScreen(),
+        HomeRegisteredUserScreen(
+          payload: widget.payload,
+        ),
         const CouponsScreen(),
         const EventScreen(
           isGuest: false,

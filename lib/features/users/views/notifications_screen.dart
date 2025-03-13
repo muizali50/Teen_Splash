@@ -22,11 +22,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     adminBloc = context.read<AdminBloc>();
-    if (adminBloc.pushNotifications.isEmpty) {
-      adminBloc.add(
-        GetPushNotification(),
-      );
-    }
+    // if (adminBloc.pushNotifications.isEmpty) {
+    //   adminBloc.add(
+    //     GetPushNotification(),
+    //   );
+    // }
+    adminBloc.add(
+      GetPushNotification(),
+    );
     super.initState();
   }
 

@@ -2,17 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/sub_features/views/signup_screen.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
+import 'package:teen_splash/features/users/views/hydrated_popup.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final String? payload;
+  const OnboardingScreen({
+    super.key,
+    this.payload,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (widget.payload != null) {
+          _showPopup(widget.payload!);
+        }
+      },
+    );
+    super.initState();
+  }
+
+  void _showPopup(String payload) {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: HydratedPopup(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

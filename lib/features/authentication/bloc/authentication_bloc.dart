@@ -34,6 +34,7 @@ class AuthenticationBloc
         );
         try {
           String membershipNumber = await generateMembershipNumber();
+          String? token = await _messaging.getToken();
           // final ref = FirebaseStorage.instance.ref().child(
           //       'idcard_images/${event.image!.path.split('/').last}',
           //     );
@@ -68,24 +69,28 @@ class AuthenticationBloc
               'dateOfBirth': event.dateOfBirth,
               'membershipNumber': membershipNumber,
               'isPrivacyPolicyAccepted': event.isPrivacyPolicyAccepted,
+              'isPushNotification': true,
+              'fcmToken': token,
             },
           );
+          await _messaging.subscribeToTopic('all_users');
           userProvider.setUser(
             AppUser(
-              uid: userCreds.user!.uid,
-              name: event.name,
-              email: event.email,
-              userType: UserType.user,
-              gender: event.gender,
-              country: event.country,
-              countryFlag: event.countryFlag,
-              // idCardPicture: event.idCardPhoto,
-              status: event.status,
-              age: event.age,
-              dateOfBirth: event.dateOfBirth,
-              membershipNumber: membershipNumber,
-              isPrivacyPolicyAccepted: event.isPrivacyPolicyAccepted,
-            ),
+                uid: userCreds.user!.uid,
+                name: event.name,
+                email: event.email,
+                userType: UserType.user,
+                gender: event.gender,
+                country: event.country,
+                countryFlag: event.countryFlag,
+                // idCardPicture: event.idCardPhoto,
+                status: event.status,
+                age: event.age,
+                dateOfBirth: event.dateOfBirth,
+                membershipNumber: membershipNumber,
+                isPrivacyPolicyAccepted: event.isPrivacyPolicyAccepted,
+                isPushNotification: true,
+                fcmToken: token),
           );
           emit(
             const Registered(
@@ -196,19 +201,21 @@ class AuthenticationBloc
 
             String? token = await _messaging.getToken();
 
-            if (token != null) {
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(user.uid)
-                  .update(
-                {
-                  'fcmToken': token,
-                },
-              );
-            }
+            if (user.isPushNotification == true) {
+              if (token != null) {
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .update(
+                  {
+                    'fcmToken': token,
+                  },
+                );
+              }
 
-            // Subscribe user to 'all_users' topic for global notifications
-            await _messaging.subscribeToTopic('all_users');
+              // Subscribe user to 'all_users' topic for global notifications
+              await _messaging.subscribeToTopic('all_users');
+            }
 
             // Set user data in UserProvider (if not on web)
             userProvider.setUser(user);

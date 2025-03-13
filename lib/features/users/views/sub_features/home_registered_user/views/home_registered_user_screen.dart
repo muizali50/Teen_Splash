@@ -6,6 +6,7 @@ import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/users/views/events_photo_gallery.dart';
 import 'package:teen_splash/features/users/views/featured_offer_details_screen.dart';
 import 'package:teen_splash/features/users/views/highlighted_sponsors_details_screen.dart';
+import 'package:teen_splash/features/users/views/hydrated_popup.dart';
 import 'package:teen_splash/features/users/views/photo_gallery_details_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/home_registered_user/widgets/drawer.dart';
 import 'package:teen_splash/features/users/views/sub_features/monday_offer_detail_screen/views/monday_offer_details_screen.dart';
@@ -22,7 +23,11 @@ import 'package:teen_splash/widgets/app_bar.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
 class HomeRegisteredUserScreen extends StatefulWidget {
-  const HomeRegisteredUserScreen({super.key});
+  final String? payload;
+  const HomeRegisteredUserScreen({
+    super.key,
+    this.payload,
+  });
 
   @override
   State<HomeRegisteredUserScreen> createState() =>
@@ -65,7 +70,25 @@ class _HomeRegisteredUserScreenState extends State<HomeRegisteredUserScreen> {
     searchController.addListener(
       _onSearchChanged,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (widget.payload != null) {
+          print('payload: ${widget.payload}');
+          _showPopup(widget.payload!);
+        }
+      },
+    );
     super.initState();
+  }
+
+  void _showPopup(String payload) {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: HydratedPopup(),
+      ),
+    );
   }
 
   void _onSearchChanged() {

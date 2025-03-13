@@ -17,7 +17,11 @@ import 'package:teen_splash/widgets/app_bar.dart';
 import 'package:teen_splash/widgets/search_field.dart';
 
 class HomeGuestUser extends StatefulWidget {
-  const HomeGuestUser({super.key});
+  final String? payload;
+  const HomeGuestUser({
+    super.key,
+    this.payload,
+  });
 
   @override
   State<HomeGuestUser> createState() => _HomeGuestUserState();

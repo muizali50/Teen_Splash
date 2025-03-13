@@ -18,15 +18,25 @@ void onBackgroundNotificationHandler(NotificationResponse response) async {
   );
 }
 
+// void _handleNotificationTap(NotificationResponse response) {
+//   debugPrint("Notification tapped with payload: ${response.payload}");
+
+//   _showPopup(navigatorKey.currentState!.context);
+// }
+
 void _handleNotificationTap(NotificationResponse response) {
   debugPrint("Notification tapped with payload: ${response.payload}");
 
-  // navigatorKey.currentState?.push(
-  //   MaterialPageRoute(
-  //     builder: (context) => const HydratedPopup(),
-  //   ),
-  // );
-  _showPopup(navigatorKey.currentState!.context);
+  if (navigatorKey.currentState != null) {
+    _showPopup(navigatorKey.currentState!.context);
+  } else {
+    Future.delayed(
+      Duration(seconds: 1),
+      () {
+        _showPopup(navigatorKey.currentState!.context);
+      },
+    );
+  }
 }
 
 void _showPopup(BuildContext context) {
@@ -67,21 +77,6 @@ class NotificationsService {
     },
         onDidReceiveBackgroundNotificationResponse:
             onBackgroundNotificationHandler);
-
-    // Handle notification tap when app is killed
-    final details =
-        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-    if (details?.didNotificationLaunchApp ?? false) {
-      final response = details!.notificationResponse;
-      if (response != null) {
-        Future.delayed(
-          Duration.zero,
-          () {
-            _handleNotificationTap(response);
-          },
-        );
-      }
-    }
   }
 
   Future<void> scheduleDailyNotifications() async {
