@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,7 +9,9 @@ import 'package:in_app_notification/in_app_notification.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
+import 'package:teen_splash/features/admin/views/sub_features/dashborad/views/admin_dashboard.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/firebase_options.dart';
 import 'package:teen_splash/services/notification_services.dart';
@@ -30,8 +34,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await notificationsService.init(navigatorKey);
-  notificationsService.scheduleDailyNotifications();
+  if (!kIsWeb) {
+    await notificationsService.init(navigatorKey);
+    notificationsService.scheduleDailyNotifications();
+  }
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -134,41 +140,14 @@ class _MyAppState extends State<MyApp> {
                 tertiary: Color(0xFFFF69B4),
               ),
             ),
-            home: SplashScreen(
-              payload: widget.payload,
-              initialMessage: widget.initialMessage,
-            ),
-            // Consumer<UserProvider>(
-            //   builder: (context, userProvider, child) {
-            //     final firebaseUser = userProvider.firebaseUser;
-            //     if (FirebaseAuth.instance.currentUser == null) {
-            //       return kIsWeb ? const LoginScreen() : const OnboardingScreen();
-            //     } else if (kIsWeb) {
-            //       return const AdminDashboard();
-            //     }
-            // else if (firebaseUser == null) {
-            //   // If the firebaseUser hasn't been fetched yet, show a loading screen
-            //   return const Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
-            //     else if (firebaseUser != null &&
-            //         firebaseUser.status == 'Pending') {
-            //       return const LoginScreen();
-            //     } else {
-            //       return const BottomNavBar();
-            //     }
-            //   },
-            // ),
-            // home: FirebaseAuth.instance.currentUser == null
-            //     ? kIsWeb
-            //         ? const LoginScreen()
-            //         : const OnboardingScreen()
-            //     : kIsWeb
-            //         ? const AdminDashboard()
-            //         : UserProvider().firebaseUser?.status == 'Pending'
-            //             ? const LoginScreen()
-            //             : const BottomNavBar(),
+            home: kIsWeb
+                ? FirebaseAuth.instance.currentUser == null
+                    ? LoginScreen()
+                    : AdminDashboard()
+                : SplashScreen(
+                    payload: widget.payload,
+                    initialMessage: widget.initialMessage,
+                  ),
           ),
         ),
       ),

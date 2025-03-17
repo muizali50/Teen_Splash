@@ -151,6 +151,7 @@ dependencies:
 
   # In_App_Notification
   in_app_notification: ^1.1.2
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:
