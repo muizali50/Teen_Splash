@@ -130,6 +130,8 @@ class UserProvider extends ChangeNotifier {
     String recieverName,
     String recieverProfileUrl,
     String type,
+    String recieverFcmToken,
+    String senderFcmToken,
   ) async {
     if (user == null || message.trim().isEmpty) return;
 
@@ -146,6 +148,8 @@ class UserProvider extends ChangeNotifier {
       messageType: 'text',
       timestamp: DateTime.now(),
       read: false,
+      recieverFcmToken: recieverFcmToken,
+      senderFcmToken: senderFcmToken,
     );
 
     await FirebaseFirestore.instance
@@ -181,6 +185,8 @@ class UserProvider extends ChangeNotifier {
     String recieverName,
     String recieverProfileUrl,
     String type,
+    String recieverFcmToken,
+    String senderFcmToken,
   ) async {
     if (user == null) return;
     final fileRef = FirebaseStorage.instance
@@ -203,6 +209,8 @@ class UserProvider extends ChangeNotifier {
       messageType: 'image',
       timestamp: DateTime.now(),
       read: false,
+      recieverFcmToken: recieverFcmToken,
+      senderFcmToken: senderFcmToken,
     );
 
     await FirebaseFirestore.instance

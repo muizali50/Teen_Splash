@@ -2888,7 +2888,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           "notification": {
             "title": notification.title,
             "body": notification.content,
-            // "icon": 'app_icon',
+          },
+          "data": {
+            "type": "notification",
           }
         }
       };
@@ -2915,7 +2917,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             "notification": {
               "title": notification.title,
               "body": notification.content,
-              // "icon": 'app_icon',
+            },
+            "data": {
+              "type": "notification",
             }
           }
         };

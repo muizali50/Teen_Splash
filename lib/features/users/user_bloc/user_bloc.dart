@@ -21,6 +21,7 @@ part 'user_state.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   List<CouponModel> coupons = [];
+  List<String> userTokens = [];
   List<AppUser> users = [];
   UserBloc() : super(UserInitial()) {
     on<GetUserCoupons>(
@@ -333,29 +334,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           } else {
             print("Storage permission denied");
           }
-
-          // final uri = Uri.parse(event.imageUrl);
-          // final fileName = uri.pathSegments.last;
-          // final response = await Dio().get(
-          //   event.imageUrl,
-          //   options: Options(responseType: ResponseType.bytes),
-          // );
-
-          // final result = await ImageGallerySaver.saveImage(
-          //   Uint8List.fromList(response.data),
-          //   quality: 100,
-          //   name: fileName,
-          // );
-
-          // if (result['isSuccess']) {
-          // emit(
-          //   const DownloadImageSuccess("Image downloaded successfully!"),
-          // );
-          // } else {
-          //   emit(
-          //     const DownloadImageFailed("Failed to save the image."),
-          //   );
-          // }
         } on FirebaseException catch (e) {
           emit(
             DownloadImageFailed(
@@ -639,6 +617,51 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           );
           emit(
             TooglePushNotificationFailed(
+              e.toString(),
+            ),
+          );
+        }
+      },
+    );
+    on<FetchUserTokensEvent>(
+      (
+        event,
+        emit,
+      ) async {
+        emit(
+          FetchUserTokenLoading(),
+        );
+        try {
+          final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+          final usersSnapshot =
+              await FirebaseFirestore.instance.collection('users').get();
+
+          final tokens = usersSnapshot.docs
+              .where((doc) =>
+                  doc.id != currentUserId &&
+                  doc.data().containsKey('fcmToken') &&
+                  doc['fcmToken'] != null &&
+                  (doc['fcmToken'] as String).isNotEmpty)
+              .map((doc) => doc['fcmToken'] as String)
+              .toList();
+
+          userTokens = tokens;
+
+          emit(
+            FetchUserTokenSuccess(userTokens),
+          );
+        } on FirebaseException catch (e) {
+          emit(
+            FetchUserTokenFailed(
+              e.message ?? '',
+            ),
+          );
+        } catch (e) {
+          log(
+            e.toString(),
+          );
+          emit(
+            FetchUserTokenFailed(
               e.toString(),
             ),
           );

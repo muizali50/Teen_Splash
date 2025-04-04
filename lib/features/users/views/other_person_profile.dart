@@ -80,45 +80,6 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
               ),
             ),
           ),
-          // actions: [
-          //   Padding(
-          //     padding: const EdgeInsets.only(
-          //       right: 16.0,
-          //     ),
-          //     child: Align(
-          //       alignment: Alignment.center,
-          //       child: InkWell(
-          //         onTap: _openMenu,
-          //         child: Container(
-          //           height: 40,
-          //           width: 40,
-          //           decoration: BoxDecoration(
-          //             color: const Color(0xFFF4F4F4),
-          //             borderRadius: BorderRadius.circular(10.0),
-          //           ),
-          //           child: PopupMenuButton<String>(
-          //             iconColor: Theme.of(context).colorScheme.secondary,
-          //             menuPadding: const EdgeInsets.all(6.0),
-          //             key: _menuKey,
-          //             onSelected: _handleMenuSelection,
-          //             itemBuilder: (BuildContext context) {
-          //               return [
-          //                 const PopupMenuItem(
-          //                   value: 'bloc',
-          //                   child: Text('Bloc'),
-          //                 ),
-          //                 const PopupMenuItem(
-          //                   value: 'report',
-          //                   child: Text('Report'),
-          //                 ),
-          //               ];
-          //             },
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ],
           title: Text(
             'Profile',
             style: TextStyle(
@@ -293,6 +254,8 @@ class _OtherPersonProfileState extends State<OtherPersonProfile> {
                                                       widget.chatUserName,
                                                   chatUserProfileUrl:
                                                       widget.chatUserProfileUrl,
+                                                  userToken:
+                                                      user.fcmToken.toString(),
                                                 ),
                                               ),
                                             );

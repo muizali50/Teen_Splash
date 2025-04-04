@@ -132,3 +132,8 @@ final class TooglePushNotification extends UserEvent {
         isPushNotification,
       ];
 }
+
+final class FetchUserTokensEvent extends UserEvent {
+  @override
+  List<Object> get props => [];
+}

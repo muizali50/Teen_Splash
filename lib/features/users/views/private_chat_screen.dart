@@ -12,8 +12,10 @@ import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/w
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_input.dart';
 import 'package:teen_splash/model/app_user.dart';
 import 'package:teen_splash/model/chat_message.dart';
+import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/user_provider.dart';
+import 'package:teen_splash/utils/app_utitls.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -21,10 +23,12 @@ class PrivateChatScreen extends StatefulWidget {
   final String chatUserId;
   final String chatUserName;
   final String chatUserProfileUrl;
+  final String userToken;
   const PrivateChatScreen({
     required this.chatUserId,
     required this.chatUserName,
     required this.chatUserProfileUrl,
+    required this.userToken,
     super.key,
   });
 
@@ -447,6 +451,15 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
           widget.chatUserName,
           widget.chatUserProfileUrl,
           'text',
+          widget.userToken,
+          currentUser.fcmToken.toString(),
+        );
+        await AppUtils().sendChatNotification(
+          PushNotificationModel(
+            title: currentUser.name,
+            content: '${currentUser.name} sent you a message',
+          ),
+          widget.userToken,
         );
         _messageController.clear();
       }
@@ -472,8 +485,16 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
         widget.chatUserName,
         widget.chatUserProfileUrl,
         'image',
+        widget.userToken,
+        currentUser.fcmToken.toString(),
       );
-
+      await AppUtils().sendChatNotification(
+        PushNotificationModel(
+          title: currentUser.name,
+          content: '${currentUser.name} sent you a image',
+        ),
+        widget.userToken,
+      );
       // Clear the preview after sending
       setState(
         () {

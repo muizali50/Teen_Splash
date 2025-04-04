@@ -254,3 +254,29 @@ final class TooglePushNotificationFailed extends UserState {
         message,
       ];
 }
+
+final class FetchUserTokenLoading extends UserState {}
+
+final class FetchUserTokenSuccess extends UserState {
+  final List<String> tokens;
+  const FetchUserTokenSuccess(
+    this.tokens,
+  );
+
+  @override
+  List<Object> get props => [
+        tokens,
+      ];
+}
+
+final class FetchUserTokenFailed extends UserState {
+  final String message;
+  const FetchUserTokenFailed(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [
+        message,
+      ];
+}

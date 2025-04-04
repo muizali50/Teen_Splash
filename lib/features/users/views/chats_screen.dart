@@ -252,6 +252,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           final recieverId = latestMessage['recieverId'] ?? '';
                           final recieverName =
                               latestMessage['recieverName'] ?? '';
+                          final recieverFcmToken =
+                              latestMessage['recieverFcmToken'] ?? '';
+                          final senderFcmToken =
+                              latestMessage['senderFcmToken'] ?? '';
                           final recieverProfileUrl =
                               latestMessage['recieverProfileUrl'];
                           final name =
@@ -297,6 +301,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         chatUserProfileUrl: senderId == cuid
                                             ? recieverProfileUrl
                                             : senderProfileUrl,
+                                        userToken: senderId == cuid
+                                            ? recieverFcmToken
+                                            : senderFcmToken,
                                       ),
                                     ),
                                   );

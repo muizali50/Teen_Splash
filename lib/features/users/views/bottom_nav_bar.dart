@@ -1,6 +1,8 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:teen_splash/features/users/views/chats_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/events_screen/views/events_screen.dart';
 import 'package:teen_splash/features/users/views/notifications_screen.dart';
 import 'package:teen_splash/features/users/views/sub_features/coupons_screen/views/coupons_screen.dart';
@@ -33,7 +35,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     super.initState();
-    if (widget.isNotification == true || widget.initialMessage != null) {
+    if ((widget.isNotification == true || widget.initialMessage != null) &&
+        widget.initialMessage?.data['type'] == 'notification') {
       _selectedIndex = 3;
     }
     if (widget.isGuest ?? false) {
@@ -61,6 +64,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
         const ProfileScreen(),
       ];
     }
+    Future.microtask(
+      () {
+        final type = widget.initialMessage?.data['type'];
+        if (type == 'chat') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatsScreen(),
+            ),
+          );
+        } else if (type == 'chatroom') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatRoomScreen(),
+            ),
+          );
+        }
+      },
+    );
   }
 
   void _onItemTapped(int index) {

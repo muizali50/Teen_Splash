@@ -89,18 +89,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    // FirebaseMessaging.onMessage.listen(
-    //   (RemoteMessage message) {
-    //     print("Foreground Notification: ${message.notification?.title}");
-    //   },
-    // );
-
-    // FirebaseMessaging.onMessageOpenedApp.listen(
-    //   (RemoteMessage message) {
-    //     print("Notification Clicked!");
-    //   },
-    // );
   }
 
   @override
@@ -119,9 +107,6 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MultiProvider(
         providers: [
-          // ChangeNotifierProvider<UserProvider>(
-          //   create: (context) => UserProvider(),
-          // ),
           ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()..getUser(),
           ),

@@ -5,14 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:teen_splash/features/admin/admin_bloc/admin_bloc.dart';
 import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dart';
+import 'package:teen_splash/features/users/user_bloc/user_bloc.dart';
 import 'package:teen_splash/features/users/views/scrolling_text.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_bubble.dart';
 import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/widgets/chat_input.dart';
 import 'package:teen_splash/features/users/views/chatroom_media.dart';
 import 'package:teen_splash/features/users/views/chats_screen.dart';
 import 'package:teen_splash/model/chat_message.dart';
+import 'package:teen_splash/model/push_notification_model.dart';
 import 'package:teen_splash/model/ticker_notification_model.dart';
 import 'package:teen_splash/user_provider.dart';
+import 'package:teen_splash/utils/app_utitls.dart';
 import 'package:teen_splash/utils/gaps.dart';
 import 'package:teen_splash/widgets/app_primary_button.dart';
 
@@ -28,6 +31,7 @@ class ChatRoomScreen extends StatefulWidget {
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  late final UserBloc userBloc;
   late final AdminBloc adminBloc;
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
@@ -38,6 +42,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   void initState() {
     authenticationBloc = context.read<AuthenticationBloc>();
     userProvider = context.read<UserProvider>();
+    userBloc = context.read<UserBloc>();
 
     if (widget.isGuest == false) {
       if (userProvider.user == null) {
@@ -45,6 +50,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           const GetUser(),
         );
       }
+    }
+    if (userBloc.userTokens == null || userBloc.userTokens!.isEmpty) {
+      userBloc.add(
+        FetchUserTokensEvent(),
+      );
     }
 
     adminBloc = context.read<AdminBloc>();
@@ -501,7 +511,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     );
   }
 
-  void _sendTextMessage(UserProvider userProvider, String message) {
+  void _sendTextMessage(UserProvider userProvider, String message) async {
     if (message.isNotEmpty) {
       final state = context.read<AdminBloc>().state;
       if (state is GetRestrictedWordsSuccess) {
@@ -514,7 +524,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           );
           return;
         }
-        print("Message Sent: ${_messageController.text}");
       }
       final currentUser = userProvider.user;
       if (currentUser != null) {
@@ -525,6 +534,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           currentUser.countryFlag.toString(),
           message,
         );
+
+        if (userBloc.userTokens.isNotEmpty) {
+          await AppUtils().sendChatroomNotification(
+            PushNotificationModel(
+              title: currentUser.name,
+              content: '${currentUser.name} sent a message',
+              userTokens: userBloc.userTokens,
+            ),
+          );
+        } else {
+          print("⚠️ Tokens not ready yet");
+        }
         _messageController.clear();
       }
     }
@@ -542,6 +563,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         currentUser.countryFlag.toString(),
         _selectedImage!,
       );
+
+      if (userBloc.userTokens.isNotEmpty) {
+        await AppUtils().sendChatroomNotification(
+          PushNotificationModel(
+            title: currentUser.name,
+            content: '${currentUser.name} sent a message',
+            userTokens: userBloc.userTokens,
+          ),
+        );
+      } else {
+        print("⚠️ Tokens not ready yet");
+      }
 
       setState(
         () {

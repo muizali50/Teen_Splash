@@ -14,6 +14,8 @@ class ChatMessage {
   final DateTime timestamp;
   final bool? read;
   final bool? isReported;
+  final String? recieverFcmToken;
+  final String? senderFcmToken;
 
   ChatMessage({
     required this.id,
@@ -29,7 +31,8 @@ class ChatMessage {
     required this.timestamp,
     this.read,
     this.isReported,
-
+    this.recieverFcmToken,
+    this.senderFcmToken,
   });
 
   Map<String, dynamic> toMap() {
@@ -46,6 +49,8 @@ class ChatMessage {
       'timestamp': timestamp,
       'read': read,
       'isReported': isReported,
+      'recieverFcmToken': recieverFcmToken,
+      'senderFcmToken': senderFcmToken,
     };
   }
 
@@ -64,6 +69,8 @@ class ChatMessage {
       timestamp: (map['timestamp'] as Timestamp).toDate(),
       read: map['read'] ?? false,
       isReported: map['isReported'] ?? false,
+      recieverFcmToken: map['recieverFcmToken'] ?? '',
+      senderFcmToken: map['senderFcmToken'] ?? '',
     );
   }
 }

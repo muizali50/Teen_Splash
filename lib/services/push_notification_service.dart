@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_notification/in_app_notification.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
+import 'package:teen_splash/features/users/views/chats_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -32,13 +34,26 @@ class PushNotificationService {
         context: navigatorKey.currentContext!,
         child: GestureDetector(
           onTap: () {
-            navigatorKey.currentState?.pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => BottomNavBar(
-                  isNotification: true,
-                ),
-              ),
-            );
+            message.data['type'] == 'chatroom'
+                ? navigatorKey.currentState?.push(
+                    MaterialPageRoute(
+                      builder: (context) => ChatRoomScreen(),
+                    ),
+                  )
+                : message.data['type'] == 'chat'
+                    ? navigatorKey.currentState?.push(
+                        MaterialPageRoute(
+                          builder: (context) => ChatsScreen(),
+                        ),
+                      )
+                    : navigatorKey.currentState?.pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => BottomNavBar(
+                            isNotification: true,
+                            initialMessage: message,
+                          ),
+                        ),
+                      );
           },
           child: Container(
             margin: EdgeInsets.only(

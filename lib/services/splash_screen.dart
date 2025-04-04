@@ -9,6 +9,8 @@ import 'package:teen_splash/features/authentication/bloc/authentication_bloc.dar
 import 'package:teen_splash/features/authentication/views/login_screen.dart';
 import 'package:teen_splash/features/authentication/views/onboarding_screen.dart';
 import 'package:teen_splash/features/users/views/bottom_nav_bar.dart';
+import 'package:teen_splash/features/users/views/chats_screen.dart';
+import 'package:teen_splash/features/users/views/sub_features/chat_room_screen/views/chat_room_screen.dart';
 import 'package:teen_splash/user_provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -93,7 +95,26 @@ class _SplashScreenState extends State<SplashScreen>
           builder: (context) => const LoginScreen(),
         ),
       );
-    } else {
+    }
+    // else {
+    //   if ((widget.initialMessage != null) &&
+    //       widget.initialMessage?.data['type'] == 'chatroom') {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => ChatRoomScreen(),
+    //       ),
+    //     );
+    //   } else if ((widget.initialMessage != null) &&
+    //       widget.initialMessage?.data['type'] == 'chat') {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => ChatsScreen(),
+    //       ),
+    //     );
+    //   }
+    else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
