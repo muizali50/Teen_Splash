@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/gestures.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -527,6 +527,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       }
       final currentUser = userProvider.user;
       if (currentUser != null) {
+        await FirebaseMessaging.instance.unsubscribeFromTopic('all_users');
         userProvider.sendTextMessage(
           currentUser.uid.toString(),
           currentUser.name,
@@ -535,17 +536,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           message,
         );
 
-        if (userBloc.userTokens.isNotEmpty) {
-          await AppUtils().sendChatroomNotification(
-            PushNotificationModel(
-              title: currentUser.name,
-              content: '${currentUser.name} sent a message',
-              userTokens: userBloc.userTokens,
-            ),
-          );
-        } else {
-          print("⚠️ Tokens not ready yet");
-        }
+        await AppUtils().sendChatroomNotification(
+          PushNotificationModel(
+            title: currentUser.name,
+            content: '${currentUser.name} sent a message',
+            // userTokens: userBloc.userTokens,
+          ),
+        );
+
+        await FirebaseMessaging.instance.subscribeToTopic('all_users');
         _messageController.clear();
       }
     }
@@ -556,6 +555,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
     final currentUser = userProvider.user;
     if (currentUser != null) {
+      await FirebaseMessaging.instance.unsubscribeFromTopic('all_users');
       await userProvider.sendImageMessage(
         currentUser.uid.toString(),
         currentUser.name,
@@ -564,18 +564,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         _selectedImage!,
       );
 
-      if (userBloc.userTokens.isNotEmpty) {
-        await AppUtils().sendChatroomNotification(
-          PushNotificationModel(
-            title: currentUser.name,
-            content: '${currentUser.name} sent a message',
-            userTokens: userBloc.userTokens,
-          ),
-        );
-      } else {
-        print("⚠️ Tokens not ready yet");
-      }
-
+      await AppUtils().sendChatroomNotification(
+        PushNotificationModel(
+          title: currentUser.name,
+          content: '${currentUser.name} sent a message',
+          // userTokens: userBloc.userTokens,
+        ),
+      );
+      await FirebaseMessaging.instance.subscribeToTopic('all_users');
       setState(
         () {
           _selectedImage = null;

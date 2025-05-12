@@ -8,41 +8,34 @@ class AppUtils {
       PushNotificationModel notification) async {
     final String url =
         'https://fcm.googleapis.com/v1/projects/teen-splah/messages:send';
-    final get = get_server_key();
-    String serverToken = await get.server_token();
 
+    String serverToken = await get_server_key().server_token();
     Map<String, dynamic> payload;
 
-    // Send to specific users using tokens
-    List<String> userTokens = notification.userTokens ?? [];
-
-    for (String token in userTokens) {
-      payload = {
-        "message": {
-          "token": token,
-          "notification": {
-            "title": notification.title,
-            "body": notification.content,
-          },
-          "data": {
-            "type": "chatroom",
-          }
-        }
-      };
-
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $serverToken"
+    payload = {
+      "message": {
+        "topic": 'all_users',
+        "notification": {
+          "title": notification.title,
+          "body": notification.content,
         },
-        body: jsonEncode(payload),
-      );
+        "data": {
+          "type": "chatroom",
+        },
+      }
+    };
 
-      print('FCM Token Response for $token: ${response.statusCode}');
-      print('FCM Token Body: ${response.body}');
-      print('FCM Tokens: ${userTokens.length}');
-    }
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $serverToken"
+      },
+      body: jsonEncode(payload),
+    );
+
+    print('📨 FCM Topic Response: ${response.statusCode}');
+    print('📨 FCM Topic Body: ${response.body}');
   }
 
   Future<void> sendChatNotification(
